@@ -1,0 +1,9 @@
+Django~=3.2
+django-cors-headers
+django-environ
+django-filter
+# django-helusers, TODO use upstream when https://github.com/City-of-Helsinki/django-helusers/pull/55 is released
+git+https://github.com/charn/django-helusers.git@59b6546405297a05c5c438910dc56a56667da39f#egg=django-helusers
+djangorestframework
+psycopg2
+sentry_sdk
