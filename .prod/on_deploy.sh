@@ -3,10 +3,10 @@
 python /app/manage.py migrate --noinput
 
 # Generate the admin user using the password given in the environment variables.
-# If no password is set, the admin user gets a generated password. Password is
-# not printed out, but needs to be reset in pod command line
+# If no password is set, the admin user gets a generated password which will
+# be written in stdout so that it can be accessed during the initial deployment.
 if [[ "$ADMIN_USER_PASSWORD" ]]; then
-    DJANGO_SUPERUSER_PASSWORD=$ADMIN_USER_PASSWORD DJANGO_SUPERUSER_USERNAME=admin DJANGO_SUPERUSER_EMAIL=admin@hel.ninja python /app/manage.py createsuperuser --noinput || true
+    python /app/manage.py add_admin_user -u admin -p $ADMIN_USER_PASSWORD -e admin@hel.ninja
 else
-    DJANGO_SUPERUSER_USERNAME=admin DJANGO_SUPERUSER_EMAIL=admin@hel.ninja python /app/manage.py createsuperuser --noinput || true
+    python /app/manage.py add_admin_user -u admin -e admin@hel.ninja
 fi

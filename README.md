@@ -17,7 +17,7 @@ Prerequisites:
    * Set entrypoint/startup variables according to taste.
      * `DEBUG`, controls debug mode on/off
      * `APPLY_MIGRATIONS`, applies migrations on startup
-     * `CREATE_SUPERUSER`, creates an admin user with credentials `admin`:(password, see below)
+     * `CREATE_ADMIN_USER`, creates an admin user with credentials `admin`:(password, see below)
      (admin@hel.ninja)
      * `ADMIN_USER_PASSWORD`, the admin user's password. If this is not given, a random password is generated
      and written into stdout when an admin user is created automatically.
@@ -33,7 +33,7 @@ Prerequisites:
 
 2. Create superuser:
     * Taken care by the example env
-    * `docker exec -it atv-backend python manage.py createsuperuser`
+    * `docker exec -it atv-backend python manage.py add_admin_user`
 
 
 ## Development without Docker

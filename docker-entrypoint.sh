@@ -14,20 +14,12 @@ if [[ "$APPLY_MIGRATIONS" = "1" ]]; then
     ./manage.py migrate --noinput
 fi
 
-# Create admin user. Generate password if there isn't one in the
-# environment variables. Password is not printed to log, but needs to be
-# changed at the pod command line
-if [[ "$CREATE_SUPERUSER" = "1" ]]; then
+# Create admin user. Generate password if there isn't one in the environment variables
+if [[ "$CREATE_ADMIN_USER" = "1" ]]; then
     if [[ "$ADMIN_USER_PASSWORD" ]]; then
-        DJANGO_SUPERUSER_PASSWORD=$ADMIN_USER_PASSWORD \
-            DJANGO_SUPERUSER_USERNAME=admin \
-            DJANGO_SUPERUSER_EMAIL=admin@hel.ninja \
-            python /app/manage.py createsuperuser --noinput || true
+      ./manage.py add_admin_user -u admin -p $ADMIN_USER_PASSWORD -e admin@hel.ninja
     else
-        DJANGO_SUPERUSER_PASSWORD=admin \
-            DJANGO_SUPERUSER_USERNAME=admin \
-            DJANGO_SUPERUSER_EMAIL=admin@hel.ninja \
-            python /app/manage.py createsuperuser --noinput || true
+      ./manage.py add_admin_user -u admin -e admin@hel.ninja
     fi
 fi
 
