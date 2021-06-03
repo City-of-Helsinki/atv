@@ -1,0 +1,41 @@
+version: "3.7"
+services:
+    postgres:
+        image: postgres:11
+        restart: on-failure
+        environment:
+            POSTGRES_USER: atv
+            POSTGRES_PASSWORD: atv
+            POSTGRES_DB: atv
+        ports:
+            - 5437:5432
+        volumes:
+          - pgdata:/var/lib/postgresql/data
+        container_name: atv-db
+
+    django:
+        build:
+            context: .
+            target: development
+        env_file:
+            - docker-compose.env.yaml
+        environment:
+            DATABASE_URL: postgres://atv:atv@atv-db/atv
+            DATABASE_HOST: atv-db
+        volumes:
+            - .:/app
+            - django-media-volume:/var/media/
+        ports:
+            - "8081:8000"
+        depends_on:
+            - postgres
+        container_name: atv-backend
+
+volumes:
+        pgdata:
+            driver: local
+        django-media-volume:
+
+networks:
+    default:
+        name: helsinki
