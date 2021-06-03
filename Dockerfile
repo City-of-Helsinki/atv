@@ -40,15 +40,15 @@ EXPOSE 8000/tcp
 FROM appbase as staticbuilder
 # ==============================
 
-ENV VAR_ROOT /app
+ENV STATIC_ROOT /var/static
 COPY --chown=appuser:appuser . /app
-RUN python manage.py collectstatic --noinput
+RUN SECRET_KEY="only-used-for-collectstatic" python manage.py collectstatic --noinput
 
 # ==============================
 FROM appbase as production
 # ==============================
 
-COPY --from=staticbuilder --chown=appuser:appuser /app/static /app/static
+COPY --from=staticbuilder --chown=appuser:appuser /var/static /var/static
 COPY --chown=appuser:appuser . /app/
 
 USER appuser
