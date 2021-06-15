@@ -20,6 +20,12 @@ coverage[toml]==5.5
     # via pytest-cov
 decorator==5.0.9
     # via ipython
+factory-boy==3.2.0
+    # via
+    #   -r requirements-dev.in
+    #   pytest-factoryboy
+faker==8.8.0
+    # via factory-boy
 flake8-bugbear==21.4.3
     # via -r requirements-dev.in
 flake8-polyfill==1.0.2
@@ -29,6 +35,8 @@ flake8==3.9.2
     #   -r requirements-dev.in
     #   flake8-bugbear
     #   flake8-polyfill
+inflection==0.5.1
+    # via pytest-factoryboy
 iniconfig==1.1.1
     # via pytest
 ipython-genutils==0.2.0
@@ -81,13 +89,24 @@ pytest-cov==2.12.0
     # via -r requirements-dev.in
 pytest-django==4.3.0
     # via -r requirements-dev.in
+pytest-factoryboy==2.1.0
+    # via -r requirements-dev.in
 pytest==6.2.4
     # via
     #   -r requirements-dev.in
     #   pytest-cov
     #   pytest-django
+    #   pytest-factoryboy
+python-dateutil==2.8.1
+    # via faker
 regex==2021.4.4
     # via black
+six==1.16.0
+    # via
+    #   -c requirements.txt
+    #   python-dateutil
+text-unidecode==1.3
+    # via faker
 toml==0.10.2
     # via
     #   black

@@ -5,5 +5,6 @@ django-filter
 # django-helusers, TODO use upstream when https://github.com/City-of-Helsinki/django-helusers/pull/55 is released
 git+https://github.com/City-of-Helsinki/django-helusers.git@f5c57241c50f970e38f17461591f6ac00a5fe0fe#egg=django-helusers
 djangorestframework
+djangorestframework-api-key
 psycopg2
 sentry_sdk

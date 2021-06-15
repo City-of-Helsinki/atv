@@ -31,6 +31,8 @@ django==3.2.3
     #   django-filter
     #   django-helusers
     #   djangorestframework
+djangorestframework-api-key==2.0.0
+    # via -r requirements.in
 djangorestframework==3.12.4
     # via -r requirements.in
 ecdsa==0.14.1
