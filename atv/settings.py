@@ -104,6 +104,7 @@ INSTALLED_APPS = [
     "corsheaders",
     # Local apps
     "users",
+    "services",
 ]
 
 MIDDLEWARE = [
