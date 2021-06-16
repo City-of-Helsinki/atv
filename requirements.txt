@@ -22,7 +22,7 @@ django-environ==0.4.5
     # via -r requirements.in
 django-filter==2.4.0
     # via -r requirements.in
-git+https://github.com/charn/django-helusers.git@59b6546405297a05c5c438910dc56a56667da39f#egg=django-helusers
+git+https://github.com/City-of-Helsinki/django-helusers.git@f5c57241c50f970e38f17461591f6ac00a5fe0fe#egg=django-helusers
     # via -r requirements.in
 django==3.2.3
     # via
@@ -31,6 +31,8 @@ django==3.2.3
     #   django-filter
     #   django-helusers
     #   djangorestframework
+djangorestframework-api-key==2.0.0
+    # via -r requirements.in
 djangorestframework==3.12.4
     # via -r requirements.in
 ecdsa==0.14.1
