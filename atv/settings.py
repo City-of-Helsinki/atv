@@ -37,6 +37,7 @@ env = environ.Env(
     DEFAULT_FROM_EMAIL=(str, "no-reply@hel.fi"),
     VERSION=(str, None),
     DJANGO_LOG_LEVEL=(str, "INFO"),
+    CSRF_TRUSTED_ORIGINS=(list, []),
 )
 if os.path.exists(env_file):
     env.read_env(env_file)
@@ -67,6 +68,9 @@ if DEBUG and not SECRET_KEY:
 
 ALLOWED_HOSTS = env("ALLOWED_HOSTS")
 USE_X_FORWARDED_HOST = env("USE_X_FORWARDED_HOST")
+
+if env("CSRF_TRUSTED_ORIGINS"):
+    CSRF_TRUSTED_ORIGINS = env("CSRF_TRUSTED_ORIGINS")
 
 DATABASES = {"default": env.db()}
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
