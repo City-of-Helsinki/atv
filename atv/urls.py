@@ -1,9 +1,17 @@
 from django.contrib import admin
 from django.http import HttpResponse
-from django.urls import path
+from django.urls import include, path
+from rest_framework import routers
+
+from services.api import DocumentsViewSet
+
+router = routers.DefaultRouter()
+router.register(r"documents", DocumentsViewSet, basename="documents")
+
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path("", include(router.urls)),
 ]
 
 
