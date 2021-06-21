@@ -38,6 +38,7 @@ env = environ.Env(
     VERSION=(str, None),
     DJANGO_LOG_LEVEL=(str, "INFO"),
     CSRF_TRUSTED_ORIGINS=(list, []),
+    API_KEY_CUSTOM_HEADER=(str, "HTTP_X_API_KEY"),
 )
 if os.path.exists(env_file):
     env.read_env(env_file)
@@ -143,9 +144,18 @@ TEMPLATES = [
 CORS_ORIGIN_WHITELIST = env.list("CORS_ORIGIN_WHITELIST")
 CORS_ORIGIN_ALLOW_ALL = env.bool("CORS_ORIGIN_ALLOW_ALL")
 
+REST_FRAMEWORK = {
+    "DEFAULT_PERMISSION_CLASSES": [
+        "services.permissions.HasServiceAPIKey",
+    ]
+}
+
 # Authentication
 
 AUTH_USER_MODEL = "users.User"
+
+API_KEY_CUSTOM_HEADER = env("API_KEY_CUSTOM_HEADER")
+
 
 LOGGING = {
     "version": 1,
