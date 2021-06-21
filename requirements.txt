@@ -22,7 +22,7 @@ django-environ==0.4.5
     # via -r requirements.in
 django-filter==2.4.0
     # via -r requirements.in
-git+https://github.com/City-of-Helsinki/django-helusers.git@f5c57241c50f970e38f17461591f6ac00a5fe0fe#egg=django-helusers
+django-helusers==0.6.1
     # via -r requirements.in
 django==3.2.3
     # via
