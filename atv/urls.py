@@ -11,7 +11,7 @@ router.register(r"documents", DocumentViewSet, basename="documents")
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("", include(router.urls)),
+    path("v1/", include(router.urls)),
 ]
 
 
