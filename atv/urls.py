@@ -3,10 +3,10 @@ from django.http import HttpResponse
 from django.urls import include, path
 from rest_framework import routers
 
-from services.api import DocumentsViewSet
+from documents.api import DocumentViewSet
 
 router = routers.DefaultRouter()
-router.register(r"documents", DocumentsViewSet, basename="documents")
+router.register(r"documents", DocumentViewSet, basename="documents")
 
 
 urlpatterns = [
