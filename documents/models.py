@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.contrib.postgres.indexes import GinIndex
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
 from django.utils.translation import gettext_lazy as _
@@ -30,7 +31,6 @@ class Document(UUIDModel, TimestampedModel):
         verbose_name=_("business ID"),
         help_text=_("The business ID of the organization which owns this document."),
     )
-    # TODO Unique per service?
     transaction_id = models.CharField(
         max_length=255,
         blank=True,
@@ -113,6 +113,17 @@ class Document(UUIDModel, TimestampedModel):
         verbose_name = _("document")
         verbose_name_plural = _("documents")
         default_related_name = "documents"
+        indexes = [
+            models.Index(fields=["created_at"], name="document_created_at_idx"),
+            models.Index(fields=["updated_at"], name="document_updated_at_idx"),
+            models.Index(fields=["business_id"], name="document_business_id_idx"),
+            models.Index(fields=["transaction_id"], name="document_transaction_id_idx"),
+            models.Index(fields=["draft"], name="document_draft_idx"),
+            models.Index(fields=["locked_after"], name="document_locked_after_idx"),
+            GinIndex(fields=["metadata"], name="document_metadata_idx"),
+            models.Index(fields=["status"], name="document_status_idx"),
+            models.Index(fields=["type"], name="document_type_idx"),
+        ]
 
     def __str__(self):
         return f"Document {self.pk}"
