@@ -111,6 +111,7 @@ INSTALLED_APPS = [
     # Local apps
     "users",
     "services",
+    "documents",
 ]
 
 MIDDLEWARE = [

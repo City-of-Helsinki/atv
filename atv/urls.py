@@ -3,15 +3,15 @@ from django.http import HttpResponse
 from django.urls import include, path
 from rest_framework import routers
 
-from services.api import DocumentsViewSet
+from documents.api import DocumentViewSet
 
 router = routers.DefaultRouter()
-router.register(r"documents", DocumentsViewSet, basename="documents")
+router.register(r"documents", DocumentViewSet, basename="documents")
 
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("", include(router.urls)),
+    path("v1/", include(router.urls)),
 ]
 
 
