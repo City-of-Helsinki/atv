@@ -3,6 +3,7 @@ from django.contrib.postgres.indexes import GinIndex
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from encrypted_fields import fields
 
 from documents.validators import BusinessIDValidator
 from services.models import Service
@@ -87,10 +88,9 @@ class Document(UUIDModel, TimestampedModel):
             "filter/sort documents, e.g. the handler of the document."
         ),
     )
-    # TODO The actual JSON content of the stored document.
-    #  The format should be relevant only to the calling service.
-    #  The content is encrypted before storing into the database.
-    #  - content
+    content = fields.EncryptedTextField(
+        help_text=_("Encrypted content of the document.")
+    )
     status = models.CharField(
         max_length=255,
         blank=True,

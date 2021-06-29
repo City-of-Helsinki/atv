@@ -3,6 +3,7 @@ import subprocess
 
 import environ
 import sentry_sdk
+from django.core.exceptions import ImproperlyConfigured
 from sentry_sdk.integrations.django import DjangoIntegration
 
 checkout_dir = environ.Path(__file__) - 2
@@ -39,6 +40,7 @@ env = environ.Env(
     DJANGO_LOG_LEVEL=(str, "INFO"),
     CSRF_TRUSTED_ORIGINS=(list, []),
     API_KEY_CUSTOM_HEADER=(str, "HTTP_X_API_KEY"),
+    FIELD_ENCRYPTION_KEYS=(list, None),
 )
 if os.path.exists(env_file):
     env.read_env(env_file)
@@ -108,6 +110,7 @@ INSTALLED_APPS = [
     "rest_framework_api_key",
     "django_filters",
     "corsheaders",
+    "encrypted_fields",
     # Local apps
     "users",
     "services",
@@ -157,6 +160,18 @@ AUTH_USER_MODEL = "users.User"
 
 API_KEY_CUSTOM_HEADER = env("API_KEY_CUSTOM_HEADER")
 
+# Encryption
+
+FIELD_ENCRYPTION_KEYS = env("FIELD_ENCRYPTION_KEYS")
+DEBUG_FIELD_ENCRYPTION_KEY = (
+    "cde167fade57af385584c43b1cff391e9ded59c65cf229276b5f6f55a9a73dfc"
+)
+
+if DEBUG and not FIELD_ENCRYPTION_KEYS:
+    FIELD_ENCRYPTION_KEYS = [DEBUG_FIELD_ENCRYPTION_KEY]
+
+if not DEBUG and DEBUG_FIELD_ENCRYPTION_KEY in FIELD_ENCRYPTION_KEYS:
+    raise ImproperlyConfigured("Cannot use the debug encryption key in production")
 
 LOGGING = {
     "version": 1,
