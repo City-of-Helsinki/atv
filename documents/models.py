@@ -3,6 +3,7 @@ from django.contrib.postgres.indexes import GinIndex
 from django.core.exceptions import ValidationError
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
+from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from encrypted_fields import fields
 
@@ -50,6 +51,10 @@ class Attachment(TimestampedModel):
 
     def __str__(self):
         return f"Attachment {self.pk}"
+
+    @property
+    def uri(self):
+        return reverse("documents-attachments-detail", args=[self.document.id, self.id])
 
     def clean(self):
         if self.file.size > settings.MAX_FILE_SIZE:

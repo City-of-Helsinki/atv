@@ -12,26 +12,34 @@ def get_api_key():
     return key
 
 
-def test_anonymous_user_can_post_documents_api_with_a_correct_api_key(api_client):
+def test_anonymous_user_cannot_get_documents_api_with_an_api_key(api_client):
     key = get_api_key()
 
     api_client.credentials(**{settings.API_KEY_CUSTOM_HEADER: key})
-    response = api_client.post(reverse("documents-list"), json={"data": "ok"})
+    response = api_client.get(reverse("documents-list"))
 
-    assert response.status_code == status.HTTP_201_CREATED
-    assert response.json() == {"status": "CREATED"}
+    # TODO: Because of how the Authentication classes work, this will be
+    #   403 FORBIDDEN until we implement the JWT authentication.
+    #   Then it should be changed to 401 UNAUTHORIZED
+    assert response.status_code == status.HTTP_403_FORBIDDEN
 
 
 def test_anonymous_user_cannot_post_documents_api_with_a_wrong_api_key(api_client):
     key = get_api_key()
 
     api_client.credentials(**{settings.API_KEY_CUSTOM_HEADER: key[::-1]})
-    response = api_client.post(reverse("documents-list"), json={"data": "ok"})
+    response = api_client.post(reverse("documents-list"), {"data": "ok"})
 
+    # TODO: Because of how the Authentication classes work, this will be
+    #   403 FORBIDDEN until we implement the JWT authentication.
+    #   Then it should be changed to 401 UNAUTHORIZED
     assert response.status_code == status.HTTP_403_FORBIDDEN
 
 
 def test_anonymous_user_cannot_post_documents_api_without_an_api_key(api_client):
-    response = api_client.post(reverse("documents-list"), json={"data": "ok"})
+    response = api_client.post(reverse("documents-list"), {"data": "ok"})
 
+    # TODO: Because of how the Authentication classes work, this will be
+    #   403 FORBIDDEN until we implement the JWT authentication.
+    #   Then it should be changed to 401 UNAUTHORIZED
     assert response.status_code == status.HTTP_403_FORBIDDEN

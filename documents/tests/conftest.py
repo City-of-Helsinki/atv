@@ -1,10 +1,13 @@
 import shutil
 
 import pytest  # noqa
+from pytest_factoryboy import register
 
 from atv.tests.conftest import *  # noqa
 from services.tests.conftest import *  # noqa
 from users.tests.conftest import *  # noqa
+
+from .factories import DocumentFactory
 
 
 @pytest.fixture(autouse=True)
@@ -16,3 +19,6 @@ def custom_media_dir_for_files(settings, request):
         shutil.rmtree("test_media", ignore_errors=True)
 
     request.addfinalizer(remove_uploaded_files)
+
+
+register(DocumentFactory)

@@ -6,5 +6,6 @@ django-helusers
 django-searchable-encrypted-fields
 djangorestframework
 djangorestframework-api-key
+drf-extensions
 psycopg2
 sentry_sdk
