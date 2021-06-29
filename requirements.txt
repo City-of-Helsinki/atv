@@ -35,8 +35,12 @@ django-helusers==0.6.1
 django-searchable-encrypted-fields==0.1.9
     # via -r requirements.in
 djangorestframework==3.12.4
-    # via -r requirements.in
+    # via
+    #   -r requirements.in
+    #   drf-extensions
 djangorestframework-api-key==2.0.0
+    # via -r requirements.in
+drf-extensions==0.7.0
     # via -r requirements.in
 ecdsa==0.14.1
     # via python-jose
