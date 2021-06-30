@@ -66,6 +66,14 @@ Allow user to create test database
 ### Daily running
 
 * Create `.env` file: `touch .env`
+```dotenv
+DEBUG=1
+DATABASE_URL=postgres://atv:atv@localhost:5437/atv
+
+# Optionals (with a default value on settings.py)
+FIELD_ENCRYPTION_KEYS=
+```
+
 * Set the `DEBUG` environment variable to `1`.
 * Run `python manage.py migrate`
 * Run `python manage.py add_admin_user`

@@ -3,6 +3,7 @@ django-cors-headers
 django-environ
 django-filter
 django-helusers
+django-searchable-encrypted-fields
 djangorestframework
 djangorestframework-api-key
 psycopg2

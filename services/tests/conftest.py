@@ -2,12 +2,9 @@ import pytest
 from pytest_factoryboy import register
 from rest_framework.test import APIClient
 
-from services.tests.factories import ServiceAPIKeyFactory, ServiceFactory
+from atv.tests.conftest import *  # noqa
 
-
-@pytest.fixture(autouse=True)
-def autouse_db(db):
-    pass
+from .factories import ServiceAPIKeyFactory, ServiceFactory
 
 
 @pytest.fixture

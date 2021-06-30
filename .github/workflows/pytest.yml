@@ -7,6 +7,7 @@ on:
 
 env:
   SECRET_KEY: topsecret123
+  FIELD_ENCRYPTION_KEYS: 4b52331c68c8b32dcfba241d6d6b23466b80a8b6d0cea91ea64eb1e23c44dff4
 
 jobs:
   pytest:
