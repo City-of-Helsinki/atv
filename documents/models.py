@@ -1,13 +1,82 @@
 from django.conf import settings
 from django.contrib.postgres.indexes import GinIndex
+from django.core.exceptions import ValidationError
+from django.core.files.storage import FileSystemStorage
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from encrypted_fields import fields
 
+from documents.utils import get_attachment_file_path
 from documents.validators import BusinessIDValidator
 from services.models import Service
 from utils.models import TimestampedModel, UUIDModel
+
+
+class AttachmentFileStorage(FileSystemStorage):
+    """The base FileSystemStorage does not accept a dynamic location,
+    it hard-codes the value on migrations.
+
+    When developing on different environments, we could have different values
+    for the root directory. This subclass uses the location configured on the settings  .
+    """
+
+    def __init__(self, *args, **kwargs):
+        super(AttachmentFileStorage, self).__init__(
+            location=settings.ATTACHMENT_VOLUME_PATH, *args, **kwargs
+        )
+
+
+class Attachment(TimestampedModel):
+    document = models.ForeignKey(
+        "Document",
+        on_delete=models.CASCADE,
+        verbose_name=_("attachment"),
+        related_name="attachments",
+        help_text=_("Document to which the file is attached."),
+    )
+    media_type = models.CharField(
+        max_length=255,
+        default="",
+        verbose_name=_("media type"),
+        help_text=_("The media type of the attachment."),
+    )
+    size = models.PositiveIntegerField(
+        verbose_name=_("size"),
+        help_text=_("Size of the attachment in bytes."),
+    )
+    filename = models.CharField(
+        max_length=255,
+        verbose_name=_("filename"),
+        help_text=_("The original filename of the attachment."),
+    )
+    # TODO: The file is not being encrypted yet
+    file = models.FileField(
+        upload_to=get_attachment_file_path,
+        verbose_name=_("file"),
+        help_text=_("Encrypted file."),
+        storage=AttachmentFileStorage(),
+    )
+
+    class Meta:
+        verbose_name = _("attachment")
+        verbose_name_plural = _("attachments")
+        default_related_name = "attachments"
+
+    def __str__(self):
+        return f"Attachment {self.pk}"
+
+    def clean(self):
+        if self.file.size > settings.MAX_FILE_SIZE:
+            raise ValidationError(_("Cannot upload files larger than 20MB"))
+
+    def save(self, *args, **kwargs):
+        self.size = self.file.size
+        self.filename = self.file.name
+
+        self.full_clean()
+
+        super(Attachment, self).save(*args, **kwargs)
 
 
 class Document(UUIDModel, TimestampedModel):

@@ -25,6 +25,7 @@ services:
         volumes:
             - .:/app
             - django-media-volume:/var/media/
+            - attachment-volume:/srv/atv/
         ports:
             - "8081:8000"
         depends_on:
@@ -35,6 +36,7 @@ volumes:
         pgdata:
             driver: local
         django-media-volume:
+        attachment-volume:
 
 networks:
     default:
