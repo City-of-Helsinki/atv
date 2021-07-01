@@ -41,6 +41,7 @@ env = environ.Env(
     CSRF_TRUSTED_ORIGINS=(list, []),
     API_KEY_CUSTOM_HEADER=(str, "HTTP_X_API_KEY"),
     FIELD_ENCRYPTION_KEYS=(list, None),
+    ENABLE_AUTOMATIC_ATTACHMENT_FILE_DELETION=(bool, True),
 )
 if os.path.exists(env_file):
     env.read_env(env_file)
@@ -153,6 +154,12 @@ REST_FRAMEWORK = {
         "services.permissions.HasServiceAPIKey",
     ]
 }
+
+ATTACHMENT_MEDIA_DIR = "attachments"
+ENABLE_AUTOMATIC_ATTACHMENT_FILE_DELETION = env.bool(
+    "ENABLE_AUTOMATIC_ATTACHMENT_FILE_DELETION"
+)
+MAX_FILE_SIZE = 20971520  # 20 MiB
 
 # Authentication
 
