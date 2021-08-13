@@ -40,7 +40,7 @@ env = environ.Env(
     DJANGO_LOG_LEVEL=(str, "INFO"),
     CSRF_TRUSTED_ORIGINS=(list, []),
     API_KEY_CUSTOM_HEADER=(str, "HTTP_X_API_KEY"),
-    FIELD_ENCRYPTION_KEYS=(list, None),
+    FIELD_ENCRYPTION_KEYS=(list, []),
     ENABLE_AUTOMATIC_ATTACHMENT_FILE_DELETION=(bool, True),
 )
 if os.path.exists(env_file):
