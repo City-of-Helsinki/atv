@@ -1,12 +1,18 @@
 from django.contrib import admin
 from django.http import HttpResponse
 from django.urls import include, path
-from rest_framework import routers
+from rest_framework_extensions.routers import ExtendedSimpleRouter
 
-from documents.api import DocumentViewSet
+from documents.api import AttachmentViewSet, DocumentViewSet
 
-router = routers.DefaultRouter()
-router.register(r"documents", DocumentViewSet, basename="documents")
+router = ExtendedSimpleRouter()
+
+router.register(r"documents", DocumentViewSet, basename="documents").register(
+    r"attachments",
+    AttachmentViewSet,
+    basename="documents-attachments",
+    parents_query_lookups=["document"],
+)
 
 
 urlpatterns = [

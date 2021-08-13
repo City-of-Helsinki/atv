@@ -41,6 +41,7 @@ env = environ.Env(
     CSRF_TRUSTED_ORIGINS=(list, []),
     API_KEY_CUSTOM_HEADER=(str, "HTTP_X_API_KEY"),
     FIELD_ENCRYPTION_KEYS=(list, None),
+    ENABLE_AUTOMATIC_ATTACHMENT_FILE_DELETION=(bool, True),
 )
 if os.path.exists(env_file):
     env.read_env(env_file)
@@ -89,7 +90,7 @@ WSGI_APPLICATION = "atv.wsgi.application"
 
 LANGUAGES = (("fi", "Finnish"), ("en", "English"), ("sv", "Swedish"))
 
-LANGUAGE_CODE = "fi"
+LANGUAGE_CODE = "en"
 TIME_ZONE = "Europe/Helsinki"
 USE_I18N = True
 USE_L10N = True
@@ -153,6 +154,13 @@ REST_FRAMEWORK = {
         "services.permissions.HasServiceAPIKey",
     ]
 }
+
+ATTACHMENT_MEDIA_DIR = "attachments"
+ENABLE_AUTOMATIC_ATTACHMENT_FILE_DELETION = env.bool(
+    "ENABLE_AUTOMATIC_ATTACHMENT_FILE_DELETION"
+)
+MAX_FILE_SIZE = 20971520  # 20 MiB
+MAX_FILE_UPLOAD_ALLOWED = 10
 
 # Authentication
 
