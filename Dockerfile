@@ -35,7 +35,6 @@ COPY --chown=appuser:appuser . /app/
 # Need to set the permissions beforehand for the Attachment directory
 # https://github.com/docker/compose/issues/3270#issuecomment-363478501
 RUN mkdir -p /var/media/ && chown -R appuser:appuser /var/media/
-RUN mkdir -p /srv/atv/ && chown -R appuser:appuser /srv/atv/
 
 USER appuser
 
@@ -58,9 +57,7 @@ COPY --chown=appuser:appuser . /app/
 
 # Need to set the permissions beforehand for the Attachment directory
 # https://github.com/docker/compose/issues/3270#issuecomment-363478501
-# TODO: Figure out whether this is for production as well
 RUN mkdir -p /var/media/ && chown -R appuser:appuser /var/media/
-RUN mkdir -p /srv/atv/ && chown -R appuser:appuser /srv/atv/
 
 USER appuser
 
