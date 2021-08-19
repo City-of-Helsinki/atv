@@ -72,7 +72,7 @@ class CreateAnonymousDocumentSerializer(serializers.ModelSerializer):
 
         # Validate that no more than settings.MAX_FILE_UPLOAD_ALLOWED files
         # are uploaded on the same call
-        if len(attrs.get("attachments")) > settings.MAX_FILE_UPLOAD_ALLOWED:
+        if len(attrs.get("attachments", [])) > settings.MAX_FILE_UPLOAD_ALLOWED:
             raise ValidationError(
                 _("File upload is limited to {max_file_upload_allowed}").format(
                     max_file_upload_allowed=settings.MAX_FILE_UPLOAD_ALLOWED
@@ -82,7 +82,7 @@ class CreateAnonymousDocumentSerializer(serializers.ModelSerializer):
         return attrs
 
     def create(self, validated_data):
-        attachments = validated_data.pop("attachments")
+        attachments = validated_data.pop("attachments", [])
 
         document = Document.objects.create(**validated_data)
         for attached_file in attachments:
