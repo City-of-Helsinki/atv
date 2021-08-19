@@ -119,3 +119,23 @@ def test_create_document_file_limit(service_api_client):
 
     body = response.json()
     assert body == {"errors": ["Cannot upload files larger than 20.0 MB"]}
+
+
+def test_create_document_no_attachments(service_api_client):
+    assert Document.objects.count() == 0
+    assert Attachment.objects.count() == 0
+
+    response = service_api_client.post(
+        reverse("documents-list"), VALID_DOCUMENT_DATA, format="multipart"
+    )
+
+    assert response.status_code == status.HTTP_201_CREATED
+    assert Document.objects.count() == 1
+    assert Attachment.objects.count() == 0
+
+    document = Document.objects.first()
+    assert document.attachments.count() == 0
+
+    body = response.json()
+
+    assert body.get("attachments") == []
