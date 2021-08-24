@@ -85,6 +85,8 @@ STATIC_ROOT = env("STATIC_ROOT")
 MEDIA_URL = env("MEDIA_URL")
 STATIC_URL = env("STATIC_URL")
 
+FILE_UPLOAD_PERMISSIONS = None
+
 ROOT_URLCONF = "atv.urls"
 WSGI_APPLICATION = "atv.wsgi.application"
 
