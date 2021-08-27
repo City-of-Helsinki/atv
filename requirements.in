@@ -11,3 +11,4 @@ drf-extensions
 drf-spectacular
 psycopg2
 sentry_sdk
+elasticsearch

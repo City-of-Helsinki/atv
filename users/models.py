@@ -2,4 +2,4 @@ from helusers.models import AbstractUser
 
 
 class User(AbstractUser):
-    pass
+    audit_log_id_field = "uuid"

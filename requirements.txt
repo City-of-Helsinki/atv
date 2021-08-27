@@ -12,6 +12,7 @@ cachetools==4.2.2
     # via django-helusers
 certifi==2021.5.30
     # via
+    #   elasticsearch
     #   requests
     #   sentry-sdk
 charset-normalizer==2.0.4
@@ -53,6 +54,8 @@ drf-spectacular==0.18.1
     # via -r requirements.in
 ecdsa==0.17.0
     # via python-jose
+elasticsearch==7.14.0
+    # via -r requirements.in
 idna==3.2
     # via requests
 inflection==0.5.1
@@ -95,6 +98,7 @@ uritemplate==3.0.1
     # via drf-spectacular
 urllib3==1.26.6
     # via
+    #   elasticsearch
     #   requests
     #   sentry-sdk
 

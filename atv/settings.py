@@ -45,6 +45,13 @@ env = environ.Env(
     FIELD_ENCRYPTION_KEYS=(list, []),
     ENABLE_AUTOMATIC_ATTACHMENT_FILE_DELETION=(bool, True),
     ENABLE_SWAGGER_UI=(bool, True),
+    ELASTICSEARCH_APP_AUDIT_LOG_INDEX=(str, "atv_audit_log"),
+    ELASTICSEARCH_CLOUD_ID=(str, ""),
+    ELASTICSEARCH_API_ID=(str, ""),
+    ELASTICSEARCH_API_KEY=(str, ""),
+    ENABLE_SEND_AUDIT_LOG=(bool, False),
+    CLEAR_AUDIT_LOG_ENTRIES=(bool, False),
+    USE_X_FORWARDED_FOR=(bool, False),
 )
 if os.path.exists(env_file):
     env.read_env(env_file)
@@ -124,6 +131,7 @@ INSTALLED_APPS = [
     "users",
     "services",
     "documents",
+    "audit_log",
 ]
 
 MIDDLEWARE = [
@@ -205,6 +213,18 @@ SPECTACULAR_SETTINGS = {
     "DESCRIPTION": "Asiointitietovaranto REST API",
     "VERSION": "0.0.1",
 }
+
+# Audit logging
+
+AUDIT_LOG_ORIGIN = "atv"
+ELASTICSEARCH_APP_AUDIT_LOG_INDEX = env("ELASTICSEARCH_APP_AUDIT_LOG_INDEX")
+ELASTICSEARCH_CLOUD_ID = env("ELASTICSEARCH_CLOUD_ID")
+ELASTICSEARCH_API_ID = env("ELASTICSEARCH_API_ID")
+ELASTICSEARCH_API_KEY = env("ELASTICSEARCH_API_KEY")
+ENABLE_SEND_AUDIT_LOG = env("ENABLE_SEND_AUDIT_LOG")
+CLEAR_AUDIT_LOG_ENTRIES = env("CLEAR_AUDIT_LOG_ENTRIES")
+
+USE_X_FORWARDED_FOR = env("USE_X_FORWARDED_FOR")
 
 LOGGING = {
     "version": 1,
