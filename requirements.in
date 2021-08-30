@@ -2,6 +2,7 @@ Django~=3.2
 django-cors-headers
 django-environ
 django-filter
+django-guardian
 django-helusers
 django-searchable-encrypted-fields
 djangorestframework

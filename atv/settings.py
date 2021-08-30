@@ -114,6 +114,7 @@ INSTALLED_APPS = [
     "django_filters",
     "corsheaders",
     "encrypted_fields",
+    "guardian",
     # Local apps
     "users",
     "services",
@@ -153,7 +154,7 @@ CORS_ORIGIN_ALLOW_ALL = env.bool("CORS_ORIGIN_ALLOW_ALL")
 
 REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": [
-        "services.permissions.HasServiceAPIKey",
+        "rest_framework.permissions.IsAdminUser",
     ]
 }
 
@@ -167,6 +168,11 @@ MAX_FILE_UPLOAD_ALLOWED = 10
 # Authentication
 
 AUTH_USER_MODEL = "users.User"
+
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",
+    "guardian.backends.ObjectPermissionBackend",
+]
 
 API_KEY_CUSTOM_HEADER = env("API_KEY_CUSTOM_HEADER")
 
