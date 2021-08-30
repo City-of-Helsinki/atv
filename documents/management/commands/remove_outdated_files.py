@@ -1,14 +1,11 @@
-import logging
 import os
 
 from django.conf import settings
-from django.core.management.base import BaseCommand
 
 from documents.models import Document
 from documents.utils import get_document_attachment_directory_path
+from utils.commands import BaseCommand
 from utils.files import remove_directory, remove_file
-
-logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
@@ -19,27 +16,6 @@ class Command(BaseCommand):
 
     directories_deleted = 0
     files_deleted = 0
-
-    @staticmethod
-    def setup_logging(verbosity):
-        """
-        The values passed by the command are:
-        Verbosity level; 0=minimal output, 1=normal output, 2=verbose output, 3=very verbose output
-
-        So output of 2 or 3 (i.e. > 1) will be verbose
-        Defaults to 1
-        """
-        if verbosity > 1:
-            logger.setLevel(logging.DEBUG)
-        else:
-            logger.setLevel(logging.INFO)
-
-    def add_arguments(self, parser):
-        parser.add_argument(
-            "--dry-run",
-            action="store_true",
-            help="Dry run, don't delete any of the files or directories",
-        )
 
     def remove_document_outdated_files(self, document: Document, path, dry_run):
         """For a given document, remove the files that don't have an associated Attachment"""
@@ -58,14 +34,14 @@ class Command(BaseCommand):
                     file_path = os.path.join(path, filename)
                     remove_file(file_path)
                     self.files_deleted += 1
-                    logger.debug(f"File removed: {file_path}")
+                    self.logger.debug(f"File removed: {file_path}")
 
     def remove_outdated_document_directories(self, root_dir, dry_run):
         for document_id in os.listdir(root_dir):
             document_path = os.path.join(root_dir, document_id)
 
             if document := Document.objects.filter(id=document_id).first():
-                logger.debug(f"Document {document_id} exists")
+                self.logger.debug(f"Document {document_id} exists")
                 self.remove_document_outdated_files(document, document_path, dry_run)
             elif dry_run:
                 self.directories_to_delete += 1
@@ -73,7 +49,7 @@ class Command(BaseCommand):
                 # If the document does not exist anymore, remove the whole directory
                 remove_directory(document_path)
                 self.directories_deleted += 1
-                logger.debug(f"Directory removed: {document_path}")
+                self.logger.debug(f"Directory removed: {document_path}")
 
     def handle(self, dry_run: bool = False, verbosity: int = 0, *args, **kwargs):
         self.setup_logging(verbosity)
@@ -83,11 +59,11 @@ class Command(BaseCommand):
         if os.path.exists(root_dir):
             self.remove_outdated_document_directories(root_dir, dry_run)
         else:
-            logger.info(f"Directory {root_dir} does not exist!")
+            self.logger.info(f"Directory {root_dir} does not exist!")
 
         if dry_run:
-            logger.info(f"Directories to be removed: {self.directories_to_delete}")
-            logger.info(f"Files to be removed: {self.files_to_delete}")
+            self.logger.info(f"Directories to be removed: {self.directories_to_delete}")
+            self.logger.info(f"Files to be removed: {self.files_to_delete}")
         else:
-            logger.info(f"Directories removed: {self.directories_deleted}")
-            logger.info(f"Files removed: {self.files_deleted}")
+            self.logger.info(f"Directories removed: {self.directories_deleted}")
+            self.logger.info(f"Files removed: {self.files_deleted}")
