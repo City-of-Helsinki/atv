@@ -6,6 +6,8 @@ import sentry_sdk
 from django.core.exceptions import ImproperlyConfigured
 from sentry_sdk.integrations.django import DjangoIntegration
 
+from atv.exceptions import sentry_before_send
+
 checkout_dir = environ.Path(__file__) - 2
 assert os.path.exists(checkout_dir("manage.py"))
 
@@ -61,6 +63,7 @@ sentry_sdk.init(
     release=VERSION,
     environment=env("SENTRY_ENVIRONMENT"),
     integrations=[DjangoIntegration()],
+    before_send=sentry_before_send,
 )
 
 BASE_DIR = str(checkout_dir)
@@ -131,6 +134,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "atv.middlewares.ServiceMiddleware",
 ]
 
 TEMPLATES = [

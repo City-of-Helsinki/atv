@@ -3,7 +3,7 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 
-from utils.exceptions import ValidationError
+from atv.exceptions import ValidationError
 
 from ..models import Document
 from .attachment import AttachmentSerializer, CreateAnonymousAttachmentSerializer
