@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.core.serializers.json import DjangoJSONEncoder
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 
@@ -11,8 +12,13 @@ from .attachment import AttachmentSerializer, CreateAnonymousAttachmentSerialize
 class DocumentSerializer(serializers.ModelSerializer):
     """Basic "read" serializer for the Document model"""
 
-    user_id = serializers.UUIDField(source="user.id", required=False, default=None)
-    attachments = AttachmentSerializer(many=True)
+    user_id = serializers.UUIDField(
+        source="user.uuid", required=False, default=None, read_only=True
+    )
+    attachments = AttachmentSerializer(many=True, required=False)
+    content = serializers.JSONField(
+        required=True, decoder=None, encoder=DjangoJSONEncoder
+    )
 
     class Meta:
         model = Document
@@ -28,6 +34,7 @@ class DocumentSerializer(serializers.ModelSerializer):
             "tos_function_id",
             "tos_record_id",
             "metadata",
+            "content",
             "draft",
             "locked_after",
             "attachments",
@@ -43,6 +50,9 @@ class CreateAnonymousDocumentSerializer(serializers.ModelSerializer):
     """
 
     attachments = serializers.ListField(child=serializers.FileField(), required=False)
+    content = serializers.JSONField(
+        required=True, decoder=None, encoder=DjangoJSONEncoder
+    )
 
     class Meta:
         model = Document
@@ -54,6 +64,7 @@ class CreateAnonymousDocumentSerializer(serializers.ModelSerializer):
             "tos_function_id",
             "tos_record_id",
             "metadata",
+            "content",
             "draft",
             "locked_after",
             "attachments",
