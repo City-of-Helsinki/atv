@@ -2,6 +2,7 @@ import json
 import uuid
 from unittest.mock import patch
 
+import pytest
 from django.conf import settings
 from django.core.files.uploadedfile import SimpleUploadedFile
 from freezegun import freeze_time
@@ -18,6 +19,16 @@ VALID_DOCUMENT_DATA = {
     "tos_function_id": "f917d43aab76420bb2ec53f6684da7f7",
     "tos_record_id": "89837a682b5d410e861f8f3688154163",
     "metadata": json.dumps({"created_by": "alex", "testing": True}),
+    "content": json.dumps(
+        {
+            "formData": {
+                "firstName": "Dolph",
+                "lastName": "Lundgren",
+                "birthDate": "3.11.1957",
+            },
+            "reasonForApplication": "No reason, just testing",
+        }
+    ),
 }
 
 
@@ -55,6 +66,25 @@ def test_create_document(service_api_client, snapshot):
 
     body = response.json()
     snapshot.assert_match(body)
+
+
+@pytest.mark.parametrize(
+    "content", ["this shouldn't be allowed", '{"id": 1 "name": "Test"}']
+)
+def test_create_document_invalid_json_content(service_api_client, content):
+    data = {**VALID_DOCUMENT_DATA, "content": content}
+
+    response = service_api_client.post(
+        reverse("documents-list"), data, format="multipart"
+    )
+
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert Document.objects.count() == 0
+    assert Attachment.objects.count() == 0
+
+    body = response.json()
+
+    assert body == {"content": ["Value must be valid JSON."]}
 
 
 def test_create_document_invalid_fields(service_api_client):

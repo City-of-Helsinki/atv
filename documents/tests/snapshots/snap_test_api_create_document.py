@@ -28,6 +28,14 @@ snapshots["test_create_document 1"] = {
         },
     ],
     "business_id": "1234567-8",
+    "content": {
+        "formData": {
+            "birthDate": "3.11.1957",
+            "firstName": "Dolph",
+            "lastName": "Lundgren",
+        },
+        "reasonForApplication": "No reason, just testing",
+    },
     "created_at": "2021-06-30T12:00:00+03:00",
     "draft": False,
     "id": "2d2b7a36-a306-4e35-990f-13aea04263ff",
