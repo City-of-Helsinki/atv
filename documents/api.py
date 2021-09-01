@@ -1,4 +1,5 @@
 from django.db import transaction
+from django.utils.translation import ugettext_lazy as _
 from rest_framework import status
 from rest_framework.exceptions import NotFound, PermissionDenied
 from rest_framework.parsers import MultiPartParser
@@ -7,13 +8,15 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from rest_framework_extensions.mixins import NestedViewSetMixin
 
-from atv.decorators import service_api_key_required, staff_required
+from atv.decorators import login_required, service_api_key_required, staff_required
+from atv.exceptions import ValidationError
 from services.enums import ServicePermissions
 
 from .models import Attachment, Document
 from .serializers import (
     AttachmentSerializer,
     CreateAnonymousDocumentSerializer,
+    CreateAttachmentSerializer,
     DocumentSerializer,
 )
 
@@ -116,9 +119,52 @@ class DocumentViewSet(ModelViewSet):
         # If the data is not valid, it will raise a ValidationError and return Bad Request
         serializer.is_valid(raise_exception=True)
 
-        document = serializer.save(service=service)
+        document = serializer.save(service=request.service)
 
         return Response(
             data=DocumentSerializer(document, context={"request": request}).data,
             status=status.HTTP_201_CREATED,
         )
+
+    @transaction.atomic()
+    @login_required()
+    def partial_update(self, request, pk, *args, **kwargs):
+        try:
+            document = Document.objects.get(pk=pk)
+        except Document.DoesNotExist as e:
+            raise NotFound(e)
+
+        # The user is the owner of the document
+        is_owner = request.user == document.user
+
+        # The user is a staff member for the document's service
+        is_staff = request.user.has_perm(
+            ServicePermissions.MANAGE_DOCUMENTS, document.service
+        )
+
+        if not is_owner and not is_staff:
+            raise PermissionDenied(
+                _("You do not have permission to perform this action.")
+            )
+
+        if is_owner and not document.draft:
+            raise ValidationError(
+                _("You cannot modify a document which is not a draft")
+            )
+
+        if is_staff and ("content" in request.data or "attachments" in request.data):
+            raise ValidationError(_("You cannot modify the contents of the document"))
+
+        attachments = request.FILES.getlist("attachments", [])
+
+        for attached_file in attachments:
+            data = {
+                "document": document.id,
+                "file": attached_file,
+                "media_type": attached_file.content_type,
+            }
+            attachment_serializer = CreateAttachmentSerializer(data=data)
+            attachment_serializer.is_valid(raise_exception=True)
+            attachment_serializer.save()
+
+        return super(DocumentViewSet, self).partial_update(request, pk, *args, **kwargs)

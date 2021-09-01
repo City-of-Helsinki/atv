@@ -27,6 +27,11 @@ def _use_request_tests(*test_funcs):
     return decorator
 
 
+def _require_authenticated(request):
+    if not request.user.is_authenticated:
+        raise PermissionDenied(_("You do not have permission to perform this action."))
+
+
 def _require_service(request):
     if not request.service:
         raise ServiceNotIdentifiedError("No service identified")
@@ -64,6 +69,14 @@ def staff_required(required_permission=ServicePermissions.VIEW_DOCUMENTS):
     @_use_request_tests(_require_service_permission(required_permission.value))
     def check_permission():
         f"""Decorator that checks for {required_permission} permission."""
+
+    return check_permission
+
+
+def login_required():
+    @_use_request_tests(_require_authenticated)
+    def check_permission():
+        """Decorator for checking that the user is logged in"""
 
     return check_permission
 
