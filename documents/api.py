@@ -1,7 +1,6 @@
-from django.conf import settings
 from django.db import transaction
 from rest_framework import status
-from rest_framework.exceptions import NotAuthenticated
+from rest_framework.exceptions import NotFound, PermissionDenied
 from rest_framework.parsers import MultiPartParser
 from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework.response import Response
@@ -10,7 +9,6 @@ from rest_framework_extensions.mixins import NestedViewSetMixin
 
 from atv.decorators import service_api_key_required, staff_required
 from services.enums import ServicePermissions
-from services.models import Service, ServiceAPIKey
 
 from .models import Attachment, Document
 from .serializers import (
@@ -55,7 +53,7 @@ class AttachmentViewSet(ModelViewSet, NestedViewSetMixin):
         # If the user doesn't have permissions to view that Service,
         # only show the Documents that belong to them
         if not user.has_perm(
-            ServicePermissions.VIEW_ATTACHMENTS.value, filters["service"]
+            ServicePermissions.VIEW_ATTACHMENTS.value, filters.get("service")
         ):
             filters = {"document__user_id": user.id}
 
@@ -98,7 +96,7 @@ class DocumentViewSet(ModelViewSet):
         # If the user doesn't have permissions to view that Service,
         # only show the Documents that belong to them
         if not user.has_perm(
-            ServicePermissions.VIEW_DOCUMENTS.value, filters["service"]
+            ServicePermissions.VIEW_DOCUMENTS.value, filters.get("service")
         ):
             filters = {"user_id": user.id}
 
@@ -111,13 +109,6 @@ class DocumentViewSet(ModelViewSet):
     @transaction.atomic()
     @service_api_key_required()
     def create(self, request, *args, **kwargs):
-        try:
-            key = request.META.get(settings.API_KEY_CUSTOM_HEADER)
-            service_key = ServiceAPIKey.objects.get_from_key(key)
-            service = service_key.service
-        except (ServiceAPIKey.DoesNotExist, Service.DoesNotExist):
-            raise NotAuthenticated()
-
         data = request.data
 
         serializer = CreateAnonymousDocumentSerializer(data=data)
