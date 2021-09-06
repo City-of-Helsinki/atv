@@ -2,7 +2,7 @@ from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 
-from utils.exceptions import ValidationError
+from atv.exceptions import ValidationError
 from utils.files import b_to_mb
 
 from ..models import Attachment

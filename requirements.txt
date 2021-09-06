@@ -21,6 +21,7 @@ django==3.2.6
     #   -r requirements.in
     #   django-cors-headers
     #   django-filter
+    #   django-guardian
     #   django-helusers
     #   django-searchable-encrypted-fields
     #   djangorestframework
@@ -29,6 +30,8 @@ django-cors-headers==3.7.0
 django-environ==0.4.5
     # via -r requirements.in
 django-filter==2.4.0
+    # via -r requirements.in
+django-guardian==2.4.0
     # via -r requirements.in
 django-helusers==0.6.1
     # via -r requirements.in

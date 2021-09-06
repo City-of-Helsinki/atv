@@ -2,6 +2,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from rest_framework_api_key.models import AbstractAPIKey
 
+from services.enums import ServicePermissions
 from utils.models import TimestampedModel
 
 
@@ -12,6 +13,7 @@ class Service(TimestampedModel):
     class Meta:
         verbose_name = _("service")
         verbose_name_plural = _("services")
+        permissions = ServicePermissions.choices
 
     def __str__(self) -> str:
         return self.name
