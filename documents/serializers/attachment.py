@@ -25,7 +25,7 @@ class AttachmentSerializer(serializers.ModelSerializer):
             "href",
         )
 
-    def get_href(self, instance):
+    def get_href(self, instance) -> str:
         if request := self.context.get("request"):
             return request.build_absolute_uri(instance.uri)
 

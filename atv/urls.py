@@ -1,6 +1,12 @@
+from django.conf import settings
 from django.contrib import admin
 from django.http import HttpResponse
 from django.urls import include, path
+from drf_spectacular.views import (
+    SpectacularAPIView,
+    SpectacularRedocView,
+    SpectacularSwaggerView,
+)
 from rest_framework_extensions.routers import ExtendedSimpleRouter
 
 from documents.api import AttachmentViewSet, DocumentViewSet
@@ -11,7 +17,7 @@ router.register(r"documents", DocumentViewSet, basename="documents").register(
     r"attachments",
     AttachmentViewSet,
     basename="documents-attachments",
-    parents_query_lookups=["document"],
+    parents_query_lookups=["document_id"],
 )
 
 
@@ -21,9 +27,26 @@ urlpatterns = [
 ]
 
 
+if settings.ENABLE_SWAGGER_UI:
+    urlpatterns += [
+        path("v1/schema/", SpectacularAPIView.as_view(), name="schema"),
+        path(
+            "v1/schema/swagger/",
+            SpectacularSwaggerView.as_view(url_name="schema"),
+            name="swagger",
+        ),
+        path(
+            "v1/schema/redoc/",
+            SpectacularRedocView.as_view(url_name="schema"),
+            name="redoc",
+        ),
+    ]
+
 #
 # Kubernetes liveness & readiness probes
 #
+
+
 def healthz(*args, **kwargs):
     return HttpResponse(status=200)
 

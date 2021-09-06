@@ -8,5 +8,6 @@ django-searchable-encrypted-fields
 djangorestframework
 djangorestframework-api-key
 drf-extensions
+drf-spectacular
 psycopg2
 sentry_sdk
