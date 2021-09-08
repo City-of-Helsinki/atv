@@ -32,7 +32,7 @@ class AttachmentSerializer(serializers.ModelSerializer):
         return instance.uri
 
 
-class CreateAnonymousAttachmentSerializer(serializers.ModelSerializer):
+class CreateAttachmentSerializer(serializers.ModelSerializer):
     """Create an Attachment associated to an anonymous document."""
 
     class Meta:

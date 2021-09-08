@@ -1,12 +1,13 @@
 from django.conf import settings
 from django.core.serializers.json import DjangoJSONEncoder
+from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 
 from atv.exceptions import ValidationError
 
 from ..models import Document
-from .attachment import AttachmentSerializer, CreateAnonymousAttachmentSerializer
+from .attachment import AttachmentSerializer, CreateAttachmentSerializer
 
 
 class DocumentSerializer(serializers.ModelSerializer):
@@ -15,7 +16,7 @@ class DocumentSerializer(serializers.ModelSerializer):
     user_id = serializers.UUIDField(
         source="user.uuid", required=False, default=None, read_only=True
     )
-    attachments = AttachmentSerializer(many=True, required=False)
+    attachments = AttachmentSerializer(many=True, required=False, read_only=True)
     content = serializers.JSONField(
         required=True, decoder=None, encoder=DjangoJSONEncoder
     )
@@ -40,13 +41,21 @@ class DocumentSerializer(serializers.ModelSerializer):
             "attachments",
         )
 
+    def update(self, document, validated_data):
+        # If the document has been locked, no further updates are allowed
+        if document.locked_after and document.locked_after <= now():
+            raise ValidationError(
+                _("Cannot update a Document after it has been locked")
+            )
+
+        return super(DocumentSerializer, self).update(document, validated_data)
+
 
 class CreateAnonymousDocumentSerializer(serializers.ModelSerializer):
     """Create a Document with Attachment for an anonymous user submitting the document
     through a Service authorized with an API key.
 
-    Also handles the creation of the associated Attachments through
-    `CreateAnonymousAttachmentSerializer`
+    Also handles the creation of the associated Attachments through `CreateAttachmentSerializer`.
     """
 
     attachments = serializers.ListField(child=serializers.FileField(), required=False)
@@ -102,7 +111,7 @@ class CreateAnonymousDocumentSerializer(serializers.ModelSerializer):
                 "file": attached_file,
                 "media_type": attached_file.content_type,
             }
-            attachment_serializer = CreateAnonymousAttachmentSerializer(data=data)
+            attachment_serializer = CreateAttachmentSerializer(data=data)
             attachment_serializer.is_valid(raise_exception=True)
             attachment_serializer.save()
         return document
