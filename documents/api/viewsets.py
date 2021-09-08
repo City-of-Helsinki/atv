@@ -134,7 +134,7 @@ class DocumentViewSet(ModelViewSet):
 
     @staff_required(required_permission=ServicePermissions.VIEW_DOCUMENTS)
     def list(self, request, *args, **kwargs):
-        return super(DocumentViewSet, self).list(request, *args, **kwargs)
+        return super().list(request, *args, **kwargs)
 
     @transaction.atomic()
     @service_api_key_required()
@@ -195,7 +195,7 @@ class DocumentViewSet(ModelViewSet):
             attachment_serializer.is_valid(raise_exception=True)
             attachment_serializer.save()
 
-        return super(DocumentViewSet, self).partial_update(request, pk, *args, **kwargs)
+        return super().partial_update(request, pk, *args, **kwargs)
 
     def update(self, request, *args, **kwargs):
         # Only allow for PATCH updates as described by the documentation
@@ -203,4 +203,4 @@ class DocumentViewSet(ModelViewSet):
         if request.method != "PATCH":
             raise MethodNotAllowed(request.method)
 
-        return super(DocumentViewSet, self).update(request, *args, **kwargs)
+        return super().update(request, *args, **kwargs)

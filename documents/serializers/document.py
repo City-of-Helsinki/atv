@@ -48,7 +48,7 @@ class DocumentSerializer(serializers.ModelSerializer):
                 _("Cannot update a Document after it has been locked")
             )
 
-        return super(DocumentSerializer, self).update(document, validated_data)
+        return super().update(document, validated_data)
 
 
 class CreateAnonymousDocumentSerializer(serializers.ModelSerializer):
