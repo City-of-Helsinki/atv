@@ -8,6 +8,7 @@ from freezegun import freeze_time
 from rest_framework import status
 from rest_framework.reverse import reverse
 
+from audit_log.models import AuditLogEntry
 from documents.models import Attachment, Document
 
 VALID_DOCUMENT_DATA = {
@@ -98,7 +99,6 @@ def test_create_document_invalid_json_content(service_api_client, content):
     assert Attachment.objects.count() == 0
 
     body = response.json()
-
     assert body == {"content": ["Value must be valid JSON."]}
 
 
@@ -178,9 +178,33 @@ def test_create_document_no_attachments(service_api_client):
     assert Document.objects.count() == 1
     assert Attachment.objects.count() == 0
 
-    document = Document.objects.first()
-    assert document.attachments.count() == 0
-
     body = response.json()
-
     assert body.get("attachments") == []
+
+
+@pytest.mark.parametrize("attachments", [0, 1, 2])
+def test_audit_log_is_created_when_creating(service_api_client, attachments):
+    data = {**VALID_DOCUMENT_DATA}
+    if attachments:
+        data["attachments"] = [
+            SimpleUploadedFile(
+                f"document{i}.pdf", b"file_content", content_type="application/pdf"
+            )
+            for i in range(attachments)
+        ]
+
+    response = service_api_client.post(
+        reverse("documents-list"), data, format="multipart"
+    ).json()
+
+    assert Document.objects.count() == 1
+
+    assert Attachment.objects.count() == attachments
+    assert (
+        AuditLogEntry.objects.filter(
+            message__audit_event__target__type="Document",
+            message__audit_event__target__id=response["id"],
+            message__audit_event__operation="CREATE",
+        ).count()
+        == 1
+    )

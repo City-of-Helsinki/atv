@@ -38,6 +38,10 @@ class AuditLoggingModelViewSet(ModelViewSet):
         )
         super().permission_denied(request, message, code)
 
+    def list(self, request, *args, **kwargs):
+        with self.record_action():
+            return super().list(request, *args, **kwargs)
+
     def retrieve(self, request, *args, **kwargs):
         with self.record_action():
             return super().retrieve(request, *args, **kwargs)
@@ -104,10 +108,12 @@ class AuditLoggingModelViewSet(ModelViewSet):
         target = None
         lookup_value = self.kwargs.get(self.lookup_field, None)
         if lookup_value is not None:
-            target = self.queryset.model.objects.filter(
-                **{self.lookup_field: lookup_value}
-            ).first()
-        return target or self.created_instance or self.queryset.model()
+            target = (
+                self.get_queryset()
+                .model.objects.filter(**{self.lookup_field: lookup_value})
+                .first()
+            )
+        return target or self.created_instance or self.get_queryset().model
 
     def _get_ip_address(self) -> str:
         client_ip = None

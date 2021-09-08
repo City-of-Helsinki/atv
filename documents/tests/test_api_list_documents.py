@@ -6,6 +6,7 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 
 from atv.tests.factories import GroupFactory
+from audit_log.models import AuditLogEntry
 from documents.tests.factories import DocumentFactory
 from services.enums import ServicePermissions
 from services.tests.factories import ServiceFactory
@@ -196,3 +197,24 @@ def test_list_document_filter_created_at_range(
 
     document = results[0]
     assert isoparse(document.get(field)) == isoparse(expected)
+
+
+def test_audit_log_is_created_when_listing(api_client, user):
+    service = ServiceFactory()
+    group = GroupFactory(name=service.name)
+    user.groups.add(group)
+    assign_perm(ServicePermissions.VIEW_DOCUMENTS.value, group, service)
+    DocumentFactory.create_batch(2, service=service)
+
+    api_client.force_login(user=user)
+    response = api_client.get(reverse("documents-list"))
+
+    assert response.status_code == status.HTTP_200_OK
+    assert (
+        AuditLogEntry.objects.filter(
+            message__audit_event__target__type="Document",
+            message__audit_event__target__id="",
+            message__audit_event__operation="READ",
+        ).count()
+        == 1
+    )
