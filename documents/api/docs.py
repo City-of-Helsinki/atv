@@ -1,7 +1,9 @@
+from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import (
     extend_schema,
     inline_serializer,
     OpenApiExample,
+    OpenApiParameter,
     OpenApiResponse,
 )
 from rest_framework import serializers, status
@@ -250,6 +252,36 @@ document_viewset_docs = {
         "* Authenticated users may fetch documents owned by an organization by giving the organization's business ID "
         "in the search parameters. In this case the user's permission to act on behalf of the organization "
         "is verified and the results will contain only documents which are owned by the given organization.",
+        parameters=[
+            OpenApiParameter(
+                "status",
+                OpenApiTypes.STR,
+                description="Search for documents with the given status",
+            ),
+            OpenApiParameter(
+                "type",
+                OpenApiTypes.STR,
+                description="Search for documents with the given type",
+            ),
+            OpenApiParameter(
+                "business_id",
+                OpenApiTypes.STR,
+                description="Search for documents which are owned by the given business ID. "
+                "If this is given, the calling user must either be an admin or have permission to act "
+                "on behalf of the organization",
+            ),
+            OpenApiParameter(
+                "user_id",
+                OpenApiTypes.UUID,
+                description="Search for documents which are owned by the given user ID. "
+                "If this is given, the calling user must be an admin of the service",
+            ),
+            OpenApiParameter(
+                "transaction_id",
+                OpenApiTypes.STR,
+                description="Search for documents with the given transaction id",
+            ),
+        ],
         responses={
             (status.HTTP_200_OK, "application/json"): OpenApiResponse(
                 response=DocumentSerializer,
