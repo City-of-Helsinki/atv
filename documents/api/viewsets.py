@@ -1,7 +1,8 @@
 from django.db import transaction
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
+from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import status
-from rest_framework.exceptions import NotFound, PermissionDenied
+from rest_framework.exceptions import MethodNotAllowed, NotFound, PermissionDenied
 from rest_framework.parsers import MultiPartParser
 from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework.response import Response
@@ -12,15 +13,17 @@ from atv.decorators import login_required, service_api_key_required, staff_requi
 from atv.exceptions import ValidationError
 from services.enums import ServicePermissions
 
-from .models import Attachment, Document
-from .serializers import (
+from ..models import Attachment, Document
+from ..serializers import (
     AttachmentSerializer,
     CreateAnonymousDocumentSerializer,
     CreateAttachmentSerializer,
     DocumentSerializer,
 )
+from .docs import attachment_viewset_docs, document_viewset_docs
 
 
+@extend_schema_view(**attachment_viewset_docs)
 class AttachmentViewSet(ModelViewSet, NestedViewSetMixin):
     permission_classes = [IsAdminUser]
     serializer_class = AttachmentSerializer
@@ -62,7 +65,17 @@ class AttachmentViewSet(ModelViewSet, NestedViewSetMixin):
 
         return Attachment.objects.filter(**filters)
 
+    def retrieve(self, request, *args, **kwargs):
+        raise MethodNotAllowed(request.method)
 
+    def partial_update(self, request, *args, **kwargs):
+        raise MethodNotAllowed(request.method)
+
+    def update(self, request, *args, **kwargs):
+        raise MethodNotAllowed(request.method)
+
+
+@extend_schema_view(**document_viewset_docs)
 class DocumentViewSet(ModelViewSet):
     parser_classes = [MultiPartParser]
     serializer_class = DocumentSerializer
@@ -111,6 +124,7 @@ class DocumentViewSet(ModelViewSet):
 
     @transaction.atomic()
     @service_api_key_required()
+    @extend_schema(request=CreateAnonymousDocumentSerializer)
     def create(self, request, *args, **kwargs):
         data = request.data
 
@@ -168,3 +182,11 @@ class DocumentViewSet(ModelViewSet):
             attachment_serializer.save()
 
         return super(DocumentViewSet, self).partial_update(request, pk, *args, **kwargs)
+
+    def update(self, request, *args, **kwargs):
+        # Only allow for PATCH updates as described by the documentation
+        # PUT requests will fail
+        if request.method != "PATCH":
+            raise MethodNotAllowed(request.method)
+
+        return super(DocumentViewSet, self).update(request, *args, **kwargs)

@@ -44,6 +44,7 @@ env = environ.Env(
     API_KEY_CUSTOM_HEADER=(str, "HTTP_X_API_KEY"),
     FIELD_ENCRYPTION_KEYS=(list, []),
     ENABLE_AUTOMATIC_ATTACHMENT_FILE_DELETION=(bool, True),
+    ENABLE_SWAGGER_UI=(bool, True),
 )
 if os.path.exists(env_file):
     env.read_env(env_file)
@@ -118,6 +119,7 @@ INSTALLED_APPS = [
     "corsheaders",
     "encrypted_fields",
     "guardian",
+    "drf_spectacular",
     # Local apps
     "users",
     "services",
@@ -159,7 +161,9 @@ CORS_ORIGIN_ALLOW_ALL = env.bool("CORS_ORIGIN_ALLOW_ALL")
 REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAdminUser",
-    ]
+    ],
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    "DEFAULT_PARENT_LOOKUP_KWARG_NAME_PREFIX": "",
 }
 
 ATTACHMENT_MEDIA_DIR = "attachments"
@@ -192,6 +196,15 @@ if DEBUG and not FIELD_ENCRYPTION_KEYS:
 
 if not DEBUG and DEBUG_FIELD_ENCRYPTION_KEY in FIELD_ENCRYPTION_KEYS:
     raise ImproperlyConfigured("Cannot use the debug encryption key in production")
+
+# API Documentation
+ENABLE_SWAGGER_UI = env("ENABLE_SWAGGER_UI")
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": " Asiointitietovaranto ",
+    "DESCRIPTION": "Asiointitietovaranto REST API",
+    "VERSION": "0.0.1",
+}
 
 LOGGING = {
     "version": 1,
