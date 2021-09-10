@@ -58,6 +58,8 @@ def test_create_document(service_api_client, snapshot):
 
     document = Document.objects.first()
     assert document.attachments.count() == 2
+    attachment1 = document.attachments.first()
+    attachment2 = document.attachments.last()
 
     body = response.json()
     assert uuid.UUID(body.pop("id")) == document.id
@@ -65,8 +67,8 @@ def test_create_document(service_api_client, snapshot):
         {
             "created_at": "2021-06-30T12:00:00+03:00",
             "filename": "document2.pdf",
-            "href": f"http://testserver/v1/documents/{document.id}/attachments/2/",
-            "id": 2,
+            "href": f"http://testserver/v1/documents/{document.id}/attachments/{attachment2.id}/",
+            "id": attachment2.id,
             "media_type": "application/pdf",
             "size": 12,
             "updated_at": "2021-06-30T12:00:00+03:00",
@@ -74,8 +76,8 @@ def test_create_document(service_api_client, snapshot):
         {
             "created_at": "2021-06-30T12:00:00+03:00",
             "filename": "document1.pdf",
-            "href": f"http://testserver/v1/documents/{document.id}/attachments/1/",
-            "id": 1,
+            "href": f"http://testserver/v1/documents/{document.id}/attachments/{attachment1.id}/",
+            "id": attachment1.id,
             "media_type": "application/pdf",
             "size": 12,
             "updated_at": "2021-06-30T12:00:00+03:00",

@@ -5,7 +5,7 @@ import factory
 from services.tests.factories import ServiceFactory
 from users.tests.factories import UserFactory
 
-from ..models import Document
+from ..models import Attachment, Document
 
 
 class DocumentFactory(factory.django.DjangoModelFactory):
@@ -17,3 +17,12 @@ class DocumentFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = Document
+
+
+class AttachmentFactory(factory.django.DjangoModelFactory):
+    document = factory.SubFactory(DocumentFactory)
+    media_type = "application/pdf"
+    file = factory.django.FileField(filename="document.pdf")
+
+    class Meta:
+        model = Attachment

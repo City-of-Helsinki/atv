@@ -39,7 +39,7 @@ def test_list_document_service_user(api_client, user):
     assert results[0].get("id") == expected_document_id
 
 
-def test_list_document_superuser(api_client, superuser_api_client):
+def test_list_document_superuser(superuser_api_client):
     service1 = ServiceFactory(name="service-1")
     service2 = ServiceFactory(name="service-2")
 
