@@ -1,6 +1,5 @@
 import json
 import uuid
-from unittest.mock import patch
 
 import pytest
 from django.conf import settings
@@ -48,14 +47,9 @@ def test_create_document(service_api_client, snapshot):
 
     # Patch the document auto-generated UUID to always have the same value
     # to have deterministic tests
-    with patch.object(
-        Document._meta.get_field("id"),
-        "default",
-        new=lambda: uuid.UUID("2d2b7a36-a306-4e35-990f-13aea04263ff"),
-    ):
-        response = service_api_client.post(
-            reverse("documents-list"), data, format="multipart"
-        )
+    response = service_api_client.post(
+        reverse("documents-list"), data, format="multipart"
+    )
 
     assert response.status_code == status.HTTP_201_CREATED
     assert Document.objects.count() == 1
@@ -65,6 +59,27 @@ def test_create_document(service_api_client, snapshot):
     assert document.attachments.count() == 2
 
     body = response.json()
+    assert uuid.UUID(body.pop("id")) == document.id
+    assert body.pop("attachments", []) == [
+        {
+            "created_at": "2021-06-30T12:00:00+03:00",
+            "filename": "document2.pdf",
+            "href": f"http://testserver/v1/documents/{document.id}/attachments/2/",
+            "id": 2,
+            "media_type": "application/pdf",
+            "size": 12,
+            "updated_at": "2021-06-30T12:00:00+03:00",
+        },
+        {
+            "created_at": "2021-06-30T12:00:00+03:00",
+            "filename": "document1.pdf",
+            "href": f"http://testserver/v1/documents/{document.id}/attachments/1/",
+            "id": 1,
+            "media_type": "application/pdf",
+            "size": 12,
+            "updated_at": "2021-06-30T12:00:00+03:00",
+        },
+    ]
     snapshot.assert_match(body)
 
 

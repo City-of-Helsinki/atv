@@ -29,6 +29,8 @@ from .filtersets import DocumentFilterSet
 class AttachmentViewSet(ModelViewSet, NestedViewSetMixin):
     permission_classes = [IsAdminUser]
     serializer_class = AttachmentSerializer
+    filter_backends = [filters.OrderingFilter]
+    ordering = ["-updated_at", "id"]
 
     def get_queryset(self):
         """
