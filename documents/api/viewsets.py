@@ -1,7 +1,8 @@
 from django.db import transaction
 from django.utils.translation import gettext_lazy as _
+from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema, extend_schema_view
-from rest_framework import status
+from rest_framework import filters, status
 from rest_framework.exceptions import MethodNotAllowed, NotFound, PermissionDenied
 from rest_framework.parsers import MultiPartParser
 from rest_framework.permissions import AllowAny, IsAdminUser
@@ -21,12 +22,15 @@ from ..serializers import (
     DocumentSerializer,
 )
 from .docs import attachment_viewset_docs, document_viewset_docs
+from .filtersets import DocumentFilterSet
 
 
 @extend_schema_view(**attachment_viewset_docs)
 class AttachmentViewSet(ModelViewSet, NestedViewSetMixin):
     permission_classes = [IsAdminUser]
     serializer_class = AttachmentSerializer
+    filter_backends = [filters.OrderingFilter]
+    ordering = ["-updated_at", "id"]
 
     def get_queryset(self):
         """
@@ -50,20 +54,20 @@ class AttachmentViewSet(ModelViewSet, NestedViewSetMixin):
         if user.is_anonymous:
             return Attachment.objects.none()
 
-        filters = {}
+        qs_filters = {}
 
         # Filter the Documents only for the user's Service
         if service := self.request.service:
-            filters["document__service"] = service
+            qs_filters["document__service"] = service
 
         # If the user doesn't have permissions to view that Service,
         # only show the Documents that belong to them
         if not user.has_perm(
-            ServicePermissions.VIEW_ATTACHMENTS.value, filters.get("service")
+            ServicePermissions.VIEW_ATTACHMENTS.value, qs_filters.get("service")
         ):
-            filters = {"document__user_id": user.id}
+            qs_filters = {"document__user_id": user.id}
 
-        return Attachment.objects.filter(**filters)
+        return Attachment.objects.filter(**qs_filters)
 
     def retrieve(self, request, *args, **kwargs):
         raise MethodNotAllowed(request.method)
@@ -81,6 +85,16 @@ class DocumentViewSet(ModelViewSet):
     serializer_class = DocumentSerializer
     # Permission checking is done by the decorators on a method basis
     permission_classes = [AllowAny]
+    # Filtering/sorting
+    filter_backends = [
+        DjangoFilterBackend,
+        filters.OrderingFilter,
+        filters.SearchFilter,
+    ]
+    ordering_fields = ["created_at", "updated_at"]
+    ordering = ["-updated_at"]
+    search_fields = ["metadata"]
+    filterset_class = DocumentFilterSet
 
     def get_queryset(self):
         """
@@ -103,20 +117,20 @@ class DocumentViewSet(ModelViewSet):
         if user.is_anonymous:
             return Document.objects.none()
 
-        filters = {}
+        qs_filters = {}
 
         # Filter the Documents only for the user's Service
         if service := self.request.service:
-            filters["service"] = service
+            qs_filters["service"] = service
 
         # If the user doesn't have permissions to view that Service,
         # only show the Documents that belong to them
         if not user.has_perm(
-            ServicePermissions.VIEW_DOCUMENTS.value, filters.get("service")
+            ServicePermissions.VIEW_DOCUMENTS.value, qs_filters.get("service")
         ):
-            filters = {"user_id": user.id}
+            qs_filters = {"user_id": user.id}
 
-        return Document.objects.filter(**filters)
+        return Document.objects.filter(**qs_filters)
 
     @staff_required(required_permission=ServicePermissions.VIEW_DOCUMENTS)
     def list(self, request, *args, **kwargs):
