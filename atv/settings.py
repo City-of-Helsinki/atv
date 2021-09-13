@@ -216,7 +216,7 @@ ENABLE_SWAGGER_UI = env("ENABLE_SWAGGER_UI")
 SPECTACULAR_SETTINGS = {
     "TITLE": " Asiointitietovaranto ",
     "DESCRIPTION": "Asiointitietovaranto REST API",
-    "VERSION": "0.0.1",
+    "VERSION": "0.1.0",
 }
 
 # Audit logging
