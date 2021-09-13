@@ -5,7 +5,7 @@ from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import filters, status
 from rest_framework.exceptions import MethodNotAllowed, NotFound, PermissionDenied
 from rest_framework.parsers import MultiPartParser
-from rest_framework.permissions import AllowAny, IsAdminUser
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework_extensions.mixins import NestedViewSetMixin
 
@@ -27,7 +27,7 @@ from .filtersets import DocumentFilterSet
 
 @extend_schema_view(**attachment_viewset_docs)
 class AttachmentViewSet(AuditLoggingModelViewSet, NestedViewSetMixin):
-    permission_classes = [IsAdminUser]
+    permission_classes = [AllowAny]
     serializer_class = AttachmentSerializer
     filter_backends = [filters.OrderingFilter]
     ordering = ["-updated_at", "id"]
@@ -69,8 +69,9 @@ class AttachmentViewSet(AuditLoggingModelViewSet, NestedViewSetMixin):
 
         return Attachment.objects.filter(**qs_filters)
 
-    def retrieve(self, request, *args, **kwargs):
-        raise MethodNotAllowed(request.method)
+    @staff_required(required_permission=ServicePermissions.VIEW_ATTACHMENTS)
+    def retrieve(self, request, pk, *args, **kwargs):
+        return super(AttachmentViewSet, self).retrieve(request, *args, **kwargs)
 
     def partial_update(self, request, *args, **kwargs):
         raise MethodNotAllowed(request.method)
