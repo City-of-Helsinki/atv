@@ -138,36 +138,35 @@ def _base_500_response(custom_message: str = None) -> OpenApiResponse:
 
 
 attachment_viewset_docs = {
-    # TODO: Not implemented yet
-    "retrieve": extend_schema(exclude=True),
-    #     summary="Download a document's attachment",
-    #     description="Permission to access the attachment is checked based on the containing document as follows:\n"
-    #     "* Admin users are allowed access to the attachment if the containing document was stored using the service "
-    #     "they are using and whose admins they are.\n"
-    #     "* Authenticated users are allowed access to the attachment if they are the owner of the containing document "
-    #     "or the containing document is owned by an organization and the user has permission to act on behalf "
-    #     "of that organization.",
-    #     responses={
-    #         (status.HTTP_200_OK, "application/octet-stream"): OpenApiResponse(
-    #             description="Returns the attachment as a downloadable file.",
-    #         ),
-    #         (status.HTTP_400_BAD_REQUEST, "application/json"): _base_400_response(),
-    #         status.HTTP_401_UNAUTHORIZED: _base_401_response(),
-    #         status.HTTP_403_FORBIDDEN: OpenApiResponse(
-    #             description="The authenticated user lacks the proper permissions to access the document. "
-    #             "Depending on the requested document, "
-    #             "either the user does not belong to the admin group of the service which owns the document, "
-    #             "the user does not own the document or the user does not have permission to act on behalf "
-    #             "of the organization which owns the document."
-    #         ),
-    #         status.HTTP_404_NOT_FOUND: OpenApiResponse(
-    #             description="No document was found with `documentId` or the document did not have "
-    #             "an attachment `attachmentId`."
-    #         ),
-    #         status.HTTP_500_INTERNAL_SERVER_ERROR: _base_500_response(),
-    #     },
-    #     examples=[example_attachment, example_error],
-    # ),
+    "retrieve": extend_schema(
+        summary="Download a document's attachment",
+        description="Permission to access the attachment is checked based on the containing document as follows:\n"
+        "* Admin users are allowed access to the attachment if the containing document was stored using the service "
+        "they are using and whose admins they are.\n"
+        "* Authenticated users are allowed access to the attachment if they are the owner of the containing document "
+        "or the containing document is owned by an organization and the user has permission to act on behalf "
+        "of that organization.",
+        responses={
+            (status.HTTP_200_OK, "application/octet-stream"): OpenApiResponse(
+                description="Returns the attachment as a downloadable file.",
+            ),
+            (status.HTTP_400_BAD_REQUEST, "application/json"): _base_400_response(),
+            status.HTTP_401_UNAUTHORIZED: _base_401_response(),
+            status.HTTP_403_FORBIDDEN: OpenApiResponse(
+                description="The authenticated user lacks the proper permissions to access the document. "
+                "Depending on the requested document, "
+                "either the user does not belong to the admin group of the service which owns the document, "
+                "the user does not own the document or the user does not have permission to act on behalf "
+                "of the organization which owns the document."
+            ),
+            status.HTTP_404_NOT_FOUND: OpenApiResponse(
+                description="No document was found with `documentId` or the document did not have "
+                "an attachment `attachmentId`."
+            ),
+            status.HTTP_500_INTERNAL_SERVER_ERROR: _base_500_response(),
+        },
+        examples=[example_attachment, example_error],
+    ),
     # TODO: Not implemented yet
     "create": extend_schema(exclude=True),
     #     summary="Upload a new attachment to a document",
