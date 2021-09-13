@@ -22,7 +22,7 @@ class ValidationError(serializers.ValidationError):
         elif not isinstance(detail, dict) and not isinstance(detail, list):
             detail = {"errors": [detail]}
 
-        super(ValidationError, self).__init__(detail, code)
+        super().__init__(detail, code)
 
 
 def sentry_before_send(event, hint):

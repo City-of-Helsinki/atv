@@ -70,7 +70,7 @@ class Attachment(TimestampedModel):
 
         self.full_clean()
 
-        super(Attachment, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
 
 class Document(UUIDModel, TimestampedModel):

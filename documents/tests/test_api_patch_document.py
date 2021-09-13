@@ -1,6 +1,7 @@
 import json
 from uuid import uuid4
 
+import pytest
 from dateutil.relativedelta import relativedelta
 from dateutil.utils import today
 from django.contrib.auth import get_user
@@ -11,6 +12,7 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 
 from atv.tests.factories import GroupFactory
+from audit_log.models import AuditLogEntry
 from documents.models import Document
 from documents.tests.factories import DocumentFactory
 from services.enums import ServicePermissions
@@ -360,3 +362,32 @@ def test_update_document_not_found(superuser_api_client):
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
     assert body.get("detail", "") == "Document matching query does not exist."
+
+
+@pytest.mark.parametrize("attachments", [0, 1, 2])
+def test_audit_log_is_created_when_patching(user_api_client, attachments):
+    user = get_user(user_api_client)
+
+    document = DocumentFactory(draft=True, user=user)
+
+    data = {**VALID_DOCUMENT_DATA}
+    data.pop("content")
+
+    if attachments:
+        data["attachments"] = [
+            SimpleUploadedFile(
+                f"document{i}.pdf", b"file_content", content_type="application/pdf"
+            )
+            for i in range(attachments)
+        ]
+
+    user_api_client.patch(reverse("documents-detail", args=[document.id]), data)
+
+    assert (
+        AuditLogEntry.objects.filter(
+            message__audit_event__target__type="Document",
+            message__audit_event__target__id=str(document.pk),
+            message__audit_event__operation="UPDATE",
+        ).count()
+        == 1
+    )

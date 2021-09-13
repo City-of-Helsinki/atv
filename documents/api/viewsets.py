@@ -7,11 +7,11 @@ from rest_framework.exceptions import MethodNotAllowed, NotFound, PermissionDeni
 from rest_framework.parsers import MultiPartParser
 from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework.response import Response
-from rest_framework.viewsets import ModelViewSet
 from rest_framework_extensions.mixins import NestedViewSetMixin
 
 from atv.decorators import login_required, service_api_key_required, staff_required
 from atv.exceptions import ValidationError
+from audit_log.viewsets import AuditLoggingModelViewSet
 from services.enums import ServicePermissions
 
 from ..models import Attachment, Document
@@ -26,7 +26,7 @@ from .filtersets import DocumentFilterSet
 
 
 @extend_schema_view(**attachment_viewset_docs)
-class AttachmentViewSet(ModelViewSet, NestedViewSetMixin):
+class AttachmentViewSet(AuditLoggingModelViewSet, NestedViewSetMixin):
     permission_classes = [IsAdminUser]
     serializer_class = AttachmentSerializer
     filter_backends = [filters.OrderingFilter]
@@ -80,7 +80,7 @@ class AttachmentViewSet(ModelViewSet, NestedViewSetMixin):
 
 
 @extend_schema_view(**document_viewset_docs)
-class DocumentViewSet(ModelViewSet):
+class DocumentViewSet(AuditLoggingModelViewSet):
     parser_classes = [MultiPartParser]
     serializer_class = DocumentSerializer
     # Permission checking is done by the decorators on a method basis
@@ -134,7 +134,7 @@ class DocumentViewSet(ModelViewSet):
 
     @staff_required(required_permission=ServicePermissions.VIEW_DOCUMENTS)
     def list(self, request, *args, **kwargs):
-        return super(DocumentViewSet, self).list(request, *args, **kwargs)
+        return super().list(request, *args, **kwargs)
 
     @transaction.atomic()
     @service_api_key_required()
@@ -147,10 +147,14 @@ class DocumentViewSet(ModelViewSet):
         # If the data is not valid, it will raise a ValidationError and return Bad Request
         serializer.is_valid(raise_exception=True)
 
-        document = serializer.save(service=request.service)
+        with self.record_action():
+            serializer.save(service=request.service)
+            self.created_instance = serializer.instance
 
         return Response(
-            data=DocumentSerializer(document, context={"request": request}).data,
+            data=DocumentSerializer(
+                serializer.instance, context={"request": request}
+            ).data,
             status=status.HTTP_201_CREATED,
         )
 
@@ -195,7 +199,7 @@ class DocumentViewSet(ModelViewSet):
             attachment_serializer.is_valid(raise_exception=True)
             attachment_serializer.save()
 
-        return super(DocumentViewSet, self).partial_update(request, pk, *args, **kwargs)
+        return super().partial_update(request, pk, *args, **kwargs)
 
     def update(self, request, *args, **kwargs):
         # Only allow for PATCH updates as described by the documentation
@@ -203,4 +207,4 @@ class DocumentViewSet(ModelViewSet):
         if request.method != "PATCH":
             raise MethodNotAllowed(request.method)
 
-        return super(DocumentViewSet, self).update(request, *args, **kwargs)
+        return super().update(request, *args, **kwargs)
