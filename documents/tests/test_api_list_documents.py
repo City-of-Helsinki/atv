@@ -64,11 +64,41 @@ def test_list_document_superuser(api_client, superuser_api_client):
     assert len(results) == 2
 
 
+def test_list_document_owner(api_client, user):
+    expected_document_id = "485af718-d9d1-46b9-ad7b-33ea054126e3"
+    service1 = ServiceFactory(name="service-1")
+    service2 = ServiceFactory(name="service-2")
+
+    DocumentFactory(id=expected_document_id, service=service1, user=user)
+    DocumentFactory(service=service2)
+
+    api_client.force_login(user=user)
+    response = api_client.get(reverse("documents-list"))
+
+    assert response.status_code == status.HTTP_200_OK
+
+    body = response.json()
+
+    results = body.get("results", [])
+
+    # The user should only be able to see the one document from the service 1
+    assert body.get("count") == 1
+    assert len(results) == 1
+    assert results[0].get("id") == expected_document_id
+
+
 def test_list_document_no_service(api_client, user):
     api_client.force_login(user=user)
     response = api_client.get(reverse("documents-list"))
 
-    assert response.status_code == status.HTTP_403_FORBIDDEN
+    assert response.status_code == status.HTTP_200_OK
+
+    body = response.json()
+
+    results = body.get("results", [])
+
+    assert body.get("count") == 0
+    assert len(results) == 0
 
 
 @pytest.mark.parametrize(

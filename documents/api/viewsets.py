@@ -10,7 +10,7 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from rest_framework_extensions.mixins import NestedViewSetMixin
 
-from atv.decorators import login_required, service_api_key_required, staff_required
+from atv.decorators import login_required, service_api_key_required
 from atv.exceptions import ValidationError
 from services.enums import ServicePermissions
 
@@ -132,7 +132,7 @@ class DocumentViewSet(ModelViewSet):
 
         return Document.objects.filter(**qs_filters)
 
-    @staff_required(required_permission=ServicePermissions.VIEW_DOCUMENTS)
+    @login_required()
     def list(self, request, *args, **kwargs):
         return super(DocumentViewSet, self).list(request, *args, **kwargs)
 
