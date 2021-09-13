@@ -9,7 +9,14 @@ from utils.files import b_to_mb
 
 @admin.register(Document)
 class DocumentAdmin(admin.ModelAdmin):
-    list_display = ("pk", "get_service_name", "draft", "created_at", "updated_at")
+    list_display = (
+        "pk",
+        "get_service_name",
+        "user",
+        "draft",
+        "created_at",
+        "updated_at",
+    )
     search_fields = ("service__name", "type", "status", "business_id")
     list_filter = ("draft",)
     autocomplete_fields = ("service", "user")
