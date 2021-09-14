@@ -10,10 +10,11 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework_extensions.mixins import NestedViewSetMixin
 
-from atv.decorators import login_required, service_api_key_required
+from atv.decorators import login_required
 from atv.exceptions import ValidationError
 from audit_log.viewsets import AuditLoggingModelViewSet
 from services.enums import ServicePermissions
+from services.utils import get_service_from_service_key
 
 from ..models import Attachment, Document
 from ..serializers import (
@@ -144,9 +145,18 @@ class DocumentViewSet(AuditLoggingModelViewSet):
         return super().list(request, *args, **kwargs)
 
     @transaction.atomic()
-    @service_api_key_required()
     @extend_schema(request=CreateAnonymousDocumentSerializer)
     def create(self, request, *args, **kwargs):
+        user = request.user
+        service = request.service
+
+        # If the user is not authenticated, try to create the Document
+        # anonymously, getting the service from the Service API key
+        if not request.user.is_authenticated:
+            # If no service is found, it will raise an exception
+            service = get_service_from_service_key(request)
+            user = None
+
         data = request.data
 
         serializer = CreateAnonymousDocumentSerializer(data=data)
@@ -155,7 +165,7 @@ class DocumentViewSet(AuditLoggingModelViewSet):
         serializer.is_valid(raise_exception=True)
 
         with self.record_action():
-            serializer.save(service=request.service)
+            serializer.save(user=user, service=service)
             self.created_instance = serializer.instance
 
         return Response(
