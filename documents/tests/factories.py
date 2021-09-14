@@ -21,8 +21,8 @@ class DocumentFactory(factory.django.DjangoModelFactory):
 
 class AttachmentFactory(factory.django.DjangoModelFactory):
     document = factory.SubFactory(DocumentFactory)
-    media_type = "application/pdf"
-    file = factory.django.FileField(filename="document.pdf")
+    file = factory.django.FileField(data=b"Test file", filename="test-document.txt")
+    media_type = "text/plain"
 
     class Meta:
         model = Attachment

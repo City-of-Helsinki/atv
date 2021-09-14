@@ -1,4 +1,5 @@
 from django.db import transaction
+from django.http import FileResponse
 from django.utils.translation import gettext_lazy as _
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema, extend_schema_view
@@ -9,7 +10,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework_extensions.mixins import NestedViewSetMixin
 
-from atv.decorators import login_required, service_api_key_required, staff_required
+from atv.decorators import login_required, service_api_key_required
 from atv.exceptions import ValidationError
 from audit_log.viewsets import AuditLoggingModelViewSet
 from services.enums import ServicePermissions
@@ -69,9 +70,14 @@ class AttachmentViewSet(AuditLoggingModelViewSet, NestedViewSetMixin):
 
         return Attachment.objects.filter(**qs_filters)
 
-    @staff_required(required_permission=ServicePermissions.VIEW_ATTACHMENTS)
-    def retrieve(self, request, *args, **kwargs):
-        return super(AttachmentViewSet, self).retrieve(request, *args, **kwargs)
+    @login_required()
+    def retrieve(self, request, pk, *args, **kwargs):
+        attachment: Attachment = self.get_object()
+
+        return FileResponse(
+            attachment.file,
+            as_attachment=True,
+        )
 
     def partial_update(self, request, *args, **kwargs):
         raise MethodNotAllowed(request.method)
