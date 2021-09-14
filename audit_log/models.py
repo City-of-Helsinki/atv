@@ -7,6 +7,9 @@ class AuditLogEntry(models.Model):
     message = models.JSONField(verbose_name=_("message"))
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_("created at"))
 
+    class Meta:
+        verbose_name_plural = "audit log entries"
+
     def __str__(self):
         return " ".join(
             [

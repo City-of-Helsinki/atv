@@ -9,7 +9,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework_extensions.mixins import NestedViewSetMixin
 
-from atv.decorators import login_required, service_api_key_required
+from atv.decorators import login_required, service_api_key_required, staff_required
 from atv.exceptions import ValidationError
 from audit_log.viewsets import AuditLoggingModelViewSet
 from services.enums import ServicePermissions
@@ -70,7 +70,7 @@ class AttachmentViewSet(AuditLoggingModelViewSet, NestedViewSetMixin):
         return Attachment.objects.filter(**qs_filters)
 
     @staff_required(required_permission=ServicePermissions.VIEW_ATTACHMENTS)
-    def retrieve(self, request, pk, *args, **kwargs):
+    def retrieve(self, request, *args, **kwargs):
         return super(AttachmentViewSet, self).retrieve(request, *args, **kwargs)
 
     def partial_update(self, request, *args, **kwargs):
