@@ -52,6 +52,10 @@ env = environ.Env(
     ENABLE_SEND_AUDIT_LOG=(bool, False),
     CLEAR_AUDIT_LOG_ENTRIES=(bool, False),
     USE_X_FORWARDED_FOR=(bool, False),
+    TOKEN_AUTH_ACCEPTED_AUDIENCE=(str, ""),
+    TOKEN_AUTH_ACCEPTED_SCOPE_PREFIX=(str, ""),
+    TOKEN_AUTH_REQUIRE_SCOPE=(bool, False),
+    TOKEN_AUTH_AUTHSERVER_URL=(str, ""),
 )
 if os.path.exists(env_file):
     env.read_env(env_file)
@@ -167,6 +171,10 @@ CORS_ORIGIN_WHITELIST = env.list("CORS_ORIGIN_WHITELIST")
 CORS_ORIGIN_ALLOW_ALL = env.bool("CORS_ORIGIN_ALLOW_ALL")
 
 REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "helusers.oidc.ApiTokenAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
+    ],
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAdminUser",
     ],
@@ -197,6 +205,13 @@ AUTHENTICATION_BACKENDS = [
 
 API_KEY_CUSTOM_HEADER = env("API_KEY_CUSTOM_HEADER")
 
+OIDC_API_TOKEN_AUTH = {
+    "AUDIENCE": env("TOKEN_AUTH_ACCEPTED_AUDIENCE"),
+    "API_SCOPE_PREFIX": env("TOKEN_AUTH_ACCEPTED_SCOPE_PREFIX"),
+    "ISSUER": env("TOKEN_AUTH_AUTHSERVER_URL"),
+    "REQUIRE_API_SCOPE_FOR_AUTHENTICATION": env("TOKEN_AUTH_REQUIRE_SCOPE"),
+}
+
 # Encryption
 
 FIELD_ENCRYPTION_KEYS = env("FIELD_ENCRYPTION_KEYS")
@@ -216,7 +231,7 @@ ENABLE_SWAGGER_UI = env("ENABLE_SWAGGER_UI")
 SPECTACULAR_SETTINGS = {
     "TITLE": " Asiointitietovaranto ",
     "DESCRIPTION": "Asiointitietovaranto REST API",
-    "VERSION": "0.0.1",
+    "VERSION": "0.1.0",
 }
 
 # Audit logging

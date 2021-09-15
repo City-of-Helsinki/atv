@@ -19,7 +19,7 @@ charset-normalizer==2.0.4
     # via requests
 deprecation==2.1.0
     # via django-helusers
-django==3.2.6
+django==3.2.7
     # via
     #   -r requirements.in
     #   django-cors-headers
@@ -28,16 +28,17 @@ django==3.2.6
     #   django-helusers
     #   django-searchable-encrypted-fields
     #   djangorestframework
+    #   drf-oidc-auth
     #   drf-spectacular
-django-cors-headers==3.7.0
+django-cors-headers==3.8.0
     # via -r requirements.in
-django-environ==0.4.5
+django-environ==0.7.0
     # via -r requirements.in
 django-filter==2.4.0
     # via -r requirements.in
 django-guardian==2.4.0
     # via -r requirements.in
-django-helusers==0.6.1
+django-helusers==0.7.0
     # via -r requirements.in
 django-searchable-encrypted-fields==0.1.9
     # via -r requirements.in
@@ -45,17 +46,22 @@ djangorestframework==3.12.4
     # via
     #   -r requirements.in
     #   drf-extensions
+    #   drf-oidc-auth
     #   drf-spectacular
 djangorestframework-api-key==2.0.0
     # via -r requirements.in
 drf-extensions==0.7.1
     # via -r requirements.in
-drf-spectacular==0.18.1
+drf-oidc-auth==0.10.0
+    # via -r requirements.in
+drf-spectacular==0.18.2
     # via -r requirements.in
 ecdsa==0.17.0
     # via python-jose
-elasticsearch==7.14.0
+elasticsearch==7.14.1
     # via -r requirements.in
+future==0.18.2
+    # via pyjwkest
 idna==3.2
     # via requests
 inflection==0.5.1
@@ -72,6 +78,10 @@ pyasn1==0.4.8
     #   rsa
 pycryptodome==3.10.1
     # via django-searchable-encrypted-fields
+pycryptodomex==3.10.1
+    # via pyjwkest
+pyjwkest==1.4.2
+    # via drf-oidc-auth
 pyparsing==2.4.7
     # via packaging
 pyrsistent==0.18.0
@@ -83,7 +93,9 @@ pytz==2021.1
 pyyaml==5.4.1
     # via drf-spectacular
 requests==2.26.0
-    # via django-helusers
+    # via
+    #   django-helusers
+    #   pyjwkest
 rsa==4.7.2
     # via python-jose
 sentry-sdk==1.3.1
@@ -92,7 +104,8 @@ six==1.16.0
     # via
     #   ecdsa
     #   jsonschema
-sqlparse==0.4.1
+    #   pyjwkest
+sqlparse==0.4.2
     # via django
 uritemplate==3.0.1
     # via drf-spectacular
