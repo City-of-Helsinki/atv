@@ -1,7 +1,7 @@
 import freezegun
 import pytest
 from dateutil.parser import isoparse
-from guardian.shortcuts import assign_perm
+from guardian.shortcuts import assign_perm, remove_perm
 from rest_framework import status
 from rest_framework.reverse import reverse
 
@@ -65,13 +65,51 @@ def test_list_document_superuser(superuser_api_client):
     assert len(results) == 2
 
 
-def test_list_document_owner(api_client, user):
+def test_list_document_owner(api_client, user, service):
     expected_document_id = "485af718-d9d1-46b9-ad7b-33ea054126e3"
-    service1 = ServiceFactory(name="service-1")
-    service2 = ServiceFactory(name="service-2")
 
-    DocumentFactory(id=expected_document_id, service=service1, user=user)
-    DocumentFactory(service=service2)
+    DocumentFactory(id=expected_document_id, service=service, user=user)
+    DocumentFactory(service=service)
+
+    # TODO: This has to be removed once we integrate JWT authentication.
+    #  This is a temporary workaround so that an authenticated user has an
+    #  associated Service, as required by the ServiceMiddleware.
+    #  The permissions are explicitly removed to simulate that user only belongs
+    #  to the Service but has no staff permissions
+    group = GroupFactory(name=service.name)
+    user.groups.add(group)
+    remove_perm(ServicePermissions.VIEW_DOCUMENTS.value, group, service)
+
+    api_client.force_login(user=user)
+    response = api_client.get(reverse("documents-list"))
+
+    assert response.status_code == status.HTTP_200_OK
+
+    body = response.json()
+
+    results = body.get("results", [])
+
+    # The user should only be able to see the one document from the service 1
+    assert body.get("count") == 1
+    assert len(results) == 1
+    assert results[0].get("id") == expected_document_id
+
+
+def test_list_document_owner_only_authenticated_service(api_client, user, service):
+    expected_document_id = "485af718-d9d1-46b9-ad7b-33ea054126e3"
+
+    DocumentFactory(id=expected_document_id, service=service, user=user)
+    # Document for the same user but different service
+    DocumentFactory(user=user)
+
+    # TODO: This has to be removed once we integrate JWT authentication.
+    #  This is a temporary workaround so that an authenticated user has an
+    #  associated Service, as required by the ServiceMiddleware.
+    #  The permissions are explicitly removed to simulate that user only belongs
+    #  to the Service but has no staff permissions
+    group = GroupFactory(name=service.name)
+    user.groups.add(group)
+    remove_perm(ServicePermissions.VIEW_DOCUMENTS.value, group, service)
 
     api_client.force_login(user=user)
     response = api_client.get(reverse("documents-list"))
@@ -92,14 +130,7 @@ def test_list_document_no_service(api_client, user):
     api_client.force_login(user=user)
     response = api_client.get(reverse("documents-list"))
 
-    assert response.status_code == status.HTTP_200_OK
-
-    body = response.json()
-
-    results = body.get("results", [])
-
-    assert body.get("count") == 0
-    assert len(results) == 0
+    assert response.status_code == status.HTTP_403_FORBIDDEN
 
 
 @pytest.mark.parametrize(

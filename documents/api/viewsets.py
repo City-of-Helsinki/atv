@@ -10,7 +10,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework_extensions.mixins import NestedViewSetMixin
 
-from atv.decorators import login_required
+from atv.decorators import login_required, service_required
 from atv.exceptions import ValidationError
 from audit_log.viewsets import AuditLoggingModelViewSet
 from services.enums import ServicePermissions
@@ -136,11 +136,12 @@ class DocumentViewSet(AuditLoggingModelViewSet):
         if not user.has_perm(
             ServicePermissions.VIEW_DOCUMENTS.value, qs_filters.get("service")
         ):
-            qs_filters = {"user_id": user.id}
+            qs_filters["user_id"] = user.id
 
         return Document.objects.filter(**qs_filters)
 
     @login_required()
+    @service_required()
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
 

@@ -1,9 +1,7 @@
 from functools import wraps
 
-from django.utils.translation import ugettext_lazy as _
 from rest_framework.exceptions import PermissionDenied
 
-from atv.exceptions import ServiceNotIdentifiedError
 from services.enums import ServicePermissions
 from services.utils import get_service_from_service_key
 
@@ -28,28 +26,20 @@ def _use_request_tests(*test_funcs):
 
 def _require_authenticated(request):
     if not request.user.is_authenticated:
-        raise PermissionDenied(_("You do not have permission to perform this action."))
+        raise PermissionDenied()
 
 
 def _require_service(request):
-    if not request.service:
-        raise ServiceNotIdentifiedError("No service identified")
+    if not request.user.is_superuser and not request.service:
+        raise PermissionDenied()
 
 
 def _require_service_permission(permission_name):
     def permission_checker(request):
-        if not request.user.is_superuser:
-            try:
-                _require_service(request)
-            except ServiceNotIdentifiedError:
-                raise PermissionDenied(
-                    _("You do not have permission to perform this action.")
-                )
+        _require_service(request)
 
         if not request.user.has_perm(permission_name, request.service):
-            raise PermissionDenied(
-                _("You do not have permission to perform this action.")
-            )
+            raise PermissionDenied()
 
     return permission_checker
 
@@ -76,6 +66,14 @@ def login_required():
     @_use_request_tests(_require_authenticated)
     def check_permission():
         """Decorator for checking that the user is logged in"""
+
+    return check_permission
+
+
+def service_required():
+    @_use_request_tests(_require_service)
+    def check_permission():
+        """Decorator for checking that the service is present in the request"""
 
     return check_permission
 
