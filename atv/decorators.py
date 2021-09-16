@@ -1,12 +1,11 @@
 from functools import wraps
 
-from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
-from rest_framework.exceptions import NotAuthenticated, PermissionDenied
+from rest_framework.exceptions import PermissionDenied
 
-from atv.exceptions import MissingServiceAPIKey, ServiceNotIdentifiedError
+from atv.exceptions import ServiceNotIdentifiedError
 from services.enums import ServicePermissions
-from services.models import Service, ServiceAPIKey
+from services.utils import get_service_from_service_key
 
 
 def _use_request_tests(*test_funcs):
@@ -91,21 +90,8 @@ def service_api_key_required():
     def wrapper(function):
         @wraps(function)
         def service_setter(_viewset, request, *args, **kwargs):
-            try:
-                key = request.META.get(settings.API_KEY_CUSTOM_HEADER)
-                if not key:
-                    raise MissingServiceAPIKey()
-
-                # get_from_key also checks that the key is still valid
-                service_key = ServiceAPIKey.objects.get_from_key(key)
-                service = service_key.service
-                request.service = service
-            except (
-                ServiceAPIKey.DoesNotExist,
-                Service.DoesNotExist,
-                MissingServiceAPIKey,
-            ):
-                raise NotAuthenticated()
+            service = get_service_from_service_key(request)
+            request.service = service
 
             return function(_viewset, request, *args, **kwargs)
 

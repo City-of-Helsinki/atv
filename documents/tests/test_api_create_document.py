@@ -3,11 +3,13 @@ import uuid
 
 import pytest
 from django.conf import settings
+from django.contrib.auth import get_user
 from django.core.files.uploadedfile import SimpleUploadedFile
 from freezegun import freeze_time
 from rest_framework import status
 from rest_framework.reverse import reverse
 
+from atv.tests.factories import GroupFactory
 from audit_log.models import AuditLogEntry
 from documents.models import Attachment, Document
 
@@ -33,7 +35,7 @@ VALID_DOCUMENT_DATA = {
 
 
 @freeze_time("2021-06-30T12:00:00+03:00")
-def test_create_document(service_api_client, snapshot):
+def test_create_anonymous_document(service_api_client, snapshot):
     data = {
         **VALID_DOCUMENT_DATA,
         "attachments": [
@@ -46,8 +48,6 @@ def test_create_document(service_api_client, snapshot):
         ],
     }
 
-    # Patch the document auto-generated UUID to always have the same value
-    # to have deterministic tests
     response = service_api_client.post(
         reverse("documents-list"), data, format="multipart"
     )
@@ -58,6 +58,7 @@ def test_create_document(service_api_client, snapshot):
 
     document = Document.objects.first()
     assert document.attachments.count() == 2
+    assert document.user is None
     attachment1 = document.attachments.first()
     attachment2 = document.attachments.last()
 
@@ -84,6 +85,44 @@ def test_create_document(service_api_client, snapshot):
         },
     ]
     snapshot.assert_match(body)
+
+
+@freeze_time("2021-06-30T12:00:00+03:00")
+def test_create_authenticated_document(user_api_client, service, snapshot):
+    user = get_user(user_api_client)
+
+    # TODO: This has to be removed once we integrate JWT authentication.
+    #  This is a temporary workaround so that an authenticated user has an
+    #  associated Service, as required by the ServiceMiddleware.
+    group = GroupFactory(name=service.name)
+    user.groups.add(group)
+
+    response = user_api_client.post(
+        reverse("documents-list"), VALID_DOCUMENT_DATA, format="multipart"
+    )
+
+    assert response.status_code == status.HTTP_201_CREATED
+    assert Document.objects.count() == 1
+
+    document = Document.objects.first()
+    assert document.user == user
+    assert document.service == service
+
+    body = response.json()
+    assert uuid.UUID(body.pop("id")) == document.id
+    assert body.pop("user_id") == str(user.uuid)
+    snapshot.assert_match(body)
+
+    response = user_api_client.get(reverse("documents-detail", args=[document.id]))
+    assert response.status_code == status.HTTP_200_OK
+
+
+@freeze_time("2021-06-30T12:00:00+03:00")
+def test_create_anonymous_document_no_service(api_client, snapshot):
+    response = api_client.post(
+        reverse("documents-list"), VALID_DOCUMENT_DATA, format="multipart"
+    )
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
 
 @pytest.mark.parametrize(
