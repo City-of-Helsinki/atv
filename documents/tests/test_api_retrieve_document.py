@@ -8,14 +8,16 @@ from rest_framework.reverse import reverse
 from atv.tests.factories import GroupFactory
 from documents.tests.factories import DocumentFactory
 from services.enums import ServicePermissions
+from services.tests.utils import get_user_service_client
 
 
 @freeze_time("2020-06-01T00:00:00Z")
-def test_list_document_service_user(api_client, user, service, snapshot):
+def test_list_document_service_user(user, service, snapshot):
+    api_client = get_user_service_client(user, service)
     expected_document_id = "485af718-d9d1-46b9-ad7b-33ea054126e3"
     expected_user_id = "66d0bfd0-308c-484d-aa22-301512899ae3"
 
-    group = GroupFactory(name=service.name)
+    group = GroupFactory()
     user.groups.add(group)
     assign_perm(ServicePermissions.VIEW_DOCUMENTS.value, group, service)
 
@@ -28,7 +30,6 @@ def test_list_document_service_user(api_client, user, service, snapshot):
         transaction_id="bd3fd958-cfeb-4ab1-bea4-5c058e8fee5c",
     )
 
-    api_client.force_login(user=user)
     response = api_client.get(reverse("documents-detail", args=[document.id]))
 
     assert response.status_code == status.HTTP_200_OK
@@ -39,10 +40,11 @@ def test_list_document_service_user(api_client, user, service, snapshot):
 
 
 @freeze_time("2020-06-01T00:00:00Z")
-def test_retrieve_document_owner(api_client, user, service, snapshot):
+def test_retrieve_document_owner(user, service, snapshot):
+    api_client = get_user_service_client(user, service)
     expected_document_id = "485af718-d9d1-46b9-ad7b-33ea054126e3"
 
-    group = GroupFactory(name=service.name)
+    group = GroupFactory()
     user.groups.add(group)
 
     document = DocumentFactory(
@@ -54,7 +56,6 @@ def test_retrieve_document_owner(api_client, user, service, snapshot):
         transaction_id="bd3fd958-cfeb-4ab1-bea4-5c058e8fee5c",
     )
 
-    api_client.force_login(user=user)
     response = api_client.get(reverse("documents-detail", args=[document.id]))
 
     assert response.status_code == status.HTTP_200_OK

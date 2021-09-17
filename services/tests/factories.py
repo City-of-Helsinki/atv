@@ -1,6 +1,6 @@
 import factory
 
-from services.models import Service, ServiceAPIKey
+from services.models import Service, ServiceAPIKey, ServiceClientId
 
 
 class ServiceFactory(factory.django.DjangoModelFactory):
@@ -27,3 +27,11 @@ class ServiceAPIKeyFactory(factory.django.DjangoModelFactory):
         manager = cls._get_manager(model_class)
         obj, key = manager.create_key(*args, **kwargs)
         return obj
+
+
+class ServiceClientIdFactory(factory.django.DjangoModelFactory):
+    service = factory.SubFactory(ServiceFactory)
+    client_id = factory.Sequence(lambda n: "https://api.hel.fi/auth/sc-%d" % n)
+
+    class Meta:
+        model = ServiceClientId

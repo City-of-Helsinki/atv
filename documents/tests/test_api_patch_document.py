@@ -4,7 +4,6 @@ from uuid import uuid4
 import pytest
 from dateutil.relativedelta import relativedelta
 from dateutil.utils import today
-from django.contrib.auth import get_user
 from django.core.files.uploadedfile import SimpleUploadedFile
 from freezegun import freeze_time
 from guardian.shortcuts import assign_perm
@@ -16,6 +15,7 @@ from audit_log.models import AuditLogEntry
 from documents.models import Document
 from documents.tests.factories import DocumentFactory
 from services.enums import ServicePermissions
+from services.tests.utils import get_user_service_client
 from utils.tests import assert_in_errors
 
 VALID_DOCUMENT_DATA = {
@@ -43,19 +43,15 @@ VALID_DOCUMENT_DATA = {
 
 
 @freeze_time("2021-06-30T12:00:00+03:00")
-def test_update_document_owner(
-    user_api_client,
-    snapshot,
-):
-    user = get_user(user_api_client)
-
+def test_update_document_owner(user, snapshot):
     document = DocumentFactory(
         id="2d2b7a36-a306-4e35-990f-13aea04263ff",
         draft=True,
         user=user,
     )
-    assert Document.objects.count() == 1
     assert document.attachments.count() == 0
+
+    api_client = get_user_service_client(user, document.service)
 
     data = {
         **VALID_DOCUMENT_DATA,
@@ -66,7 +62,7 @@ def test_update_document_owner(
         ],
     }
 
-    response = user_api_client.patch(
+    response = api_client.patch(
         reverse("documents-detail", args=[document.id]),
         data,
         format="multipart",
@@ -98,41 +94,38 @@ def test_update_document_owner(
 
 @freeze_time("2021-06-30T12:00:00+03:00")
 def test_update_document_owner_someone_elses_document(
-    user_api_client,
+    user,
 ):
     document = DocumentFactory(
         id="2d2b7a36-a306-4e35-990f-13aea04263ff",
         draft=True,
     )
-
+    api_client = get_user_service_client(user, document.service)
     # Check that the owner of the document is different than the one
     # making the request
-    assert document.user != get_user(user_api_client)
+    assert document.user != user
 
-    response = user_api_client.patch(
+    response = api_client.patch(
         reverse("documents-detail", args=[document.id]),
         {},  # No need to have any actual data
     )
 
     body = response.json()
 
-    assert response.status_code == status.HTTP_403_FORBIDDEN
-    assert (
-        body.get("detail", "") == "You do not have permission to perform this action."
-    )
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+    assert body.get("detail", "") == "Not found."
 
 
 @freeze_time("2021-06-30T12:00:00+03:00")
-def test_update_document_owner_non_draft(
-    user_api_client,
-):
+def test_update_document_owner_non_draft(user):
     document = DocumentFactory(
         id="2d2b7a36-a306-4e35-990f-13aea04263ff",
         draft=False,
-        user=get_user(user_api_client),
+        user=user,
     )
+    api_client = get_user_service_client(user, document.service)
 
-    response = user_api_client.patch(
+    response = api_client.patch(
         reverse("documents-detail", args=[document.id]),
         {},  # No need to have any actual data
     )
@@ -144,17 +137,16 @@ def test_update_document_owner_non_draft(
 
 
 @freeze_time("2021-06-30T12:00:00")
-def test_update_document_owner_after_lock_date(
-    user_api_client,
-):
+def test_update_document_owner_after_lock_date(user):
     document = DocumentFactory(
         id="2d2b7a36-a306-4e35-990f-13aea04263ff",
         locked_after=today() - relativedelta(days=1),
         draft=True,
-        user=get_user(user_api_client),
+        user=user,
     )
+    api_client = get_user_service_client(user, document.service)
 
-    response = user_api_client.patch(
+    response = api_client.patch(
         reverse("documents-detail", args=[document.id]),
         {},  # No need to have any actual data
     )
@@ -169,13 +161,9 @@ def test_update_document_owner_after_lock_date(
 
 
 @freeze_time("2021-06-30T12:00:00+03:00")
-def test_update_document_staff(
-    user_api_client,
-    service,
-    snapshot,
-):
-    group = GroupFactory(name=service.name)
-    user = get_user(user_api_client)
+def test_update_document_staff(user, service, snapshot):
+    api_client = get_user_service_client(user, service)
+    group = GroupFactory()
     assign_perm(ServicePermissions.MANAGE_DOCUMENTS.value, group, service)
     user.groups.add(group)
 
@@ -189,10 +177,7 @@ def test_update_document_staff(
     data = {**VALID_DOCUMENT_DATA}
     data.pop("content")
 
-    response = user_api_client.patch(
-        reverse("documents-detail", args=[document.id]),
-        data,
-    )
+    response = api_client.patch(reverse("documents-detail", args=[document.id]), data)
 
     assert Document.objects.count() == 1
 
@@ -204,13 +189,9 @@ def test_update_document_staff(
 
 
 @freeze_time("2021-06-30T12:00:00+03:00")
-def test_update_document_staff_non_draft(
-    user_api_client,
-    service,
-    snapshot,
-):
-    group = GroupFactory(name=service.name)
-    user = get_user(user_api_client)
+def test_update_document_staff_non_draft(user, service, snapshot):
+    api_client = get_user_service_client(user, service)
+    group = GroupFactory()
     assign_perm(ServicePermissions.MANAGE_DOCUMENTS.value, group, service)
     user.groups.add(group)
 
@@ -223,7 +204,7 @@ def test_update_document_staff_non_draft(
     data = {**VALID_DOCUMENT_DATA}
     data.pop("content")
 
-    response = user_api_client.patch(
+    response = api_client.patch(
         reverse("documents-detail", args=[document.id]),
         data,
     )
@@ -236,12 +217,9 @@ def test_update_document_staff_non_draft(
 
 
 @freeze_time("2021-06-30T12:00:00")
-def test_update_document_staff_after_lock_date(
-    user_api_client,
-    service,
-):
-    group = GroupFactory(name=service.name)
-    user = get_user(user_api_client)
+def test_update_document_staff_after_lock_date(user, service):
+    api_client = get_user_service_client(user, service)
+    group = GroupFactory()
     assign_perm(ServicePermissions.MANAGE_DOCUMENTS.value, group, service)
     user.groups.add(group)
 
@@ -251,7 +229,7 @@ def test_update_document_staff_after_lock_date(
         service=service,
     )
 
-    response = user_api_client.patch(
+    response = api_client.patch(
         reverse("documents-detail", args=[document.id]),
         {},  # No need to have any actual data
     )
@@ -263,12 +241,9 @@ def test_update_document_staff_after_lock_date(
 
 
 @freeze_time("2021-06-30T12:00:00")
-def test_update_document_staff_another_service(
-    user_api_client,
-    service,
-):
-    group = GroupFactory(name=service.name)
-    user = get_user(user_api_client)
+def test_update_document_staff_another_service(user, service):
+    api_client = get_user_service_client(user, service)
+    group = GroupFactory()
     assign_perm(ServicePermissions.MANAGE_DOCUMENTS.value, group, service)
     user.groups.add(group)
 
@@ -276,26 +251,21 @@ def test_update_document_staff_another_service(
         id="2d2b7a36-a306-4e35-990f-13aea04263ff",
     )
 
-    response = user_api_client.patch(
+    response = api_client.patch(
         reverse("documents-detail", args=[document.id]),
         {},  # No need to have any actual data
     )
 
     body = response.json()
 
-    assert response.status_code == status.HTTP_403_FORBIDDEN
-    assert (
-        body.get("detail", "") == "You do not have permission to perform this action."
-    )
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+    assert body.get("detail", "") == "Not found."
 
 
 @freeze_time("2021-06-30T12:00:00")
-def test_update_document_staff_update_content_fails(
-    user_api_client,
-    service,
-):
-    group = GroupFactory(name=service.name)
-    user = get_user(user_api_client)
+def test_update_document_staff_update_content_fails(user, service):
+    api_client = get_user_service_client(user, service)
+    group = GroupFactory()
     assign_perm(ServicePermissions.MANAGE_DOCUMENTS.value, group, service)
     user.groups.add(group)
 
@@ -304,7 +274,7 @@ def test_update_document_staff_update_content_fails(
         service=service,
     )
 
-    response = user_api_client.patch(
+    response = api_client.patch(
         reverse("documents-detail", args=[document.id]),
         {"content": json.dumps({"value": "secret stuff"})},
     )
@@ -316,12 +286,9 @@ def test_update_document_staff_update_content_fails(
 
 
 @freeze_time("2021-06-30T12:00:00")
-def test_update_document_staff_update_attachments_fails(
-    user_api_client,
-    service,
-):
-    group = GroupFactory(name=service.name)
-    user = get_user(user_api_client)
+def test_update_document_staff_update_attachments_fails(user, service):
+    api_client = get_user_service_client(user, service)
+    group = GroupFactory()
     assign_perm(ServicePermissions.MANAGE_DOCUMENTS.value, group, service)
     user.groups.add(group)
 
@@ -330,7 +297,7 @@ def test_update_document_staff_update_attachments_fails(
         service=service,
     )
 
-    response = user_api_client.patch(
+    response = api_client.patch(
         reverse("documents-detail", args=[document.id]),
         {
             "attachments": [
@@ -361,15 +328,13 @@ def test_update_document_not_found(superuser_api_client):
 
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
-    assert body.get("detail", "") == "Document matching query does not exist."
+    assert body.get("detail", "") == "Not found."
 
 
 @pytest.mark.parametrize("attachments", [0, 1, 2])
-def test_audit_log_is_created_when_patching(user_api_client, attachments):
-    user = get_user(user_api_client)
-
+def test_audit_log_is_created_when_patching(user, attachments):
     document = DocumentFactory(draft=True, user=user)
-
+    api_client = get_user_service_client(user, document.service)
     data = {**VALID_DOCUMENT_DATA}
     data.pop("content")
 
@@ -381,7 +346,7 @@ def test_audit_log_is_created_when_patching(user_api_client, attachments):
             for i in range(attachments)
         ]
 
-    user_api_client.patch(reverse("documents-detail", args=[document.id]), data)
+    api_client.patch(reverse("documents-detail", args=[document.id]), data)
 
     assert (
         AuditLogEntry.objects.filter(

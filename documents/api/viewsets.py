@@ -4,7 +4,7 @@ from django.utils.translation import gettext_lazy as _
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import filters, status
-from rest_framework.exceptions import MethodNotAllowed, NotFound, PermissionDenied
+from rest_framework.exceptions import MethodNotAllowed, PermissionDenied
 from rest_framework.parsers import MultiPartParser
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
@@ -14,7 +14,7 @@ from atv.decorators import login_required, service_required
 from atv.exceptions import ValidationError
 from audit_log.viewsets import AuditLoggingModelViewSet
 from services.enums import ServicePermissions
-from services.utils import get_service_from_service_key
+from services.utils import get_service_from_request
 
 from ..models import Attachment, Document
 from ..serializers import (
@@ -56,17 +56,16 @@ class AttachmentViewSet(AuditLoggingModelViewSet, NestedViewSetMixin):
         if user.is_anonymous:
             return Attachment.objects.none()
 
+        service = get_service_from_request(self.request)
+
         qs_filters = {}
 
         # Filter the Documents only for the user's Service
-        if service := self.request.service:
-            qs_filters["document__service"] = service
+        qs_filters["document__service"] = service
 
         # If the user doesn't have permissions to view that Service,
         # only show the Documents that belong to them
-        if not user.has_perm(
-            ServicePermissions.VIEW_ATTACHMENTS.value, qs_filters.get("service")
-        ):
+        if not user.has_perm(ServicePermissions.VIEW_ATTACHMENTS.value, service):
             qs_filters = {"document__user_id": user.id}
 
         return Attachment.objects.filter(**qs_filters)
@@ -125,17 +124,20 @@ class DocumentViewSet(AuditLoggingModelViewSet):
         if user.is_anonymous:
             return Document.objects.none()
 
+        service = get_service_from_request(self.request)
+
         qs_filters = {}
 
         # Filter the Documents only for the user's Service
-        if service := self.request.service:
-            qs_filters["service"] = service
+        qs_filters["service"] = service
 
         # If the user doesn't have permissions to view that Service,
         # only show the Documents that belong to them
-        if not user.has_perm(
-            ServicePermissions.VIEW_DOCUMENTS.value, qs_filters.get("service")
-        ):
+        staff_can_view = user.has_perm(ServicePermissions.VIEW_DOCUMENTS.value, service)
+        staff_can_manage = user.has_perm(
+            ServicePermissions.MANAGE_DOCUMENTS.value, service
+        )
+        if not staff_can_view and not staff_can_manage:
             qs_filters["user_id"] = user.id
 
         return Document.objects.filter(**qs_filters)
@@ -152,15 +154,8 @@ class DocumentViewSet(AuditLoggingModelViewSet):
     @transaction.atomic()
     @extend_schema(request=CreateAnonymousDocumentSerializer)
     def create(self, request, *args, **kwargs):
-        user = request.user
-        service = request.service
-
-        # If the user is not authenticated, try to create the Document
-        # anonymously, getting the service from the Service API key
-        if not request.user.is_authenticated:
-            # If no service is found, it will raise an exception
-            service = get_service_from_service_key(request)
-            user = None
+        user = request.user if request.user.is_authenticated else None
+        service = get_service_from_request(request)
 
         data = request.data
 
@@ -183,10 +178,7 @@ class DocumentViewSet(AuditLoggingModelViewSet):
     @transaction.atomic()
     @login_required()
     def partial_update(self, request, pk, *args, **kwargs):
-        try:
-            document = Document.objects.get(pk=pk)
-        except Document.DoesNotExist as e:
-            raise NotFound(e)
+        document = self.get_object()
 
         # The user is the owner of the document
         is_owner = request.user == document.user
