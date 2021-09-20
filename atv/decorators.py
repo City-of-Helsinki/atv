@@ -3,7 +3,7 @@ from functools import wraps
 from rest_framework.exceptions import PermissionDenied
 
 from services.enums import ServicePermissions
-from services.utils import get_service_from_service_key
+from services.utils import get_service_from_request, get_service_from_service_key
 
 
 def _use_request_tests(*test_funcs):
@@ -30,7 +30,9 @@ def _require_authenticated(request):
 
 
 def _require_service(request):
-    if not request.user.is_superuser and not request.service:
+    service = get_service_from_request(request, raise_exception=False)
+
+    if not request.user.is_superuser and not service:
         raise PermissionDenied()
 
 

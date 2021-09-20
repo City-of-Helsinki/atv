@@ -7,6 +7,7 @@ from rest_framework.reverse import reverse
 
 from atv.tests.factories import GroupFactory
 from services.enums import ServicePermissions
+from services.tests.utils import get_user_service_client
 
 
 def test_retrieve_attachment_superuser(superuser_api_client, attachment):
@@ -25,14 +26,18 @@ def test_retrieve_attachment_superuser(superuser_api_client, attachment):
     ) == 'attachment; filename="{}"'.format(attachment.filename)
 
 
-def test_retrieve_attachment_service_staff(api_client, attachment):
-    group = GroupFactory(name=attachment.document.service.name)
-    attachment.document.user.groups.add(group)
+def test_retrieve_attachment_service_staff(user_factory, attachment):
+    user = user_factory()
+    group = GroupFactory()
+    user.groups.add(group)
     assign_perm(
-        ServicePermissions.VIEW_DOCUMENTS.value, group, attachment.document.service
+        ServicePermissions.VIEW_ATTACHMENTS.value, group, attachment.document.service
     )
+    # Check that the owner of the document is different than the one
+    # making the request
+    assert attachment.document.user != user
 
-    api_client.force_login(user=attachment.document.user)
+    api_client = get_user_service_client(user, attachment.document.service)
 
     response = api_client.get(
         reverse(
@@ -49,9 +54,10 @@ def test_retrieve_attachment_service_staff(api_client, attachment):
     ) == 'attachment; filename="{}"'.format(attachment.filename)
 
 
-def test_retrieve_attachment_owner(api_client, attachment):
-    api_client.force_login(user=attachment.document.user)
-
+def test_retrieve_attachment_owner(attachment):
+    api_client = get_user_service_client(
+        attachment.document.user, attachment.document.service
+    )
     response = api_client.get(
         reverse(
             "documents-attachments-detail", args=[attachment.document.id, attachment.id]

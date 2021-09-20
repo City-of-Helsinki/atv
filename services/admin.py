@@ -6,13 +6,30 @@ from guardian.admin import GuardedModelAdmin
 from rest_framework_api_key.admin import APIKeyModelAdmin
 from rest_framework_api_key.models import APIKey
 
-from .models import Service, ServiceAPIKey
+from .models import Service, ServiceAPIKey, ServiceClientId
+
+
+@admin.register(ServiceClientId)
+class ServiceClientIdAdmin(admin.ModelAdmin):
+    list_display = ("get_service_name", "client_id")
+    search_fields = ("service__name", "client_id")
+    autocomplete_fields = ("service",)
+
+    @admin.display(description=_("service"), ordering="-service__name")
+    def get_service_name(self, obj):
+        return obj.service.name
+
+
+class ServiceClientIdInline(admin.StackedInline):
+    model = ServiceClientId
+    extra = 0
 
 
 @admin.register(Service)
 class ServiceAdmin(GuardedModelAdmin):
     list_display = ("name", "short_description", "api_key_count")
     search_fields = ("name",)
+    inlines = (ServiceClientIdInline,)
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)

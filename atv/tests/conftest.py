@@ -12,13 +12,14 @@ def api_client():
 
 @pytest.fixture
 def user_api_client(api_client, user):
-    api_client.force_login(user=user)
+    api_client.force_authenticate(user=user)
+    api_client.user = user
     return api_client
 
 
 @pytest.fixture
 def superuser_api_client(api_client, superuser):
-    api_client.force_login(user=superuser)
+    api_client.force_authenticate(user=superuser)
     return api_client
 
 

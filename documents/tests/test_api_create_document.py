@@ -3,15 +3,14 @@ import uuid
 
 import pytest
 from django.conf import settings
-from django.contrib.auth import get_user
 from django.core.files.uploadedfile import SimpleUploadedFile
 from freezegun import freeze_time
 from rest_framework import status
 from rest_framework.reverse import reverse
 
-from atv.tests.factories import GroupFactory
 from audit_log.models import AuditLogEntry
 from documents.models import Attachment, Document
+from services.tests.utils import get_user_service_client
 
 VALID_DOCUMENT_DATA = {
     "status": "handled",
@@ -88,16 +87,10 @@ def test_create_anonymous_document(service_api_client, snapshot):
 
 
 @freeze_time("2021-06-30T12:00:00+03:00")
-def test_create_authenticated_document(user_api_client, service, snapshot):
-    user = get_user(user_api_client)
+def test_create_authenticated_document(user, service, snapshot):
+    api_client = get_user_service_client(user, service)
 
-    # TODO: This has to be removed once we integrate JWT authentication.
-    #  This is a temporary workaround so that an authenticated user has an
-    #  associated Service, as required by the ServiceMiddleware.
-    group = GroupFactory(name=service.name)
-    user.groups.add(group)
-
-    response = user_api_client.post(
+    response = api_client.post(
         reverse("documents-list"), VALID_DOCUMENT_DATA, format="multipart"
     )
 
@@ -113,7 +106,7 @@ def test_create_authenticated_document(user_api_client, service, snapshot):
     assert body.pop("user_id") == str(user.uuid)
     snapshot.assert_match(body)
 
-    response = user_api_client.get(reverse("documents-detail", args=[document.id]))
+    response = api_client.get(reverse("documents-detail", args=[document.id]))
     assert response.status_code == status.HTTP_200_OK
 
 
