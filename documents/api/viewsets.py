@@ -141,6 +141,10 @@ class DocumentViewSet(AuditLoggingModelViewSet):
         return Document.objects.filter(**qs_filters)
 
     @login_required()
+    def retrieve(self, request, *args, **kwargs):
+        return super().retrieve(request, *args, **kwargs)
+
+    @login_required()
     @service_required()
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
