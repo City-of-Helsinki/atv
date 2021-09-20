@@ -1,8 +1,7 @@
 from django.conf import settings
-from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 
-from atv.exceptions import ValidationError
+from atv.exceptions import MaximumFileSizeExceededException
 from utils.files import b_to_mb
 
 from ..models import Attachment
@@ -45,10 +44,6 @@ class CreateAttachmentSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
         """Validate that the uploaded files are smaller than settings.MAX_FILE_SIZE."""
         if (size := attrs.get("file").size) > settings.MAX_FILE_SIZE:
-            raise ValidationError(
-                _("Cannot upload files larger than {size_mb} MB").format(
-                    size_mb=b_to_mb(size)
-                )
-            )
+            raise MaximumFileSizeExceededException(file_size=b_to_mb(size))
 
         return attrs

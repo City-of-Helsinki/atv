@@ -11,7 +11,7 @@ from rest_framework.response import Response
 from rest_framework_extensions.mixins import NestedViewSetMixin
 
 from atv.decorators import login_required, service_required
-from atv.exceptions import ValidationError
+from atv.exceptions import DocumentLockedException
 from audit_log.viewsets import AuditLoggingModelViewSet
 from services.enums import ServicePermissions
 from services.utils import get_service_from_request
@@ -194,12 +194,10 @@ class DocumentViewSet(AuditLoggingModelViewSet):
             )
 
         if is_owner and not document.draft:
-            raise ValidationError(
-                _("You cannot modify a document which is not a draft")
-            )
+            raise DocumentLockedException()
 
         if is_staff and ("content" in request.data or "attachments" in request.data):
-            raise ValidationError(_("You cannot modify the contents of the document"))
+            raise PermissionDenied(_("You cannot modify the contents of the document"))
 
         attachments = request.FILES.getlist("attachments", [])
 

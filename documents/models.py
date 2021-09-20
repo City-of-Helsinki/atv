@@ -1,16 +1,15 @@
 from django.conf import settings
 from django.contrib.postgres.indexes import GinIndex
-from django.core.exceptions import ValidationError
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from encrypted_fields import fields
 
+from atv.exceptions import MaximumFileSizeExceededException
 from documents.utils import get_attachment_file_path
 from documents.validators import BusinessIDValidator
 from services.models import Service
-from utils.files import b_to_mb
 from utils.models import TimestampedModel, UUIDModel
 
 
@@ -58,11 +57,7 @@ class Attachment(TimestampedModel):
 
     def clean(self):
         if self.file.size > settings.MAX_FILE_SIZE:
-            raise ValidationError(
-                _("Cannot upload files larger than {size_mb} MB").format(
-                    size_mb=b_to_mb(self.file.size)
-                )
-            )
+            raise MaximumFileSizeExceededException()
 
     def save(self, *args, **kwargs):
         self.size = self.file.size

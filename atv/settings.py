@@ -6,7 +6,7 @@ import sentry_sdk
 from django.core.exceptions import ImproperlyConfigured
 from sentry_sdk.integrations.django import DjangoIntegration
 
-from atv.exceptions import sentry_before_send
+from utils.exceptions import sentry_before_send
 
 checkout_dir = environ.Path(__file__) - 2
 assert os.path.exists(checkout_dir("manage.py"))
@@ -184,6 +184,7 @@ REST_FRAMEWORK = {
     "ORDERING_PARAM": "sort",
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     "DEFAULT_PARENT_LOOKUP_KWARG_NAME_PREFIX": "",
+    "EXCEPTION_HANDLER": "utils.exceptions.custom_exception_handler",
 }
 
 ATTACHMENT_MEDIA_DIR = "attachments"

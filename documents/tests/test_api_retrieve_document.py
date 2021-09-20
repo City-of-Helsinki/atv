@@ -9,6 +9,7 @@ from atv.tests.factories import GroupFactory
 from documents.tests.factories import DocumentFactory
 from services.enums import ServicePermissions
 from services.tests.utils import get_user_service_client
+from utils.exceptions import get_error_response
 
 
 @freeze_time("2020-06-01T00:00:00Z")
@@ -92,6 +93,7 @@ def test_list_document_no_permissions(api_client):
 
     body = response.json()
     assert response.status_code == status.HTTP_403_FORBIDDEN
-    assert (
-        body.get("detail", "") == "You do not have permission to perform this action."
+    assert body == get_error_response(
+        "PERMISSION_DENIED",
+        "You do not have permission to perform this action.",
     )

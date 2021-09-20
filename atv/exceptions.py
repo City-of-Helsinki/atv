@@ -1,4 +1,9 @@
-from rest_framework import serializers
+from django.conf import settings
+from django.utils.translation import gettext_lazy as _
+from rest_framework import status
+from rest_framework.exceptions import APIException
+
+from utils.files import b_to_mb
 
 
 class ATVError(Exception):
@@ -15,23 +20,38 @@ class MissingServiceAPIKey(ATVError):
     """The request required a Service API Key but it was not present on the request"""
 
 
-class ValidationError(serializers.ValidationError):
-    def __init__(self, detail=None, code=None):
-        if isinstance(detail, tuple):
-            detail = {"errors": list(detail)}
-        elif not isinstance(detail, dict) and not isinstance(detail, list):
-            detail = {"errors": [detail]}
+class MaximumFileCountExceededException(APIException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    default_code = "MAXIMUM_FILE_COUNT_EXCEEDED"
+    default_detail = (
+        _("File upload is limited to {max_file_upload_allowed}").format(
+            max_file_upload_allowed=settings.MAX_FILE_UPLOAD_ALLOWED
+        ),
+    )
 
-        super().__init__(detail, code)
+
+class MaximumFileSizeExceededException(APIException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    default_code = "MAXIMUM_FILE_SIZE_EXCEEDED"
+    default_detail = _("Cannot upload files larger than {size_mb} Mb")
+
+    def __init__(self, detail=None, code=None, file_size=None):
+        detail = detail or self.default_detail.format(
+            size_mb=b_to_mb(settings.MAX_FILE_SIZE)
+        )
+        if file_size:
+            detail = f"{detail}: {file_size} Mb"
+
+        super().__init__(detail=detail, code=code or self.default_code)
 
 
-def sentry_before_send(event, hint):
-    """
-    Filter internal exceptions that should not be logged to Sentry
-    https://docs.sentry.io/platforms/python/guides/django/configuration/filtering/
-    """
-    if "exc_info" in hint:
-        exc_type, exc_value, tb = hint["exc_info"]
-        if isinstance(exc_value, ATVError):
-            return None
-    return event
+class DocumentLockedException(APIException):
+    status_code = status.HTTP_403_FORBIDDEN
+    default_code = "DOCUMENT_LOCKED"
+    default_detail = _("Unable to modify document - it's no longer a draft.")
+
+
+class InvalidFieldException(APIException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    default_code = "INVALID_FIELD"
+    default_detail = _("Got invalid input fields")
