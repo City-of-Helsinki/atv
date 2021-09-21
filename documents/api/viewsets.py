@@ -1,5 +1,6 @@
 from django.db import transaction
 from django.http import FileResponse
+from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema, extend_schema_view
@@ -220,3 +221,32 @@ class DocumentViewSet(AuditLoggingModelViewSet):
             raise MethodNotAllowed(request.method)
 
         return super().update(request, *args, **kwargs)
+
+    @login_required()
+    def destroy(self, request, *args, **kwargs):
+        document = self.get_object()
+
+        # The user is the owner of the document
+        is_owner = request.user == document.user
+
+        # The user is a staff member for the document's service
+        is_staff = request.user.has_perm(
+            ServicePermissions.MANAGE_DOCUMENTS, document.service
+        )
+
+        if not is_owner and not is_staff:
+            raise PermissionDenied(
+                _("You do not have permission to perform this action.")
+            )
+
+        not_draft = is_owner and not document.draft
+        is_locked = document.locked_after and now() >= document.locked_after
+        if is_locked or not_draft:
+            raise DocumentLockedException(
+                # Only pass the locked date if it's after the date
+                locked_after=document.locked_after
+                if is_locked
+                else None
+            )
+
+        return super().destroy(request, *args, **kwargs)

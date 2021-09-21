@@ -387,36 +387,36 @@ document_viewset_docs = {
         examples=[example_document, example_error],
     ),
     # TODO: Not implemented yet
-    "destroy": extend_schema(exclude=True),
-    #     summary="Remove an existing document and its attachments",
-    #     description="Permission to access the document is checked as follows:\n"
-    #     "* Authenticated users are allowed access to the document if they are the owner of the document "
-    #     "or the document is owned by an organization and the user has permission to act "
-    #     "on behalf of that organization.\n\n"
-    #     "The following rules apply:\n"
-    #     "* Drafts may be removed by the owning user or an organization's representative, "
-    #     "if the document is owned by an organization. This is possible even if the `lockedAfter` date has passed, "
-    #     "to enable a user to remove expired applications.",
-    #     responses={
-    #         status.HTTP_204_NO_CONTENT: OpenApiResponse(
-    #             description="The specified Document and its attachments were removed successfully",
-    #         ),
-    #         (status.HTTP_400_BAD_REQUEST, "application/json"): _base_400_response(),
-    #         status.HTTP_401_UNAUTHORIZED: _base_401_response(),
-    #         status.HTTP_403_FORBIDDEN: OpenApiResponse(
-    #             description="The authenticated user lacks the proper permissions to access the document. "
-    #             "Depending on the requested document, "
-    #             "either the user does not belong to the admin group of the service which owns the document, "
-    #             "the user does not own the document or the user does not have permission to act on behalf "
-    #             "of the organization which owns the document."
-    #         ),
-    #         status.HTTP_404_NOT_FOUND: OpenApiResponse(
-    #             description="No document was found with `documentId`.",
-    #         ),
-    #         status.HTTP_500_INTERNAL_SERVER_ERROR: _base_500_response(),
-    #     },
-    #     examples=[example_error],
-    # ),
+    "destroy": extend_schema(
+        summary="Remove an existing document and its attachments",
+        description="Permission to access the document is checked as follows:\n"
+        "* Authenticated users are allowed access to the document if they are the owner of the document "
+        "or the document is owned by an organization and the user has permission to act "
+        "on behalf of that organization.\n\n"
+        "The following rules apply:\n"
+        "* Drafts may be removed by the owning user or an organization's representative, "
+        "if the document is owned by an organization. This is possible even if the `lockedAfter` date has passed, "
+        "to enable a user to remove expired applications.",
+        responses={
+            status.HTTP_204_NO_CONTENT: OpenApiResponse(
+                description="The specified Document and its attachments were removed successfully",
+            ),
+            (status.HTTP_400_BAD_REQUEST, "application/json"): _base_400_response(),
+            status.HTTP_401_UNAUTHORIZED: _base_401_response(),
+            status.HTTP_403_FORBIDDEN: OpenApiResponse(
+                description="The authenticated user lacks the proper permissions to access the document. "
+                "Depending on the requested document, "
+                "either the user does not belong to the admin group of the service which owns the document, "
+                "the user does not own the document or the user does not have permission to act on behalf "
+                "of the organization which owns the document."
+            ),
+            status.HTTP_404_NOT_FOUND: OpenApiResponse(
+                description="No document was found with `documentId`.",
+            ),
+            status.HTTP_500_INTERNAL_SERVER_ERROR: _base_500_response(),
+        },
+        examples=[example_error],
+    ),
     # Not implementing
     "update": extend_schema(exclude=True),
 }
