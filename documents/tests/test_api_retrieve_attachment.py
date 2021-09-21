@@ -8,6 +8,7 @@ from rest_framework.reverse import reverse
 from atv.tests.factories import GroupFactory
 from services.enums import ServicePermissions
 from services.tests.utils import get_user_service_client
+from utils.exceptions import get_error_response
 
 
 def test_retrieve_attachment_superuser(superuser_api_client, attachment):
@@ -88,9 +89,13 @@ def test_retrieve_attachment_document_not_found(superuser_api_client):
         reverse("documents-attachments-detail", args=[uuid4(), random.randint(0, 100)])
     )
 
-    assert response.status_code == status.HTTP_404_NOT_FOUND
     body = response.json()
-    assert body.get("detail", "") == "Not found."
+
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+    assert body == get_error_response(
+        "NOT_FOUND",
+        "No Attachment matches the given query.",
+    )
 
 
 def test_retrieve_attachment_attachment_not_found(superuser_api_client, document):
@@ -100,6 +105,10 @@ def test_retrieve_attachment_attachment_not_found(superuser_api_client, document
         )
     )
 
-    assert response.status_code == status.HTTP_404_NOT_FOUND
     body = response.json()
-    assert body.get("detail", "") == "Not found."
+
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+    assert body == get_error_response(
+        "NOT_FOUND",
+        "No Attachment matches the given query.",
+    )

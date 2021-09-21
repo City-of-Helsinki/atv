@@ -2,8 +2,8 @@ import json
 import uuid
 
 import pytest
-from django.conf import settings
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.test import override_settings
 from freezegun import freeze_time
 from rest_framework import status
 from rest_framework.reverse import reverse
@@ -11,6 +11,7 @@ from rest_framework.reverse import reverse
 from audit_log.models import AuditLogEntry
 from documents.models import Attachment, Document
 from services.tests.utils import get_user_service_client
+from utils.exceptions import get_error_response
 
 VALID_DOCUMENT_DATA = {
     "status": "handled",
@@ -133,7 +134,9 @@ def test_create_document_invalid_json_content(service_api_client, content):
     assert Attachment.objects.count() == 0
 
     body = response.json()
-    assert body == {"content": ["Value must be valid JSON."]}
+    assert body == get_error_response(
+        "INVALID_FIELD", "content: Value must be valid JSON."
+    )
 
 
 def test_create_document_invalid_fields(service_api_client):
@@ -148,9 +151,12 @@ def test_create_document_invalid_fields(service_api_client):
     assert Attachment.objects.count() == 0
 
     body = response.json()
-    assert body == {"errors": ["Got invalid input fields: invalid_field"]}
+    assert body == get_error_response(
+        "INVALID_FIELD", "Got invalid input fields: invalid_field"
+    )
 
 
+@override_settings(MAX_FILE_UPLOAD_ALLOWED=10)
 def test_create_document_many_files(service_api_client):
     data = {
         **VALID_DOCUMENT_DATA,
@@ -171,18 +177,19 @@ def test_create_document_many_files(service_api_client):
     assert Attachment.objects.count() == 0
 
     body = response.json()
-    assert body == {
-        "errors": [f"File upload is limited to {settings.MAX_FILE_UPLOAD_ALLOWED}"]
-    }
+    assert body == get_error_response(
+        "MAXIMUM_FILE_COUNT_EXCEEDED", "File upload is limited to 10"
+    )
 
 
-def test_create_document_file_limit(service_api_client):
+@override_settings(MAX_FILE_SIZE=50)
+def test_create_document_file_limit(service_api_client, settings):
     data = {
         **VALID_DOCUMENT_DATA,
         "attachments": [
             SimpleUploadedFile(
                 "document1.pdf",
-                b"x" * (settings.MAX_FILE_SIZE + 1),
+                b"x" * 10000,
                 content_type="application/pdf",
             )
         ],
@@ -197,7 +204,10 @@ def test_create_document_file_limit(service_api_client):
     assert Attachment.objects.count() == 0
 
     body = response.json()
-    assert body == {"errors": ["Cannot upload files larger than 20.0 MB"]}
+    assert body == get_error_response(
+        "MAXIMUM_FILE_SIZE_EXCEEDED",
+        "Cannot upload files larger than 0.0 Mb: 0.01 Mb",
+    )
 
 
 def test_create_document_no_attachments(service_api_client):

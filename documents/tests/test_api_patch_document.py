@@ -16,7 +16,7 @@ from documents.models import Document
 from documents.tests.factories import DocumentFactory
 from services.enums import ServicePermissions
 from services.tests.utils import get_user_service_client
-from utils.tests import assert_in_errors
+from utils.exceptions import get_error_response
 
 VALID_DOCUMENT_DATA = {
     "status": "handled",
@@ -113,7 +113,10 @@ def test_update_document_owner_someone_elses_document(
     body = response.json()
 
     assert response.status_code == status.HTTP_404_NOT_FOUND
-    assert body.get("detail", "") == "Not found."
+    assert body == get_error_response(
+        "NOT_FOUND",
+        "No Document matches the given query.",
+    )
 
 
 @freeze_time("2021-06-30T12:00:00+03:00")
@@ -132,8 +135,11 @@ def test_update_document_owner_non_draft(user):
 
     body = response.json()
 
-    assert response.status_code == status.HTTP_400_BAD_REQUEST
-    assert_in_errors("You cannot modify a document which is not a draft", body)
+    assert response.status_code == status.HTTP_403_FORBIDDEN
+    assert body == get_error_response(
+        "DOCUMENT_LOCKED",
+        "Unable to modify document - it's no longer a draft.",
+    )
 
 
 @freeze_time("2021-06-30T12:00:00")
@@ -153,8 +159,11 @@ def test_update_document_owner_after_lock_date(user):
 
     body = response.json()
 
-    assert response.status_code == status.HTTP_400_BAD_REQUEST
-    assert_in_errors("Cannot update a Document after it has been locked", body)
+    assert response.status_code == status.HTTP_403_FORBIDDEN
+    assert body == get_error_response(
+        "DOCUMENT_LOCKED",
+        "Unable to modify document - it's no longer a draft.",
+    )
 
 
 # STAFF-RELATED ACTION
@@ -236,8 +245,11 @@ def test_update_document_staff_after_lock_date(user, service):
 
     body = response.json()
 
-    assert response.status_code == status.HTTP_400_BAD_REQUEST
-    assert_in_errors("Cannot update a Document after it has been locked", body)
+    assert response.status_code == status.HTTP_403_FORBIDDEN
+    assert body == get_error_response(
+        "DOCUMENT_LOCKED",
+        "Unable to modify document - it's no longer a draft.",
+    )
 
 
 @freeze_time("2021-06-30T12:00:00")
@@ -259,7 +271,10 @@ def test_update_document_staff_another_service(user, service):
     body = response.json()
 
     assert response.status_code == status.HTTP_404_NOT_FOUND
-    assert body.get("detail", "") == "Not found."
+    assert body == get_error_response(
+        "NOT_FOUND",
+        "No Document matches the given query.",
+    )
 
 
 @freeze_time("2021-06-30T12:00:00")
@@ -281,8 +296,11 @@ def test_update_document_staff_update_content_fails(user, service):
 
     body = response.json()
 
-    assert response.status_code == status.HTTP_400_BAD_REQUEST
-    assert_in_errors("You cannot modify the contents of the document", body)
+    assert response.status_code == status.HTTP_403_FORBIDDEN
+    assert body == get_error_response(
+        "PERMISSION_DENIED",
+        "You cannot modify the contents of the document",
+    )
 
 
 @freeze_time("2021-06-30T12:00:00")
@@ -310,8 +328,11 @@ def test_update_document_staff_update_attachments_fails(user, service):
 
     body = response.json()
 
-    assert response.status_code == status.HTTP_400_BAD_REQUEST
-    assert_in_errors("You cannot modify the contents of the document", body)
+    assert response.status_code == status.HTTP_403_FORBIDDEN
+    assert body == get_error_response(
+        "PERMISSION_DENIED",
+        "You cannot modify the contents of the document",
+    )
 
 
 # OTHER STUFF
@@ -327,8 +348,10 @@ def test_update_document_not_found(superuser_api_client):
     body = response.json()
 
     assert response.status_code == status.HTTP_404_NOT_FOUND
-
-    assert body.get("detail", "") == "Not found."
+    assert body == get_error_response(
+        "NOT_FOUND",
+        "No Document matches the given query.",
+    )
 
 
 @pytest.mark.parametrize("attachments", [0, 1, 2])

@@ -4,7 +4,11 @@ from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 
-from atv.exceptions import ValidationError
+from atv.exceptions import (
+    DocumentLockedException,
+    InvalidFieldException,
+    MaximumFileCountExceededException,
+)
 
 from ..models import Document
 from .attachment import AttachmentSerializer, CreateAttachmentSerializer
@@ -44,9 +48,7 @@ class DocumentSerializer(serializers.ModelSerializer):
     def update(self, document, validated_data):
         # If the document has been locked, no further updates are allowed
         if document.locked_after and document.locked_after <= now():
-            raise ValidationError(
-                _("Cannot update a Document after it has been locked")
-            )
+            raise DocumentLockedException()
 
         return super().update(document, validated_data)
 
@@ -84,8 +86,8 @@ class CreateAnonymousDocumentSerializer(serializers.ModelSerializer):
         if hasattr(self, "initial_data"):
             invalid_keys = set(self.initial_data.keys()) - set(self.fields.keys())
             if invalid_keys:
-                raise ValidationError(
-                    _("Got invalid input fields: {list_of_fields}").format(
+                raise InvalidFieldException(
+                    detail=_("Got invalid input fields: {list_of_fields}").format(
                         list_of_fields=", ".join(invalid_keys)
                     )
                 )
@@ -93,11 +95,7 @@ class CreateAnonymousDocumentSerializer(serializers.ModelSerializer):
         # Validate that no more than settings.MAX_FILE_UPLOAD_ALLOWED files
         # are uploaded on the same call
         if len(attrs.get("attachments", [])) > settings.MAX_FILE_UPLOAD_ALLOWED:
-            raise ValidationError(
-                _("File upload is limited to {max_file_upload_allowed}").format(
-                    max_file_upload_allowed=settings.MAX_FILE_UPLOAD_ALLOWED
-                )
-            )
+            raise MaximumFileCountExceededException()
 
         return attrs
 
