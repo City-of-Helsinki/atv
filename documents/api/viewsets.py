@@ -12,11 +12,12 @@ from rest_framework.response import Response
 from rest_framework_extensions.mixins import NestedViewSetMixin
 
 from atv.decorators import login_required, service_required
-from atv.exceptions import DocumentLockedException
+from atv.exceptions import DocumentLockedException, InvalidFieldException
 from audit_log.viewsets import AuditLoggingModelViewSet
 from services.enums import ServicePermissions
 from services.utils import get_service_from_request
 
+from ..consts import VALID_OWNER_PATCH_FIELDS
 from ..models import Attachment, Document
 from ..serializers import (
     AttachmentSerializer,
@@ -219,8 +220,14 @@ class DocumentViewSet(AuditLoggingModelViewSet):
         if not is_owner and not is_staff:
             raise PermissionDenied()
 
-        if is_owner and not document.draft:
-            raise DocumentLockedException()
+        if is_owner:
+            if not document.draft:
+                raise DocumentLockedException()
+
+            # Check that the fields on the input are only the ones allowed for owners
+            keys = set(request.data.keys())
+            if not keys.issubset(VALID_OWNER_PATCH_FIELDS):
+                raise InvalidFieldException(fields=keys - VALID_OWNER_PATCH_FIELDS)
 
         if is_staff and ("content" in request.data or "attachments" in request.data):
             raise PermissionDenied(_("You cannot modify the contents of the document"))
