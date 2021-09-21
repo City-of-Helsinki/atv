@@ -50,6 +50,13 @@ class DocumentLockedException(APIException):
     default_code = "DOCUMENT_LOCKED"
     default_detail = _("Unable to modify document - it's no longer a draft.")
 
+    def __init__(self, detail=None, code=None, locked_after=None):
+        detail = detail or self.default_detail
+        if locked_after:
+            detail = f"{detail} Locked at: {locked_after}."
+
+        super().__init__(detail=detail, code=code or self.default_code)
+
 
 class InvalidFieldException(APIException):
     status_code = status.HTTP_400_BAD_REQUEST
