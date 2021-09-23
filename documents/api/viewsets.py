@@ -80,6 +80,33 @@ class AttachmentViewSet(AuditLoggingModelViewSet, NestedViewSetMixin):
             as_attachment=True,
         )
 
+    @login_required()
+    def destroy(self, request, *args, **kwargs):
+        attachment = self.get_object()
+
+        # The user is the owner of the document
+        is_owner = request.user == attachment.document.user
+
+        # Only owners are allowed to remove the attachments,
+        # staff users aren't.
+        if not is_owner:
+            raise PermissionDenied()
+
+        not_draft = is_owner and not attachment.document.draft
+        is_locked = (
+            attachment.document.locked_after
+            and now() >= attachment.document.locked_after
+        )
+        if is_locked or not_draft:
+            raise DocumentLockedException(
+                # Only pass the locked date if it's after the date
+                locked_after=attachment.document.locked_after
+                if is_locked
+                else None
+            )
+
+        return super().destroy(request, *args, **kwargs)
+
     def partial_update(self, request, *args, **kwargs):
         raise MethodNotAllowed(request.method)
 
@@ -190,9 +217,7 @@ class DocumentViewSet(AuditLoggingModelViewSet):
         )
 
         if not is_owner and not is_staff:
-            raise PermissionDenied(
-                _("You do not have permission to perform this action.")
-            )
+            raise PermissionDenied()
 
         if is_owner and not document.draft:
             raise DocumentLockedException()
@@ -235,9 +260,7 @@ class DocumentViewSet(AuditLoggingModelViewSet):
         )
 
         if not is_owner and not is_staff:
-            raise PermissionDenied(
-                _("You do not have permission to perform this action.")
-            )
+            raise PermissionDenied()
 
         not_draft = is_owner and not document.draft
         is_locked = document.locked_after and now() >= document.locked_after
