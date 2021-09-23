@@ -18,6 +18,21 @@ from services.enums import ServicePermissions
 from services.tests.utils import get_user_service_client
 from utils.exceptions import get_error_response
 
+VALID_OWNER_DOCUMENT_DATA = {
+    "draft": False,
+    "metadata": json.dumps({"created_by": "alex", "testing": True}),
+    "content": json.dumps(
+        {
+            "formData": {
+                "firstName": "Dolph",
+                "lastName": "Lundgren",
+                "birthDate": "3.11.1957",
+            },
+            "reasonForApplication": "No reason, just testing",
+        }
+    ),
+}
+
 VALID_DOCUMENT_DATA = {
     "status": "handled",
     "type": "mysterious form",
@@ -48,13 +63,19 @@ def test_update_document_owner(user, snapshot):
         id="2d2b7a36-a306-4e35-990f-13aea04263ff",
         draft=True,
         user=user,
+        status="handled",
+        type="mysterious form",
+        transaction_id="cf0a341b-6bfd-4f59-8d7c-87bf62ba837b",
+        business_id="1234567-8",
+        tos_function_id="f917d43aab76420bb2ec53f6684da7f7",
+        tos_record_id="89837a682b5d410e861f8f3688154163",
     )
     assert document.attachments.count() == 0
 
     api_client = get_user_service_client(user, document.service)
 
     data = {
-        **VALID_DOCUMENT_DATA,
+        **VALID_OWNER_DOCUMENT_DATA,
         "attachments": [
             SimpleUploadedFile(
                 "document1.pdf", b"file_content", content_type="application/pdf"
@@ -358,8 +379,7 @@ def test_update_document_not_found(superuser_api_client):
 def test_audit_log_is_created_when_patching(user, attachments):
     document = DocumentFactory(draft=True, user=user)
     api_client = get_user_service_client(user, document.service)
-    data = {**VALID_DOCUMENT_DATA}
-    data.pop("content")
+    data = {**VALID_OWNER_DOCUMENT_DATA}
 
     if attachments:
         data["attachments"] = [

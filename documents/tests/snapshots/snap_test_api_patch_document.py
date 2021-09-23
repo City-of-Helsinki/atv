@@ -17,7 +17,7 @@ snapshots["test_update_document_owner 1"] = {
         "reasonForApplication": "No reason, just testing",
     },
     "created_at": "2021-06-30T12:00:00+03:00",
-    "draft": True,
+    "draft": False,
     "id": "2d2b7a36-a306-4e35-990f-13aea04263ff",
     "locked_after": None,
     "metadata": {"created_by": "alex", "testing": True},

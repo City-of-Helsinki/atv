@@ -1,3 +1,5 @@
+from typing import Union
+
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 from rest_framework import status
@@ -62,3 +64,12 @@ class InvalidFieldException(APIException):
     status_code = status.HTTP_400_BAD_REQUEST
     default_code = "INVALID_FIELD"
     default_detail = _("Got invalid input fields")
+
+    def __init__(
+        self, detail=None, code=None, fields: Union[list[str], set[str]] = None
+    ):
+        detail = detail or self.default_detail
+        if fields:
+            detail = f"{detail}: {', '.join(fields)}."
+
+        super().__init__(detail=detail, code=code or self.default_code)
