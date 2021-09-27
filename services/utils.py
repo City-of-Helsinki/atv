@@ -53,17 +53,18 @@ def get_service_from_request(
             request, raise_exception=raise_exception
         )
 
-    elif auth := getattr(request, "auth", None):
-        if client_id := auth.data.get("azp"):
-            service_client_id = (
-                ServiceClientId.objects.select_related("service")
-                .filter(client_id=client_id)
-                .first()
-            )
-            if service_client_id:
-                request._service = service_client_id.service
+    if not request.user.is_superuser:
+        if auth := getattr(request, "auth", None):
+            if client_id := auth.data.get("azp"):
+                service_client_id = (
+                    ServiceClientId.objects.select_related("service")
+                    .filter(client_id=client_id)
+                    .first()
+                )
+                if service_client_id:
+                    request._service = service_client_id.service
 
-    if not request._service and raise_exception:
-        raise NotAuthenticated()
+        if not request._service and raise_exception:
+            raise NotAuthenticated()
 
     return request._service
