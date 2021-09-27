@@ -1,18 +1,23 @@
 from django.db import transaction
 from django.http import FileResponse
+from django.shortcuts import get_object_or_404
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import filters, status
 from rest_framework.exceptions import MethodNotAllowed, PermissionDenied
-from rest_framework.parsers import MultiPartParser
+from rest_framework.parsers import FileUploadParser, MultiPartParser
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework_extensions.mixins import NestedViewSetMixin
 
 from atv.decorators import login_required, service_required
-from atv.exceptions import DocumentLockedException, InvalidFieldException
+from atv.exceptions import (
+    DocumentLockedException,
+    InvalidFieldException,
+    MissingParameterException,
+)
 from audit_log.viewsets import AuditLoggingModelViewSet
 from services.enums import ServicePermissions
 from services.utils import get_service_from_request
@@ -34,6 +39,7 @@ from .querysets import get_attachment_queryset, get_document_queryset
 class AttachmentViewSet(AuditLoggingModelViewSet, NestedViewSetMixin):
     permission_classes = [AllowAny]
     serializer_class = AttachmentSerializer
+    parser_classes = [MultiPartParser, FileUploadParser]
     filter_backends = [filters.OrderingFilter]
     ordering = ["-updated_at", "id"]
 
@@ -78,6 +84,51 @@ class AttachmentViewSet(AuditLoggingModelViewSet, NestedViewSetMixin):
             )
 
         return super().destroy(request, *args, **kwargs)
+
+    @login_required()
+    def create(self, request, *args, **kwargs):
+        document_id = kwargs.get("document_id")
+        if not document_id:
+            raise MissingParameterException(parameter="document_id")
+
+        # Filter only for the user's documents
+        document = get_object_or_404(
+            get_document_queryset(
+                request.user,
+                get_service_from_request(self.request),
+            ),
+            id=document_id,
+        )
+
+        # The user is the owner of the document
+        is_owner = request.user == document.user
+
+        if not is_owner:
+            raise PermissionDenied()
+
+        if is_owner and not document.draft:
+            raise DocumentLockedException()
+
+        file = request.data.get("file")
+
+        data = {
+            "document": document.id,
+            "file": file,
+            "media_type": file.content_type,
+        }
+        attachment_serializer = CreateAttachmentSerializer(data=data)
+        attachment_serializer.is_valid(raise_exception=True)
+
+        with self.record_action():
+            attachment_serializer.save()
+            self.created_instance = attachment_serializer.instance
+
+        return Response(
+            AttachmentSerializer(
+                attachment_serializer.instance, context={"request": request}
+            ).data,
+            status=status.HTTP_201_CREATED,
+        )
 
     def partial_update(self, request, *args, **kwargs):
         raise MethodNotAllowed(request.method)

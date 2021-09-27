@@ -73,3 +73,16 @@ class InvalidFieldException(APIException):
             detail = f"{detail}: {', '.join(fields)}."
 
         super().__init__(detail=detail, code=code or self.default_code)
+
+
+class MissingParameterException(APIException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    default_code = "MISSING_PARAMETER"
+    default_detail = _("Missing parameter")
+
+    def __init__(self, detail=None, code=None, parameter=None):
+        detail = detail or self.default_detail
+        if parameter:
+            detail = f"{detail}: {parameter}."
+
+        super().__init__(detail=detail, code=code or self.default_code)

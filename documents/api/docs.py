@@ -8,7 +8,7 @@ from drf_spectacular.utils import (
 )
 from rest_framework import serializers, status
 
-from documents.serializers import DocumentSerializer
+from documents.serializers import AttachmentSerializer, DocumentSerializer
 
 error_serializer = inline_serializer(
     "ErrorResponse",
@@ -167,38 +167,35 @@ attachment_viewset_docs = {
         },
         examples=[example_attachment, example_error],
     ),
-    # TODO: Not implemented yet
-    "create": extend_schema(exclude=True),
-    #     summary="Upload a new attachment to a document",
-    #     description="Permission to access the document is checked as follows:\n"
-    #     "* Authenticated users are allowed access to the document if they are the owner of the document "
-    #     "or the document is owned by an organization and the user has permission to act on behalf "
-    #     "of that organization.\n\n"
-    #     "The following rules apply:\n"
-    #     "* Drafts may be modified by the owning user, "
-    #     "the owning service's admin or an organization's representative, "
-    #     "if the document is owned by an organization.\n"
-    #     "* Non-drafts may be modified by an admin.\n"
-    #     "* Documents may not be modified if their `lockedAfter` date has passed.",
-    #     #     # TODO: Need to add a serializer for plain file
-    #     #     request=None,
-    #     responses={
-    #         (status.HTTP_201_CREATED, "application/json"): OpenApiResponse(
-    #             response=AttachmentSerializer,
-    #             description="The attachment was uploaded successfully. "
-    #             "The attachments information is returned in the response body.",
-    #         ),
-    #         (status.HTTP_400_BAD_REQUEST, "application/json"): _base_400_response(),
-    #         status.HTTP_401_UNAUTHORIZED: _base_401_response(),
-    #         status.HTTP_403_FORBIDDEN: OpenApiResponse(
-    #             description="The request contains an organization ID and the currently authenticated user "
-    #             "does not have permission to act on behalf of that organization."
-    #         ),
-    #         status.HTTP_500_INTERNAL_SERVER_ERROR: _base_500_response(),
-    #     },
-    #     examples=[example_attachment, example_error],
-    # ),
-    # TODO: Not implemented yet
+    "create": extend_schema(
+        summary="Upload a new attachment to a document",
+        description="Permission to access the document is checked as follows:\n"
+        "* Authenticated users are allowed access to the document if they are the owner of the document "
+        "or the document is owned by an organization and the user has permission to act on behalf "
+        "of that organization.\n\n"
+        "The following rules apply:\n"
+        "* Drafts may be modified by the owning user, "
+        "the owning service's admin or an organization's representative, "
+        "if the document is owned by an organization.\n"
+        "* Non-drafts may be modified by an admin.\n"
+        "* Documents may not be modified if their `lockedAfter` date has passed.",
+        request={"application/octet-stream": OpenApiTypes.BINARY},
+        responses={
+            (status.HTTP_201_CREATED, "application/json"): OpenApiResponse(
+                response=AttachmentSerializer,
+                description="The attachment was uploaded successfully. "
+                "The attachments information is returned in the response body.",
+            ),
+            (status.HTTP_400_BAD_REQUEST, "application/json"): _base_400_response(),
+            status.HTTP_401_UNAUTHORIZED: _base_401_response(),
+            status.HTTP_403_FORBIDDEN: OpenApiResponse(
+                description="The request contains an organization ID and the currently authenticated user "
+                "does not have permission to act on behalf of that organization."
+            ),
+            status.HTTP_500_INTERNAL_SERVER_ERROR: _base_500_response(),
+        },
+        examples=[example_attachment, example_error],
+    ),
     "destroy": extend_schema(
         summary="Remove a document's attachment",
         description="Permission to remove the attachment is checked based on the containing document as follows:\n"
@@ -386,7 +383,6 @@ document_viewset_docs = {
         },
         examples=[example_document, example_error],
     ),
-    # TODO: Not implemented yet
     "destroy": extend_schema(
         summary="Remove an existing document and its attachments",
         description="Permission to access the document is checked as follows:\n"
