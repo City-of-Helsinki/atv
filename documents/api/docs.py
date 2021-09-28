@@ -143,9 +143,10 @@ attachment_viewset_docs = {
         description="Permission to access the attachment is checked based on the containing document as follows:\n"
         "* Admin users are allowed access to the attachment if the containing document was stored using the service "
         "they are using and whose admins they are.\n"
-        "* Authenticated users are allowed access to the attachment if they are the owner of the containing document "
-        "or the containing document is owned by an organization and the user has permission to act on behalf "
-        "of that organization.",
+        "* Authenticated users are allowed access to the attachment if they are the owner of the containing document.",
+        # TODO: Uncomment when organization features are implemented
+        # " or the containing document is owned by an organization and the user has permission to act on behalf "
+        # "of that organization.",
         responses={
             (status.HTTP_200_OK, "application/octet-stream"): OpenApiResponse(
                 description="Returns the attachment as a downloadable file.",
@@ -156,8 +157,10 @@ attachment_viewset_docs = {
                 description="The authenticated user lacks the proper permissions to access the document. "
                 "Depending on the requested document, "
                 "either the user does not belong to the admin group of the service which owns the document, "
-                "the user does not own the document or the user does not have permission to act on behalf "
-                "of the organization which owns the document."
+                "the user does not own the document."
+                # TODO: Uncomment when organization features are implemented
+                # " or the user does not have permission to act on behalf "
+                # "of the organization which owns the document."
             ),
             status.HTTP_404_NOT_FOUND: OpenApiResponse(
                 description="No document was found with `documentId` or the document did not have "
@@ -170,13 +173,17 @@ attachment_viewset_docs = {
     "create": extend_schema(
         summary="Upload a new attachment to a document",
         description="Permission to access the document is checked as follows:\n"
-        "* Authenticated users are allowed access to the document if they are the owner of the document "
-        "or the document is owned by an organization and the user has permission to act on behalf "
-        "of that organization.\n\n"
+        "* Authenticated users are allowed access to the document if they are the owner of the document.\n\n"
+        # TODO: Uncomment when organization features are implemented
+        # " or the document is owned by an organization and the user has permission to act on behalf "
+        # "of that organization.\n\n"
         "The following rules apply:\n"
-        "* Drafts may be modified by the owning user, "
-        "the owning service's admin or an organization's representative, "
-        "if the document is owned by an organization.\n"
+        "* Drafts may be modified by the owning user or the owning service's admin\n"
+        # TODO: Uncomment when organization features are implemented
+        #   Replace the previous line with the following
+        # "* Drafts may be modified by the owning user, "
+        # "the owning service's admin or an organization's representative, "
+        # "if the document is owned by an organization.\n"
         "* Non-drafts may be modified by an admin.\n"
         "* Documents may not be modified if their `lockedAfter` date has passed.",
         request={"application/octet-stream": OpenApiTypes.BINARY},
@@ -188,10 +195,11 @@ attachment_viewset_docs = {
             ),
             (status.HTTP_400_BAD_REQUEST, "application/json"): _base_400_response(),
             status.HTTP_401_UNAUTHORIZED: _base_401_response(),
-            status.HTTP_403_FORBIDDEN: OpenApiResponse(
-                description="The request contains an organization ID and the currently authenticated user "
-                "does not have permission to act on behalf of that organization."
-            ),
+            # TODO: Uncomment when organization features are implemented
+            # status.HTTP_403_FORBIDDEN: OpenApiResponse(
+            #     description="The request contains an organization ID and the currently authenticated user "
+            #     "does not have permission to act on behalf of that organization."
+            # ),
             status.HTTP_500_INTERNAL_SERVER_ERROR: _base_500_response(),
         },
         examples=[example_attachment, example_error],
@@ -199,12 +207,16 @@ attachment_viewset_docs = {
     "destroy": extend_schema(
         summary="Remove a document's attachment",
         description="Permission to remove the attachment is checked based on the containing document as follows:\n"
-        "* Authenticated users are allowed to remove the attachment if they are the owner of the containing document "
-        "or the containing document is owned by an organization and the user has permission to act on behalf "
-        "of that organization.\n\n"
+        "* Authenticated users are allowed to remove the attachment if they are the owner "
+        "of the containing document.\n\n"
+        # TODO: Uncomment when organization features are implemented
+        # "or the containing document is owned by an organization and the user has permission to act on behalf "
+        # "of that organization.\n\n"
         "The following rules apply:\n"
-        "* Attachments of drafts may be removed by the owning user or an organization's representative, "
-        "if the containing document is owned by an organization."
+        "* Attachments of drafts may be removed by the owning user."
+        # TODO: Uncomment when organization features are implemented
+        # "or an organization's representative, "
+        # "if the containing document is owned by an organization."
         "* Attachments may not be removed if the containing document's `lockedAfter` date has passed. "
         "This should be done by removing the whole document.",
         responses={
@@ -216,9 +228,13 @@ attachment_viewset_docs = {
             status.HTTP_403_FORBIDDEN: OpenApiResponse(
                 description="The authenticated user lacks the proper permissions to access the document. "
                 "Depending on the requested document, "
-                "either the user does not belong to the admin group of the service which owns the document, "
-                "the user does not own the document or the user does not have permission to act on behalf "
-                "of the organization which owns the document."
+                "either the user does not belong to the admin group of the service which owns the document "
+                "or the user does not own the document."
+                # TODO: Uncomment when organization features are implemented
+                #   Replace the previous two lines with the following
+                # "either the user does not belong to the admin group of the service which owns the document, "
+                # "the user does not own the document or the user does not have permission to act on behalf "
+                # "of the organization which owns the document."
             ),
             status.HTTP_404_NOT_FOUND: OpenApiResponse(
                 description="No document was found with `documentId` or the document did not have "
@@ -243,11 +259,13 @@ document_viewset_docs = {
         "* Admin users are allowed to fetch all documents which were stored using the service "
         "they are using and whose admins they are.\n"
         "* Authenticated users are allowed to fetch documents which are owned by them and "
-        "which were stored using the service they are using. "
-        "Documents owned by an organization are not returned even if such a document was created by the current user.\n"
-        "* Authenticated users may fetch documents owned by an organization by giving the organization's business ID "
-        "in the search parameters. In this case the user's permission to act on behalf of the organization "
-        "is verified and the results will contain only documents which are owned by the given organization.",
+        "which were stored using the service they are using.",
+        # TODO: Uncomment when organization features are implemented
+        # "Documents owned by an organization are not returned even if such a document
+        # "was created by the current user.\n"
+        # "* Authenticated users may fetch documents owned by an organization by giving the organization's business ID "
+        # "in the search parameters. In this case the user's permission to act on behalf of the organization "
+        # "is verified and the results will contain only documents which are owned by the given organization.",
         parameters=[
             OpenApiParameter(
                 "status",
@@ -263,8 +281,11 @@ document_viewset_docs = {
                 "business_id",
                 OpenApiTypes.STR,
                 description="Search for documents which are owned by the given business ID. "
-                "If this is given, the calling user must either be an admin or have permission to act "
-                "on behalf of the organization",
+                "If this is given, the calling user must either be an admin"
+                # TODO: Uncomment when organization features are implemented
+                #   Replace the previous line with the following
+                # "If this is given, the calling user must either be an admin or have permission to act "
+                # "on behalf of the organization",
             ),
             OpenApiParameter(
                 "user_id",
@@ -286,10 +307,12 @@ document_viewset_docs = {
             ),
             (status.HTTP_400_BAD_REQUEST, "application/json"): _base_400_response(),
             status.HTTP_401_UNAUTHORIZED: _base_401_response(),
-            status.HTTP_403_FORBIDDEN: OpenApiResponse(
-                description="The search parameters contain an organization ID and the currently authenticated user does"
-                "not have permission to act on behalf of that organization."
-            ),
+            # TODO: Uncomment when organization features are implemented
+            # status.HTTP_403_FORBIDDEN: OpenApiResponse(
+            #     description="The search parameters contain an organization ID "
+            #     "and the currently authenticated user does"
+            #     "not have permission to act on behalf of that organization."
+            # ),
             status.HTTP_500_INTERNAL_SERVER_ERROR: _base_500_response(),
         },
         examples=[example_document, example_error],
@@ -300,9 +323,12 @@ document_viewset_docs = {
         "Permission to access the document is checked as follows:\n\n"
         "* Admin users are allowed access to the document if it was stored using the service "
         "they are using and whose admins they are.\n"
-        "* Authenticated users are allowed access to the document if they are the owner of the document "
-        "or the document is owned by an organization and the user has permission to act on behalf "
-        "of that organization.",
+        "* Authenticated users are allowed access to the document if they are the owner of the document.",
+        # TODO: Uncomment when organization features are implemented
+        #   Replace the previous line with the following
+        # "* Authenticated users are allowed access to the document if they are the owner of the document "
+        # "or the document is owned by an organization and the user has permission to act on behalf "
+        # "of that organization.",
         responses={
             (status.HTTP_200_OK, "application/json"): OpenApiResponse(
                 response=DocumentSerializer,
@@ -314,8 +340,10 @@ document_viewset_docs = {
                 description="The authenticated user lacks the proper permissions to access the document. "
                 "Depending on the requested document, "
                 "either the user does not belong to the admin group of the service which owns the document, "
-                "the user does not own the document or the user does not have permission to act on behalf "
-                "of the organization which owns the document."
+                "the user does not own the document."
+                # TODO: Uncomment when organization features are implemented
+                # " or the user does not have permission to act on behalf "
+                # "of the organization which owns the document."
             ),
             status.HTTP_404_NOT_FOUND: OpenApiResponse(
                 description="No document was found with `documentId`.",
@@ -340,10 +368,11 @@ document_viewset_docs = {
             ),
             (status.HTTP_400_BAD_REQUEST, "application/json"): _base_400_response(),
             status.HTTP_401_UNAUTHORIZED: _base_401_response(),
-            status.HTTP_403_FORBIDDEN: OpenApiResponse(
-                description="The request contains an organization ID and the currently authenticated user "
-                "does not have permission to act on behalf of that organization."
-            ),
+            # TODO: Uncomment when organization features are implemented
+            # status.HTTP_403_FORBIDDEN: OpenApiResponse(
+            #     description="The request contains an organization ID and the currently authenticated user "
+            #     "does not have permission to act on behalf of that organization."
+            # ),
             status.HTTP_500_INTERNAL_SERVER_ERROR: _base_500_response(),
         },
         examples=[example_document, example_error],
@@ -353,12 +382,19 @@ document_viewset_docs = {
         description="Permission to access the document is checked as follows:\n\n"
         "* Admin users are allowed access to the document if it was stored using the service they are using "
         "and whose admins they are.\n"
-        "* Authenticated users are allowed access to the document if they are the owner of the document "
-        "or the document is owned by an organization and the user has permission to act "
-        "on behalf of that organization.\n\n"
+        "* Authenticated users are allowed access to the document if they are the owner of the document.\n\n"
+        # TODO: Uncomment when organization features are implemented
+        #   Replace the previous line with the following
+        # "* Authenticated users are allowed access to the document if they are the owner of the document "
+        # "or the document is owned by an organization and the user has permission to act "
+        # "on behalf of that organization.\n\n"
         "The following rules apply:\n"
-        "* Drafts may be modified by the owning user, the owning service's admin or an organization's representative, "
-        "if the document is owned by an organization.\n"
+        "* Drafts may be modified by the owning user or the owning service's admin.\n"
+        # TODO: Uncomment when organization features are implemented
+        #   Replace the previous line with the following
+        # "* Drafts may be modified by the owning user, the owning service's admin "
+        # "or an organization's representative, "
+        # "if the document is owned by an organization.\n"
         "* Non-drafts may be modified by an admin.\n"
         "* Documents may not be modified if their `lockedAfter` date has passed.",
         responses={
@@ -373,8 +409,10 @@ document_viewset_docs = {
                 description="The authenticated user lacks the proper permissions to access the document. "
                 "Depending on the requested document, "
                 "either the user does not belong to the admin group of the service which owns the document, "
-                "the user does not own the document or the user does not have permission to act on behalf "
-                "of the organization which owns the document."
+                "the user does not own the document."
+                # TODO: Uncomment when organization features are implemented
+                # " or the user does not have permission to act on behalf "
+                # "of the organization which owns the document."
             ),
             status.HTTP_404_NOT_FOUND: OpenApiResponse(
                 description="No document was found with `documentId`.",
@@ -386,13 +424,15 @@ document_viewset_docs = {
     "destroy": extend_schema(
         summary="Remove an existing document and its attachments",
         description="Permission to access the document is checked as follows:\n"
-        "* Authenticated users are allowed access to the document if they are the owner of the document "
-        "or the document is owned by an organization and the user has permission to act "
-        "on behalf of that organization.\n\n"
-        "The following rules apply:\n"
-        "* Drafts may be removed by the owning user or an organization's representative, "
-        "if the document is owned by an organization. This is possible even if the `lockedAfter` date has passed, "
-        "to enable a user to remove expired applications.",
+        "* Authenticated users are allowed access to the document if they are the owner of the document.\n\n"
+        # TODO: Uncomment when organization features are implemented
+        # "or the document is owned by an organization and the user has permission to act "
+        # "on behalf of that organization.\n\n"
+        "The following rules apply:\n" "* Drafts may be removed by the owning user.",
+        # TODO: Uncomment when organization features are implemented
+        # "or an organization's representative, "
+        # "if the document is owned by an organization. This is possible even if the `lockedAfter` date has passed, "
+        # "to enable a user to remove expired applications.",
         responses={
             status.HTTP_204_NO_CONTENT: OpenApiResponse(
                 description="The specified Document and its attachments were removed successfully",
@@ -403,8 +443,10 @@ document_viewset_docs = {
                 description="The authenticated user lacks the proper permissions to access the document. "
                 "Depending on the requested document, "
                 "either the user does not belong to the admin group of the service which owns the document, "
-                "the user does not own the document or the user does not have permission to act on behalf "
-                "of the organization which owns the document."
+                "the user does not own the document."
+                # TODO: Uncomment when organization features are implemented
+                # " or the user does not have permission to act on behalf "
+                # "of the organization which owns the document."
             ),
             status.HTTP_404_NOT_FOUND: OpenApiResponse(
                 description="No document was found with `documentId`.",
