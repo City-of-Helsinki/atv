@@ -95,7 +95,7 @@ def test_destroy_attachment_owner_non_draft(user, service):
     assert response.status_code == status.HTTP_403_FORBIDDEN
     assert body == get_error_response(
         "DOCUMENT_LOCKED",
-        "Unable to modify document - it's no longer a draft.",
+        "Unable to modify document - it's no longer a draft",
     )
 
 

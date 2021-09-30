@@ -159,7 +159,7 @@ def test_update_document_owner_non_draft(user):
     assert response.status_code == status.HTTP_403_FORBIDDEN
     assert body == get_error_response(
         "DOCUMENT_LOCKED",
-        "Unable to modify document - it's no longer a draft.",
+        "Unable to modify document - it's no longer a draft",
     )
 
 
@@ -183,7 +183,7 @@ def test_update_document_owner_after_lock_date(user):
     assert response.status_code == status.HTTP_403_FORBIDDEN
     assert body == get_error_response(
         "DOCUMENT_LOCKED",
-        "Unable to modify document - it's no longer a draft.",
+        "Unable to modify document - it's no longer a draft",
     )
 
 
@@ -269,7 +269,7 @@ def test_update_document_staff_after_lock_date(user, service):
     assert response.status_code == status.HTTP_403_FORBIDDEN
     assert body == get_error_response(
         "DOCUMENT_LOCKED",
-        "Unable to modify document - it's no longer a draft.",
+        "Unable to modify document - it's no longer a draft",
     )
 
 

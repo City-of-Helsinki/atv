@@ -50,12 +50,12 @@ class MaximumFileSizeExceededException(APIException):
 class DocumentLockedException(APIException):
     status_code = status.HTTP_403_FORBIDDEN
     default_code = "DOCUMENT_LOCKED"
-    default_detail = _("Unable to modify document - it's no longer a draft.")
+    default_detail = _("Unable to modify document - it's no longer a draft")
 
     def __init__(self, detail=None, code=None, locked_after=None):
         detail = detail or self.default_detail
         if locked_after:
-            detail = f"{detail} Locked at: {locked_after}."
+            detail = f"{detail}. Locked at: {locked_after}."
 
         super().__init__(detail=detail, code=code or self.default_code)
 
@@ -71,5 +71,18 @@ class InvalidFieldException(APIException):
         detail = detail or self.default_detail
         if fields:
             detail = f"{detail}: {', '.join(fields)}."
+
+        super().__init__(detail=detail, code=code or self.default_code)
+
+
+class MissingParameterException(APIException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    default_code = "MISSING_PARAMETER"
+    default_detail = _("Missing parameter")
+
+    def __init__(self, detail=None, code=None, parameter=None):
+        detail = detail or self.default_detail
+        if parameter:
+            detail = f"{detail}: {parameter}."
 
         super().__init__(detail=detail, code=code or self.default_code)
