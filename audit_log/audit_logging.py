@@ -41,8 +41,8 @@ def log(
     (a Django model instance), status (e.g. SUCCESS), and a timestamp.
     """
     current_time = get_time()
-    user_id_field_name = getattr(target, "audit_log_id_field", "pk")
-    user_id = str(getattr(actor, user_id_field_name, ""))
+    user_id_field_name = getattr(actor, "audit_log_id_field", "pk")
+    user_id = str(getattr(actor, user_id_field_name, None) or "")
 
     if actor is None:
         role = Role.SYSTEM

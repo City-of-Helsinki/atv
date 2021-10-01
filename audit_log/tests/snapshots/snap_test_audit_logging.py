@@ -6,6 +6,24 @@ from snapshottest import Snapshot
 
 snapshots = Snapshot()
 
+snapshots["test_log_actor_uuid 1"] = {
+    "audit_event": {
+        "actor": {
+            "ip_address": "192.168.1.1",
+            "provider": "",
+            "role": "USER",
+            "user_id": "7e564b45-527f-4ea6-92c7-3d39ba05733c",
+        },
+        "additional_information": "",
+        "date_time": "2020-06-01T00:00:00.000Z",
+        "date_time_epoch": 1590969600000,
+        "operation": "READ",
+        "origin": "atv",
+        "status": "SUCCESS",
+        "target": {"id": "be584b90-b256-46f5-83e1-4e6a0f8b4cc3", "type": "User"},
+    }
+}
+
 snapshots["test_log_anonymous_role[CREATE] 1"] = {
     "audit_event": {
         "actor": {
