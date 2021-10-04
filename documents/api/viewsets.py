@@ -131,6 +131,10 @@ class AttachmentViewSet(AuditLoggingModelViewSet, NestedViewSetMixin):
         )
 
     @not_allowed()
+    def list(self, request, *args, **kwargs):
+        pass
+
+    @not_allowed()
     def partial_update(self, request, *args, **kwargs):
         pass
 

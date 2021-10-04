@@ -8,6 +8,7 @@ from rest_framework import status
 @pytest.mark.parametrize(
     "method,url",
     [
+        ("GET", reverse("documents-attachments-list", args=[uuid4()])),
         ("PUT", reverse("documents-attachments-detail", args=[uuid4(), uuid4()])),
         ("PATCH", reverse("documents-attachments-detail", args=[uuid4(), uuid4()])),
         ("PUT", reverse("documents-detail", args=[uuid4()])),
