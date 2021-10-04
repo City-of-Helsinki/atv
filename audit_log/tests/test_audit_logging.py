@@ -32,6 +32,22 @@ def test_log_current_timestamp(user):
     assert logging_datetime == logged_date_from_date_time
 
 
+def test_log_actor_uuid(fixed_datetime, user, user_factory, snapshot):
+    other_user = user_factory()
+    audit_logging.log(
+        user,
+        "",
+        Operation.READ,
+        other_user,
+        get_time=fixed_datetime,
+        ip_address="192.168.1.1",
+    )
+
+    message = AuditLogEntry.objects.first().message
+    assert message["audit_event"]["actor"]["user_id"] == str(user.uuid)
+    snapshot.assert_match(message)
+
+
 @pytest.mark.parametrize("operation", list(Operation))
 def test_log_owner_operation(fixed_datetime, user, operation, snapshot):
     audit_logging.log(
