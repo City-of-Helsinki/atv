@@ -12,7 +12,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework_extensions.mixins import NestedViewSetMixin
 
-from atv.decorators import login_required, service_required
+from atv.decorators import login_required, not_allowed, service_required
 from atv.exceptions import (
     DocumentLockedException,
     InvalidFieldException,
@@ -130,11 +130,13 @@ class AttachmentViewSet(AuditLoggingModelViewSet, NestedViewSetMixin):
             status=status.HTTP_201_CREATED,
         )
 
+    @not_allowed()
     def partial_update(self, request, *args, **kwargs):
-        raise MethodNotAllowed(request.method)
+        pass
 
+    @not_allowed()
     def update(self, request, *args, **kwargs):
-        raise MethodNotAllowed(request.method)
+        pass
 
 
 @extend_schema_view(**document_viewset_docs)
