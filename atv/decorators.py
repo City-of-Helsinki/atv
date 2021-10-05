@@ -40,7 +40,10 @@ def _require_service_permission(permission_name):
     def permission_checker(request):
         _require_service(request)
 
-        if not request.user.has_perm(permission_name, request.service):
+        if not request.user.has_perm(
+            permission_name,
+            get_service_from_request(request),
+        ):
             raise PermissionDenied()
 
     return permission_checker
@@ -94,7 +97,7 @@ def service_required():
 def service_api_key_required():
     """
     Returns a decorator that checks if request includes a service API key to authorize it.
-    If it includes one, it adds the related service to the `request.service`, otherwise it
+    If it includes one, it adds the related service to the `request._service`, otherwise it
     raises a NotAuthenticated error and returns 404.
     """
 
@@ -102,7 +105,7 @@ def service_api_key_required():
         @wraps(function)
         def service_setter(_viewset, request, *args, **kwargs):
             service = get_service_from_service_key(request)
-            request.service = service
+            request._service = service
 
             return function(_viewset, request, *args, **kwargs)
 

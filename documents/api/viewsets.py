@@ -21,6 +21,7 @@ from atv.exceptions import (
 from audit_log.viewsets import AuditLoggingModelViewSet
 from services.enums import ServicePermissions
 from services.utils import get_service_from_request
+from utils.uuid import is_valid_uuid
 
 from ..consts import VALID_OWNER_PATCH_FIELDS
 from ..models import Attachment
@@ -88,7 +89,8 @@ class AttachmentViewSet(AuditLoggingModelViewSet, NestedViewSetMixin):
     @login_required()
     def create(self, request, *args, **kwargs):
         document_id = kwargs.get("document_id")
-        if not document_id:
+
+        if document_id is None or not is_valid_uuid(document_id):
             raise MissingParameterException(parameter="document_id")
 
         # Filter only for the user's documents
@@ -132,15 +134,15 @@ class AttachmentViewSet(AuditLoggingModelViewSet, NestedViewSetMixin):
 
     @not_allowed()
     def list(self, request, *args, **kwargs):
-        pass
+        """Method not allowed"""
 
     @not_allowed()
     def partial_update(self, request, *args, **kwargs):
-        pass
+        """Method not allowed"""
 
     @not_allowed()
     def update(self, request, *args, **kwargs):
-        pass
+        """Method not allowed"""
 
 
 @extend_schema_view(**document_viewset_docs)

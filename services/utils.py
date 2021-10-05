@@ -19,6 +19,10 @@ def get_service_from_service_key(request, raise_exception: bool = True) -> Servi
 
         # get_from_key also checks that the key is still valid
         service_key = ServiceAPIKey.objects.get_from_key(key)
+
+        if service_key.has_expired:
+            raise ServiceAPIKey.DoesNotExist()
+
         service = service_key.service
     except (
         ServiceAPIKey.DoesNotExist,

@@ -68,6 +68,48 @@ def test_create_attachment_other_document(user, service):
     )
 
 
+@freeze_time("2021-06-30T12:00:00+03:00")
+def test_create_attachment_document_not_draft(user, service):
+    document = DocumentFactory(
+        id="5209bdd0-e626-4a7d-aa4d-73aaf961a93f",
+        user=user,
+        service=service,
+        draft=False,
+    )
+    api_client = get_user_service_client(user, service)
+
+    response = api_client.post(
+        reverse("documents-attachments-list", args=[document.id]),
+        {},
+    )
+
+    body = response.json()
+
+    assert response.status_code == status.HTTP_403_FORBIDDEN
+    assert body == get_error_response(
+        "DOCUMENT_LOCKED",
+        "Unable to modify document - it's no longer a draft",
+    )
+
+
+@freeze_time("2021-06-30T12:00:00+03:00")
+def test_create_attachment_missing_document_id(user, service, document_data, snapshot):
+    api_client = get_user_service_client(user, service)
+
+    response = api_client.post(
+        reverse("documents-attachments-list", args=[None]),
+        document_data,
+    )
+
+    body = response.json()
+
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert body == get_error_response(
+        "MISSING_PARAMETER",
+        "Missing parameter: document_id.",
+    )
+
+
 @override_settings(MAX_FILE_SIZE=50)
 def test_create_document_file_limit(user, service, snapshot, settings):
     api_client = get_user_service_client(user, service)

@@ -187,6 +187,34 @@ def test_update_document_owner_after_lock_date(user):
     )
 
 
+@freeze_time("2021-06-30T12:00:00")
+def test_update_document_owner_invalid_fields(user):
+    document = DocumentFactory(
+        id="2d2b7a36-a306-4e35-990f-13aea04263ff",
+        draft=True,
+        user=user,
+    )
+    api_client = get_user_service_client(user, document.service)
+
+    response = api_client.patch(
+        reverse("documents-detail", args=[document.id]),
+        {
+            "tos_function_id": "f917d43aab76420bb2ec53f6684da7f7",
+            "tos_record_id": "89837a682b5d410e861f8f3688154163",
+        },  # No need to have any actual data
+    )
+
+    body = response.json()
+
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    assert len(body.get("errors")) == 1
+    assert body.get("errors", [])[0].get("code") == "INVALID_FIELD"
+    assert "Got invalid input fields" in body.get("errors", [])[0].get("message")
+    assert "tos_function_id" in body.get("errors", [])[0].get("message")
+    assert "tos_record_id" in body.get("errors", [])[0].get("message")
+
+
 # STAFF-RELATED ACTION
 
 
