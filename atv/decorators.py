@@ -1,6 +1,6 @@
 from functools import wraps
 
-from rest_framework.exceptions import PermissionDenied
+from rest_framework.exceptions import MethodNotAllowed, PermissionDenied
 
 from services.enums import ServicePermissions
 from services.utils import get_service_from_request, get_service_from_service_key
@@ -62,6 +62,17 @@ def staff_required(required_permission=ServicePermissions.VIEW_DOCUMENTS):
         f"""Decorator that checks for {required_permission} permission."""
 
     return check_permission
+
+
+def not_allowed():
+    def wrapper(function):
+        @wraps(function)
+        def raise_exc(_viewset, request, *args, **kwargs):
+            raise MethodNotAllowed(request.method)
+
+        return raise_exc
+
+    return wrapper
 
 
 def login_required():
