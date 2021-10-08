@@ -24,7 +24,7 @@ from services.utils import get_service_from_request
 from utils.uuid import is_valid_uuid
 
 from ..consts import VALID_OWNER_PATCH_FIELDS
-from ..models import Attachment
+from ..models import Attachment, Document
 from ..serializers import (
     AttachmentSerializer,
     CreateAnonymousDocumentSerializer,
@@ -43,6 +43,7 @@ class AttachmentViewSet(AuditLoggingModelViewSet, NestedViewSetMixin):
     parser_classes = [MultiPartParser, FileUploadParser]
     filter_backends = [filters.OrderingFilter]
     ordering = ["-updated_at", "id"]
+    queryset = Attachment.objects.none()
 
     def get_queryset(self):
         user = self.request.user
@@ -161,6 +162,7 @@ class DocumentViewSet(AuditLoggingModelViewSet):
     ordering = ["-updated_at"]
     search_fields = ["metadata"]
     filterset_class = DocumentFilterSet
+    queryset = Document.objects.none()
 
     def get_queryset(self):
         user = self.request.user
