@@ -3,6 +3,7 @@ from django.conf import settings
 from pytest_factoryboy import register
 
 from atv.tests.conftest import *  # noqa
+from users.tests.conftest import *  # noqa
 
 from ..models import ServiceAPIKey
 from .factories import ServiceAPIKeyFactory, ServiceFactory

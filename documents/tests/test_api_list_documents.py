@@ -116,6 +116,13 @@ def test_list_document_no_service(api_client, user):
     assert response.status_code == status.HTTP_403_FORBIDDEN
 
 
+def test_list_document_anonymous_user(api_client, anonymous_user):
+    api_client.user = anonymous_user
+    response = api_client.get(reverse("documents-list"))
+
+    assert response.status_code == status.HTTP_403_FORBIDDEN
+
+
 @pytest.mark.parametrize(
     "param,value",
     [

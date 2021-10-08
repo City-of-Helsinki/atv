@@ -3,9 +3,13 @@ from uuid import uuid4
 
 import pytest  # noqa
 from django.contrib.auth import get_user_model
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db import connection
+from django.test import override_settings
 
-from ..models import Document
+from atv.exceptions import MaximumFileSizeExceededException
+
+from ..models import Attachment, Document
 from .utils import generate_tos_uuid
 
 User = get_user_model()
@@ -35,3 +39,21 @@ def test_content_is_encrypted(service, user):
     assert data == str(content)
     assert document.content == ast.literal_eval(data)
     assert isinstance(document.content, dict)
+
+
+@override_settings(MAX_FILE_SIZE=50)
+def test_attachment_file_size_exceeded(document):
+    with pytest.raises(MaximumFileSizeExceededException):
+        Attachment.objects.create(
+            document=document,
+            file=SimpleUploadedFile(
+                "document1.pdf",
+                b"x" * 10000,
+                content_type="application/pdf",
+            ),
+        )
+
+
+def test_model_str(document, attachment):
+    assert str(document) == f"Document {document.id}"
+    assert str(attachment) == f"Attachment {attachment.id}"
