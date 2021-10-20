@@ -3,7 +3,7 @@ from functools import wraps
 from rest_framework.exceptions import MethodNotAllowed, PermissionDenied
 
 from services.enums import ServicePermissions
-from services.utils import get_service_from_request, get_service_from_service_key
+from services.utils import get_service_from_request
 
 
 def _use_request_tests(*test_funcs):
@@ -22,11 +22,6 @@ def _use_request_tests(*test_funcs):
         return wrapper
 
     return decorator
-
-
-def _require_authenticated(request):
-    if not request.user.is_authenticated:
-        raise PermissionDenied()
 
 
 def _require_service(request):
@@ -78,37 +73,9 @@ def not_allowed():
     return wrapper
 
 
-def login_required():
-    @_use_request_tests(_require_authenticated)
-    def check_permission():
-        """Decorator for checking that the user is logged in"""
-
-    return check_permission
-
-
 def service_required():
     @_use_request_tests(_require_service)
     def check_permission():
         """Decorator for checking that the service is present in the request"""
 
     return check_permission
-
-
-def service_api_key_required():
-    """
-    Returns a decorator that checks if request includes a service API key to authorize it.
-    If it includes one, it adds the related service to the `request._service`, otherwise it
-    raises a NotAuthenticated error and returns 404.
-    """
-
-    def wrapper(function):
-        @wraps(function)
-        def service_setter(_viewset, request, *args, **kwargs):
-            service = get_service_from_service_key(request)
-            request._service = service
-
-            return function(_viewset, request, *args, **kwargs)
-
-        return service_setter
-
-    return wrapper

@@ -18,10 +18,6 @@ class ServiceNotIdentifiedError(ATVError):
     """The requester failed to identify the service they are coming from"""
 
 
-class MissingServiceAPIKey(ATVError):
-    """The request required a Service API Key but it was not present on the request"""
-
-
 class MaximumFileCountExceededException(APIException):
     status_code = status.HTTP_400_BAD_REQUEST
     default_code = "MAXIMUM_FILE_COUNT_EXCEEDED"

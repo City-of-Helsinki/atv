@@ -4,25 +4,7 @@ from rest_framework.exceptions import NotAuthenticated
 
 from services.models import ServiceAPIKey
 from services.tests.factories import ServiceClientIdFactory
-from services.utils import get_service_from_request, get_service_from_service_key
-
-
-def test_get_service_from_service_key(rf, settings, service):
-    _service_api_key, key = ServiceAPIKey.objects.create_key(
-        service=service,
-        name=f"{service.name} api key",
-    )
-
-    credentials = {settings.API_KEY_CUSTOM_HEADER: key}
-    request = rf.request(**credentials)
-
-    assert get_service_from_service_key(request) == service
-
-
-def test_get_service_from_service_key_no_raise_exception(rf):
-    request = rf.request()
-
-    assert get_service_from_service_key(request, raise_exception=False) is None
+from services.utils import get_service_from_request
 
 
 def test_get_service_from_request(rf, user, service):
