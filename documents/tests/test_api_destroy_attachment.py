@@ -135,8 +135,9 @@ def test_destroy_attachment_owner_after_lock_date(user, service):
 def test_destroy_attachment_staff_no_permissions(user, service):
     api_client = get_user_service_client(user, service)
 
-    group = GroupFactory(name=service.name)
-    assign_perm(ServicePermissions.MANAGE_ATTACHMENTS.value, group, service)
+    group = GroupFactory()
+    assign_perm(ServicePermissions.VIEW_ATTACHMENTS.value, group, service)
+    assign_perm(ServicePermissions.DELETE_ATTACHMENTS.value, group, service)
     user.groups.add(group)
 
     attachment = AttachmentFactory(

@@ -89,6 +89,7 @@ def test_create_anonymous_document(service_api_client, snapshot):
 
 @freeze_time("2021-06-30T12:00:00+03:00")
 def test_create_authenticated_document(user, service, snapshot):
+    """Normal user creates a document which is attached to his/her account."""
     api_client = get_user_service_client(user, service)
 
     response = api_client.post(

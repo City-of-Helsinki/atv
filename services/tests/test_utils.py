@@ -24,14 +24,13 @@ def test_get_service_from_request(rf, user, service):
 def test_get_service_from_request_not_authenticated(
     rf, settings, anonymous_user, service
 ):
-    _service_api_key, key = ServiceAPIKey.objects.create_key(
+    request = rf.request()
+    service_api_key, key = ServiceAPIKey.objects.create_key(
         service=service,
         name=f"{service.name} api key",
     )
-
-    credentials = {settings.API_KEY_CUSTOM_HEADER: key}
-    request = rf.request(**credentials)
-    request.user = anonymous_user
+    request.user = service_api_key.user
+    request.auth = service_api_key
 
     request_service = get_service_from_request(request)
 
@@ -41,6 +40,7 @@ def test_get_service_from_request_not_authenticated(
 def test_get_service_from_request_superuser_no_service(rf, superuser):
     request = rf.request()
     request.user = superuser
+    request.auth = None
 
     assert get_service_from_request(request) is None
 

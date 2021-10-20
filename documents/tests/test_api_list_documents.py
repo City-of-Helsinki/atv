@@ -13,7 +13,7 @@ from services.tests.factories import ServiceFactory
 from services.tests.utils import get_user_service_client
 
 
-def test_list_document_service_user(user):
+def test_list_document_service_admin_user(user):
     expected_document_id = "485af718-d9d1-46b9-ad7b-33ea054126e3"
     service1 = ServiceFactory(name="service-1")
     service2 = ServiceFactory(name="service-2")
@@ -116,11 +116,10 @@ def test_list_document_no_service(api_client, user):
     assert response.status_code == status.HTTP_403_FORBIDDEN
 
 
-def test_list_document_anonymous_user(api_client, anonymous_user):
-    api_client.user = anonymous_user
+def test_list_document_anonymous_user(api_client):
     response = api_client.get(reverse("documents-list"))
 
-    assert response.status_code == status.HTTP_403_FORBIDDEN
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
 
 @pytest.mark.parametrize(
