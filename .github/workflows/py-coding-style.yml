@@ -14,8 +14,6 @@ jobs:
         uses: actions/checkout@v2
       - name: Run black
         uses: psf/black@stable
-        with:
-          args: ". --check"
 
   flake8:
     name: Coding style - flake8
