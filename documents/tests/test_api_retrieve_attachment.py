@@ -81,7 +81,7 @@ def test_retrieve_attachment_no_permissions(api_client, attachment):
         )
     )
 
-    assert response.status_code == status.HTTP_403_FORBIDDEN
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
 
 def test_retrieve_attachment_document_not_found(superuser_api_client):

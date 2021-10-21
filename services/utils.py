@@ -1,38 +1,15 @@
 from typing import Optional
 
-from django.conf import settings
 from rest_framework.exceptions import NotAuthenticated
 
-from atv.exceptions import MissingServiceAPIKey
 from services.models import ServiceClientId
 
 from .models import Service, ServiceAPIKey
 
 
-def get_service_from_service_key(request, raise_exception: bool = True) -> Service:
-    key = request.META.get(settings.API_KEY_CUSTOM_HEADER)
-    service = None
-
-    try:
-        if not key:
-            raise MissingServiceAPIKey()
-
-        # get_from_key also checks that the key is still valid
-        service_key = ServiceAPIKey.objects.get_from_key(key)
-
-        if service_key.has_expired:
-            raise ServiceAPIKey.DoesNotExist()
-
-        service = service_key.service
-    except (
-        ServiceAPIKey.DoesNotExist,
-        Service.DoesNotExist,
-        MissingServiceAPIKey,
-    ):
-        if raise_exception:
-            raise NotAuthenticated()
-
-    return service
+def get_service_api_key_from_request(request) -> Optional[ServiceAPIKey]:
+    """Return API Key if it was used for authentication."""
+    return request.auth if isinstance(request.auth, ServiceAPIKey) else None
 
 
 def get_service_from_request(
@@ -52,12 +29,9 @@ def get_service_from_request(
 
     request._service = None
 
-    if not request.user.is_authenticated:
-        request._service = get_service_from_service_key(
-            request, raise_exception=raise_exception
-        )
-
-    if not request.user.is_superuser:
+    if api_key := get_service_api_key_from_request(request):
+        request._service = api_key.service
+    elif not request.user.is_superuser:
         if auth := getattr(request, "auth", None):
             if client_id := auth.data.get("azp"):
                 service_client_id = (

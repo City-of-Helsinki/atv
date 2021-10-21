@@ -2,7 +2,7 @@ import pytest
 from rest_framework import status
 from rest_framework.exceptions import NotAuthenticated, ValidationError
 
-from atv.exceptions import ATVError, MissingServiceAPIKey, ServiceNotIdentifiedError
+from atv.exceptions import ATVError, ServiceNotIdentifiedError
 from utils.exceptions import (
     custom_exception_handler,
     get_error_response,
@@ -12,7 +12,7 @@ from utils.exceptions import (
 
 @pytest.mark.parametrize(
     "exception_class",
-    [ATVError, ServiceNotIdentifiedError, MissingServiceAPIKey],
+    [ATVError, ServiceNotIdentifiedError],
 )
 def test_sentry_before_send_exclude_atv_error(exception_class):
     hint = {"exc_info": (exception_class, exception_class("test"), None)}

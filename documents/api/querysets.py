@@ -1,13 +1,16 @@
 from django.db.models import QuerySet
+from rest_framework.exceptions import PermissionDenied
 
 from services.enums import ServicePermissions
-from services.models import Service
+from services.models import Service, ServiceAPIKey
 from users.models import User
 
 from ..models import Attachment, Document
 
 
-def get_document_queryset(user: User, service: Service) -> QuerySet:
+def get_document_queryset(
+    user: User, service: Service, api_key: ServiceAPIKey = None
+) -> QuerySet:
     """
     Only allow for the user to see Documents that belong to them or their Service.
 
@@ -33,15 +36,19 @@ def get_document_queryset(user: User, service: Service) -> QuerySet:
     # If the user doesn't have permissions to view that Service,
     # only show the Documents that belong to them
     staff_can_view = user.has_perm(ServicePermissions.VIEW_DOCUMENTS.value, service)
-    staff_can_manage = user.has_perm(ServicePermissions.MANAGE_DOCUMENTS.value, service)
 
-    if not staff_can_view and not staff_can_manage:
+    if not staff_can_view:
+        if api_key:
+            raise PermissionDenied()
+
         qs_filters["user_id"] = user.id
 
     return Document.objects.filter(**qs_filters)
 
 
-def get_attachment_queryset(user: User, service: Service) -> QuerySet:
+def get_attachment_queryset(
+    user: User, service: Service, api_key: ServiceAPIKey = None
+) -> QuerySet:
     """
     Only allow for the user to see Attachments that belong to their Documents
     or their Service.
@@ -67,11 +74,11 @@ def get_attachment_queryset(user: User, service: Service) -> QuerySet:
     # If the user doesn't have permissions to view that Service,
     # only show the Documents that belong to them
     staff_can_view = user.has_perm(ServicePermissions.VIEW_ATTACHMENTS.value, service)
-    staff_can_manage = user.has_perm(
-        ServicePermissions.MANAGE_ATTACHMENTS.value, service
-    )
 
-    if not staff_can_view and not staff_can_manage:
+    if not staff_can_view:
+        if api_key:
+            raise PermissionDenied()
+
         qs_filters["document__user_id"] = user.id
 
     return Attachment.objects.filter(**qs_filters)

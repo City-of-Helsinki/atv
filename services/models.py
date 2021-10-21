@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from rest_framework_api_key.models import AbstractAPIKey
@@ -24,6 +25,18 @@ class ServiceAPIKey(AbstractAPIKey):
         Service,
         on_delete=models.CASCADE,
         related_name="api_keys",
+    )
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+        related_name="service_api_key",
+        verbose_name=_("user"),
+        help_text=_(
+            "User to which the permissions of the API key will be attached to. "
+            "A service user will be automatically generated."
+        ),
     )
 
     class Meta(AbstractAPIKey.Meta):

@@ -222,7 +222,8 @@ def test_update_document_owner_invalid_fields(user):
 def test_update_document_staff(user, service, snapshot):
     api_client = get_user_service_client(user, service)
     group = GroupFactory()
-    assign_perm(ServicePermissions.MANAGE_DOCUMENTS.value, group, service)
+    assign_perm(ServicePermissions.VIEW_DOCUMENTS.value, group, service)
+    assign_perm(ServicePermissions.CHANGE_DOCUMENTS.value, group, service)
     user.groups.add(group)
 
     document = DocumentFactory(
@@ -250,7 +251,8 @@ def test_update_document_staff(user, service, snapshot):
 def test_update_document_staff_non_draft(user, service, snapshot):
     api_client = get_user_service_client(user, service)
     group = GroupFactory()
-    assign_perm(ServicePermissions.MANAGE_DOCUMENTS.value, group, service)
+    assign_perm(ServicePermissions.VIEW_DOCUMENTS.value, group, service)
+    assign_perm(ServicePermissions.CHANGE_DOCUMENTS.value, group, service)
     user.groups.add(group)
 
     document = DocumentFactory(
@@ -278,7 +280,8 @@ def test_update_document_staff_non_draft(user, service, snapshot):
 def test_update_document_staff_after_lock_date(user, service):
     api_client = get_user_service_client(user, service)
     group = GroupFactory()
-    assign_perm(ServicePermissions.MANAGE_DOCUMENTS.value, group, service)
+    assign_perm(ServicePermissions.VIEW_DOCUMENTS.value, group, service)
+    assign_perm(ServicePermissions.CHANGE_DOCUMENTS.value, group, service)
     user.groups.add(group)
 
     document = DocumentFactory(
@@ -305,7 +308,8 @@ def test_update_document_staff_after_lock_date(user, service):
 def test_update_document_staff_another_service(user, service):
     api_client = get_user_service_client(user, service)
     group = GroupFactory()
-    assign_perm(ServicePermissions.MANAGE_DOCUMENTS.value, group, service)
+    assign_perm(ServicePermissions.VIEW_DOCUMENTS.value, group, service)
+    assign_perm(ServicePermissions.CHANGE_DOCUMENTS.value, group, service)
     user.groups.add(group)
 
     document = DocumentFactory(
@@ -330,7 +334,8 @@ def test_update_document_staff_another_service(user, service):
 def test_update_document_staff_update_content_fails(user, service):
     api_client = get_user_service_client(user, service)
     group = GroupFactory()
-    assign_perm(ServicePermissions.MANAGE_DOCUMENTS.value, group, service)
+    assign_perm(ServicePermissions.VIEW_DOCUMENTS.value, group, service)
+    assign_perm(ServicePermissions.CHANGE_DOCUMENTS.value, group, service)
     user.groups.add(group)
 
     document = DocumentFactory(
@@ -356,7 +361,8 @@ def test_update_document_staff_update_content_fails(user, service):
 def test_update_document_staff_update_attachments_fails(user, service):
     api_client = get_user_service_client(user, service)
     group = GroupFactory()
-    assign_perm(ServicePermissions.MANAGE_DOCUMENTS.value, group, service)
+    assign_perm(ServicePermissions.VIEW_DOCUMENTS.value, group, service)
+    assign_perm(ServicePermissions.CHANGE_DOCUMENTS.value, group, service)
     user.groups.add(group)
 
     document = DocumentFactory(

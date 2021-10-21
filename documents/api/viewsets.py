@@ -8,11 +8,10 @@ from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import filters, status
 from rest_framework.exceptions import MethodNotAllowed, PermissionDenied
 from rest_framework.parsers import FileUploadParser, MultiPartParser
-from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework_extensions.mixins import NestedViewSetMixin
 
-from atv.decorators import login_required, not_allowed, service_required
+from atv.decorators import not_allowed, service_required
 from atv.exceptions import (
     DocumentLockedException,
     InvalidFieldException,
@@ -20,7 +19,7 @@ from atv.exceptions import (
 )
 from audit_log.viewsets import AuditLoggingModelViewSet
 from services.enums import ServicePermissions
-from services.utils import get_service_from_request
+from services.utils import get_service_api_key_from_request, get_service_from_request
 from utils.uuid import is_valid_uuid
 
 from ..consts import VALID_OWNER_PATCH_FIELDS
@@ -38,7 +37,6 @@ from .querysets import get_attachment_queryset, get_document_queryset
 
 @extend_schema_view(**attachment_viewset_docs)
 class AttachmentViewSet(AuditLoggingModelViewSet, NestedViewSetMixin):
-    permission_classes = [AllowAny]
     serializer_class = AttachmentSerializer
     parser_classes = [MultiPartParser, FileUploadParser]
     filter_backends = [filters.OrderingFilter]
@@ -48,11 +46,11 @@ class AttachmentViewSet(AuditLoggingModelViewSet, NestedViewSetMixin):
     def get_queryset(self):
         user = self.request.user
         service = get_service_from_request(self.request)
+        service_api_key = get_service_api_key_from_request(self.request)
 
-        return get_attachment_queryset(user, service)
+        return get_attachment_queryset(user, service, service_api_key)
 
-    @login_required()
-    def retrieve(self, request, pk, *args, **kwargs):
+    def retrieve(self, request, *args, **kwargs):
         attachment: Attachment = self.get_object()
 
         return FileResponse(
@@ -60,7 +58,6 @@ class AttachmentViewSet(AuditLoggingModelViewSet, NestedViewSetMixin):
             as_attachment=True,
         )
 
-    @login_required()
     def destroy(self, request, *args, **kwargs):
         attachment = self.get_object()
 
@@ -87,7 +84,6 @@ class AttachmentViewSet(AuditLoggingModelViewSet, NestedViewSetMixin):
 
         return super().destroy(request, *args, **kwargs)
 
-    @login_required()
     def create(self, request, *args, **kwargs):
         document_id = kwargs.get("document_id")
 
@@ -99,6 +95,7 @@ class AttachmentViewSet(AuditLoggingModelViewSet, NestedViewSetMixin):
             get_document_queryset(
                 request.user,
                 get_service_from_request(self.request),
+                get_service_api_key_from_request(self.request),
             ),
             id=document_id,
         )
@@ -150,8 +147,6 @@ class AttachmentViewSet(AuditLoggingModelViewSet, NestedViewSetMixin):
 class DocumentViewSet(AuditLoggingModelViewSet):
     parser_classes = [MultiPartParser]
     serializer_class = DocumentSerializer
-    # Permission checking is done by the decorators on a method basis
-    permission_classes = [AllowAny]
     # Filtering/sorting
     filter_backends = [
         DjangoFilterBackend,
@@ -167,14 +162,12 @@ class DocumentViewSet(AuditLoggingModelViewSet):
     def get_queryset(self):
         user = self.request.user
         service = get_service_from_request(self.request)
+        service_api_key = get_service_api_key_from_request(self.request)
+        return get_document_queryset(user, service, service_api_key)
 
-        return get_document_queryset(user, service)
-
-    @login_required()
     def retrieve(self, request, *args, **kwargs):
         return super().retrieve(request, *args, **kwargs)
 
-    @login_required()
     @service_required()
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
@@ -182,8 +175,15 @@ class DocumentViewSet(AuditLoggingModelViewSet):
     @transaction.atomic()
     @extend_schema(request=CreateAnonymousDocumentSerializer)
     def create(self, request, *args, **kwargs):
-        user = request.user if request.user.is_authenticated else None
         service = get_service_from_request(request)
+        api_key = get_service_api_key_from_request(request)
+
+        user = request.user if not api_key else None
+
+        if api_key and not request.user.has_perm(
+            ServicePermissions.ADD_DOCUMENTS, service
+        ):
+            raise PermissionDenied()
 
         data = request.data
 
@@ -204,7 +204,6 @@ class DocumentViewSet(AuditLoggingModelViewSet):
         )
 
     @transaction.atomic()
-    @login_required()
     def partial_update(self, request, pk, *args, **kwargs):
         document = self.get_object()
 
@@ -213,7 +212,7 @@ class DocumentViewSet(AuditLoggingModelViewSet):
 
         # The user is a staff member for the document's service
         is_staff = request.user.has_perm(
-            ServicePermissions.MANAGE_DOCUMENTS, document.service
+            ServicePermissions.CHANGE_DOCUMENTS, document.service
         )
 
         if not is_owner and not is_staff:
@@ -253,7 +252,6 @@ class DocumentViewSet(AuditLoggingModelViewSet):
 
         return super().update(request, *args, **kwargs)
 
-    @login_required()
     def destroy(self, request, *args, **kwargs):
         document = self.get_object()
 
@@ -262,7 +260,7 @@ class DocumentViewSet(AuditLoggingModelViewSet):
 
         # The user is a staff member for the document's service
         is_staff = request.user.has_perm(
-            ServicePermissions.MANAGE_DOCUMENTS, document.service
+            ServicePermissions.DELETE_DOCUMENTS, document.service
         )
 
         if not is_owner and not is_staff:

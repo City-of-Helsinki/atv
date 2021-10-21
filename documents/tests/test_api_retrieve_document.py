@@ -92,8 +92,8 @@ def test_list_document_no_permissions(api_client):
     response = api_client.get(reverse("documents-detail", args=[uuid.uuid4()]))
 
     body = response.json()
-    assert response.status_code == status.HTTP_403_FORBIDDEN
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
     assert body == get_error_response(
-        "PERMISSION_DENIED",
-        "You do not have permission to perform this action.",
+        "NOT_AUTHENTICATED",
+        "Authentication credentials were not provided.",
     )

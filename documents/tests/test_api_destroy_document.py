@@ -111,8 +111,9 @@ def test_destroy_document_owner_after_lock_date(user, service):
 def test_destroy_document_staff(user, service):
     api_client = get_user_service_client(user, service)
 
-    group = GroupFactory(name=service.name)
-    assign_perm(ServicePermissions.MANAGE_DOCUMENTS.value, group, service)
+    group = GroupFactory()
+    assign_perm(ServicePermissions.VIEW_DOCUMENTS.value, group, service)
+    assign_perm(ServicePermissions.DELETE_DOCUMENTS.value, group, service)
     user.groups.add(group)
 
     document = DocumentFactory(
@@ -131,8 +132,9 @@ def test_destroy_document_staff(user, service):
 def test_destroy_document_staff_non_draft(user, service):
     api_client = get_user_service_client(user, service)
 
-    group = GroupFactory(name=service.name)
-    assign_perm(ServicePermissions.MANAGE_DOCUMENTS.value, group, service)
+    group = GroupFactory()
+    assign_perm(ServicePermissions.VIEW_DOCUMENTS.value, group, service)
+    assign_perm(ServicePermissions.DELETE_DOCUMENTS.value, group, service)
     user.groups.add(group)
 
     document = DocumentFactory(
@@ -152,8 +154,9 @@ def test_destroy_document_staff_non_draft(user, service):
 def test_destroy_document_staff_after_lock_date(user, service):
     api_client = get_user_service_client(user, service)
 
-    group = GroupFactory(name=service.name)
-    assign_perm(ServicePermissions.MANAGE_DOCUMENTS.value, group, service)
+    group = GroupFactory()
+    assign_perm(ServicePermissions.VIEW_DOCUMENTS.value, group, service)
+    assign_perm(ServicePermissions.DELETE_DOCUMENTS.value, group, service)
     user.groups.add(group)
 
     document = DocumentFactory(
@@ -179,8 +182,9 @@ def test_destroy_document_staff_after_lock_date(user, service):
 def test_destroy_document_staff_another_service(user, service):
     api_client = get_user_service_client(user, service)
 
-    group = GroupFactory(name=service.name)
-    assign_perm(ServicePermissions.MANAGE_DOCUMENTS.value, group, service)
+    group = GroupFactory()
+    assign_perm(ServicePermissions.VIEW_DOCUMENTS.value, group, service)
+    assign_perm(ServicePermissions.DELETE_DOCUMENTS.value, group, service)
     user.groups.add(group)
 
     document = DocumentFactory()
