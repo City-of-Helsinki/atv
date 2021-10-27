@@ -84,9 +84,7 @@ def test_update_document_owner(user, snapshot):
     }
 
     response = api_client.patch(
-        reverse("documents-detail", args=[document.id]),
-        data,
-        format="multipart",
+        reverse("documents-detail", args=[document.id]), data, format="multipart"
     )
 
     assert Document.objects.count() == 1
@@ -117,10 +115,7 @@ def test_update_document_owner(user, snapshot):
 def test_update_document_owner_someone_elses_document(
     user,
 ):
-    document = DocumentFactory(
-        id="2d2b7a36-a306-4e35-990f-13aea04263ff",
-        draft=True,
-    )
+    document = DocumentFactory(id="2d2b7a36-a306-4e35-990f-13aea04263ff", draft=True)
     api_client = get_user_service_client(user, document.service)
     # Check that the owner of the document is different than the one
     # making the request
@@ -135,17 +130,14 @@ def test_update_document_owner_someone_elses_document(
 
     assert response.status_code == status.HTTP_404_NOT_FOUND
     assert body == get_error_response(
-        "NOT_FOUND",
-        "No Document matches the given query.",
+        "NOT_FOUND", "No Document matches the given query."
     )
 
 
 @freeze_time("2021-06-30T12:00:00+03:00")
 def test_update_document_owner_non_draft(user):
     document = DocumentFactory(
-        id="2d2b7a36-a306-4e35-990f-13aea04263ff",
-        draft=False,
-        user=user,
+        id="2d2b7a36-a306-4e35-990f-13aea04263ff", draft=False, user=user
     )
     api_client = get_user_service_client(user, document.service)
 
@@ -158,8 +150,7 @@ def test_update_document_owner_non_draft(user):
 
     assert response.status_code == status.HTTP_403_FORBIDDEN
     assert body == get_error_response(
-        "DOCUMENT_LOCKED",
-        "Unable to modify document - it's no longer a draft",
+        "DOCUMENT_LOCKED", "Unable to modify document - it's no longer a draft"
     )
 
 
@@ -182,17 +173,14 @@ def test_update_document_owner_after_lock_date(user):
 
     assert response.status_code == status.HTTP_403_FORBIDDEN
     assert body == get_error_response(
-        "DOCUMENT_LOCKED",
-        "Unable to modify document - it's no longer a draft",
+        "DOCUMENT_LOCKED", "Unable to modify document - it's no longer a draft"
     )
 
 
 @freeze_time("2021-06-30T12:00:00")
 def test_update_document_owner_invalid_fields(user):
     document = DocumentFactory(
-        id="2d2b7a36-a306-4e35-990f-13aea04263ff",
-        draft=True,
-        user=user,
+        id="2d2b7a36-a306-4e35-990f-13aea04263ff", draft=True, user=user
     )
     api_client = get_user_service_client(user, document.service)
 
@@ -224,23 +212,44 @@ def test_update_document_staff(user, service, snapshot):
     group = GroupFactory()
     assign_perm(ServicePermissions.VIEW_DOCUMENTS.value, group, service)
     assign_perm(ServicePermissions.CHANGE_DOCUMENTS.value, group, service)
+    assign_perm(ServicePermissions.ADD_ATTACHMENTS.value, group, service)
     user.groups.add(group)
 
     document = DocumentFactory(
-        id="2d2b7a36-a306-4e35-990f-13aea04263ff",
-        draft=True,
-        service=service,
+        id="2d2b7a36-a306-4e35-990f-13aea04263ff", draft=True, service=service
     )
     assert Document.objects.count() == 1
 
-    data = {**VALID_DOCUMENT_DATA}
-    data.pop("content")
+    data = {
+        **VALID_DOCUMENT_DATA,
+        "attachments": [
+            SimpleUploadedFile(
+                "document1.pdf", b"file_content", content_type="application/pdf"
+            ),
+        ],
+    }
 
-    response = api_client.patch(reverse("documents-detail", args=[document.id]), data)
+    response = api_client.patch(
+        reverse("documents-detail", args=[document.id]), data, format="multipart"
+    )
 
     assert Document.objects.count() == 1
+    assert document.attachments.count() == 1
 
     body = response.json()
+    attachment = document.attachments.first()
+
+    assert body.pop("attachments", []) == [
+        {
+            "created_at": "2021-06-30T12:00:00+03:00",
+            "filename": "document1.pdf",
+            "href": f"http://testserver/v1/documents/2d2b7a36-a306-4e35-990f-13aea04263ff/attachments/{attachment.id}/",
+            "id": attachment.id,
+            "media_type": "application/pdf",
+            "size": 12,
+            "updated_at": "2021-06-30T12:00:00+03:00",
+        }
+    ]
 
     assert response.status_code == status.HTTP_200_OK
     assert body.pop("user_id", None) == str(document.user.uuid)
@@ -256,18 +265,12 @@ def test_update_document_staff_non_draft(user, service, snapshot):
     user.groups.add(group)
 
     document = DocumentFactory(
-        id="2d2b7a36-a306-4e35-990f-13aea04263ff",
-        service=service,
-        draft=False,
+        id="2d2b7a36-a306-4e35-990f-13aea04263ff", service=service, draft=False
     )
 
     data = {**VALID_DOCUMENT_DATA}
-    data.pop("content")
 
-    response = api_client.patch(
-        reverse("documents-detail", args=[document.id]),
-        data,
-    )
+    response = api_client.patch(reverse("documents-detail", args=[document.id]), data)
 
     body = response.json()
 
@@ -299,8 +302,7 @@ def test_update_document_staff_after_lock_date(user, service):
 
     assert response.status_code == status.HTTP_403_FORBIDDEN
     assert body == get_error_response(
-        "DOCUMENT_LOCKED",
-        "Unable to modify document - it's no longer a draft",
+        "DOCUMENT_LOCKED", "Unable to modify document - it's no longer a draft"
     )
 
 
@@ -312,9 +314,7 @@ def test_update_document_staff_another_service(user, service):
     assign_perm(ServicePermissions.CHANGE_DOCUMENTS.value, group, service)
     user.groups.add(group)
 
-    document = DocumentFactory(
-        id="2d2b7a36-a306-4e35-990f-13aea04263ff",
-    )
+    document = DocumentFactory(id="2d2b7a36-a306-4e35-990f-13aea04263ff")
 
     response = api_client.patch(
         reverse("documents-detail", args=[document.id]),
@@ -325,68 +325,7 @@ def test_update_document_staff_another_service(user, service):
 
     assert response.status_code == status.HTTP_404_NOT_FOUND
     assert body == get_error_response(
-        "NOT_FOUND",
-        "No Document matches the given query.",
-    )
-
-
-@freeze_time("2021-06-30T12:00:00")
-def test_update_document_staff_update_content_fails(user, service):
-    api_client = get_user_service_client(user, service)
-    group = GroupFactory()
-    assign_perm(ServicePermissions.VIEW_DOCUMENTS.value, group, service)
-    assign_perm(ServicePermissions.CHANGE_DOCUMENTS.value, group, service)
-    user.groups.add(group)
-
-    document = DocumentFactory(
-        id="2d2b7a36-a306-4e35-990f-13aea04263ff",
-        service=service,
-    )
-
-    response = api_client.patch(
-        reverse("documents-detail", args=[document.id]),
-        {"content": json.dumps({"value": "secret stuff"})},
-    )
-
-    body = response.json()
-
-    assert response.status_code == status.HTTP_403_FORBIDDEN
-    assert body == get_error_response(
-        "PERMISSION_DENIED",
-        "You cannot modify the contents of the document",
-    )
-
-
-@freeze_time("2021-06-30T12:00:00")
-def test_update_document_staff_update_attachments_fails(user, service):
-    api_client = get_user_service_client(user, service)
-    group = GroupFactory()
-    assign_perm(ServicePermissions.VIEW_DOCUMENTS.value, group, service)
-    assign_perm(ServicePermissions.CHANGE_DOCUMENTS.value, group, service)
-    user.groups.add(group)
-
-    document = DocumentFactory(
-        id="2d2b7a36-a306-4e35-990f-13aea04263ff",
-        service=service,
-    )
-
-    response = api_client.patch(
-        reverse("documents-detail", args=[document.id]),
-        {
-            "attachments": [
-                SimpleUploadedFile(
-                    "document1.pdf", b"file_content", content_type="application/pdf"
-                )
-            ]
-        },
-    )
-
-    body = response.json()
-
-    assert response.status_code == status.HTTP_403_FORBIDDEN
-    assert body == get_error_response(
-        "PERMISSION_DENIED",
-        "You cannot modify the contents of the document",
+        "NOT_FOUND", "No Document matches the given query."
     )
 
 
@@ -404,8 +343,7 @@ def test_update_document_not_found(superuser_api_client):
 
     assert response.status_code == status.HTTP_404_NOT_FOUND
     assert body == get_error_response(
-        "NOT_FOUND",
-        "No Document matches the given query.",
+        "NOT_FOUND", "No Document matches the given query."
     )
 
 
