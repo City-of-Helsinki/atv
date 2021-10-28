@@ -2,7 +2,6 @@ from django.db import transaction
 from django.http import FileResponse
 from django.shortcuts import get_object_or_404
 from django.utils.timezone import now
-from django.utils.translation import gettext_lazy as _
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import filters, status
@@ -214,6 +213,9 @@ class DocumentViewSet(AuditLoggingModelViewSet):
         is_staff = request.user.has_perm(
             ServicePermissions.CHANGE_DOCUMENTS, document.service
         )
+        staff_can_add_attachments = request.user.has_perm(
+            ServicePermissions.ADD_ATTACHMENTS, document.service
+        )
 
         if not is_owner and not is_staff:
             raise PermissionDenied()
@@ -227,12 +229,11 @@ class DocumentViewSet(AuditLoggingModelViewSet):
             if not keys.issubset(VALID_OWNER_PATCH_FIELDS):
                 raise InvalidFieldException(fields=keys - VALID_OWNER_PATCH_FIELDS)
 
-        if is_staff and ("content" in request.data or "attachments" in request.data):
-            raise PermissionDenied(_("You cannot modify the contents of the document"))
-
         attachments = request.FILES.getlist("attachments", [])
 
         for attached_file in attachments:
+            if is_staff and not staff_can_add_attachments:
+                raise PermissionDenied()
             data = {
                 "document": document.id,
                 "file": attached_file,
