@@ -1,6 +1,7 @@
 import random
 from datetime import timezone
 
+import pytest
 from dateutil.relativedelta import relativedelta
 from dateutil.utils import today
 from freezegun import freeze_time
@@ -132,12 +133,14 @@ def test_destroy_attachment_owner_after_lock_date(user, service):
 
 
 @freeze_time("2021-06-30T12:00:00+03:00")
-def test_destroy_attachment_staff_no_permissions(user, service):
+@pytest.mark.parametrize("has_permission", [True, False])
+def test_destroy_attachment_staff(user, service, has_permission):
     api_client = get_user_service_client(user, service)
 
     group = GroupFactory()
     assign_perm(ServicePermissions.VIEW_ATTACHMENTS.value, group, service)
-    assign_perm(ServicePermissions.DELETE_ATTACHMENTS.value, group, service)
+    if has_permission:
+        assign_perm(ServicePermissions.DELETE_ATTACHMENTS.value, group, service)
     user.groups.add(group)
 
     attachment = AttachmentFactory(
@@ -152,14 +155,18 @@ def test_destroy_attachment_staff_no_permissions(user, service):
         )
     )
 
-    body = response.json()
+    if has_permission:
+        assert response.status_code == status.HTTP_204_NO_CONTENT
+        assert Attachment.objects.count() == 0
+    else:
+        body = response.json()
 
-    assert Attachment.objects.count() == 1
-    assert response.status_code == status.HTTP_403_FORBIDDEN
-    assert body == get_error_response(
-        "PERMISSION_DENIED",
-        "You do not have permission to perform this action.",
-    )
+        assert Attachment.objects.count() == 1
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert body == get_error_response(
+            "PERMISSION_DENIED",
+            "You do not have permission to perform this action.",
+        )
 
 
 # OTHER STUFF
