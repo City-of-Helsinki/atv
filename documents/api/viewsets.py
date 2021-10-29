@@ -62,10 +62,11 @@ class AttachmentViewSet(AuditLoggingModelViewSet, NestedViewSetMixin):
 
         # The user is the owner of the document
         is_owner = request.user == attachment.document.user
+        staff_can_delete = request.user.has_perm(
+            ServicePermissions.DELETE_ATTACHMENTS, attachment.document.service
+        )
 
-        # Only owners are allowed to remove the attachments,
-        # staff users aren't.
-        if not is_owner:
+        if not is_owner and not staff_can_delete:
             raise PermissionDenied()
 
         not_draft = is_owner and not attachment.document.draft
@@ -101,8 +102,11 @@ class AttachmentViewSet(AuditLoggingModelViewSet, NestedViewSetMixin):
 
         # The user is the owner of the document
         is_owner = request.user == document.user
+        staff_can_create = request.user.has_perm(
+            ServicePermissions.ADD_ATTACHMENTS, document.service
+        )
 
-        if not is_owner:
+        if not is_owner and not staff_can_create:
             raise PermissionDenied()
 
         if is_owner and not document.draft:

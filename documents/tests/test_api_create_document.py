@@ -113,7 +113,7 @@ def test_create_authenticated_document(user, service, snapshot):
 
 
 @freeze_time("2021-06-30T12:00:00+03:00")
-def test_create_anonymous_document_no_service(api_client, snapshot):
+def test_create_anonymous_document_no_service(api_client):
     response = api_client.post(
         reverse("documents-list"), VALID_DOCUMENT_DATA, format="multipart"
     )

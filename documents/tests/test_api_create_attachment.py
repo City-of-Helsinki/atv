@@ -2,12 +2,15 @@ import pytest
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import override_settings
 from freezegun import freeze_time
+from guardian.shortcuts import assign_perm
 from rest_framework import status
 from rest_framework.reverse import reverse
 
+from atv.tests.factories import GroupFactory
 from audit_log.models import AuditLogEntry
 from documents.models import Attachment
 from documents.tests.factories import DocumentFactory
+from services.enums import ServicePermissions
 from services.tests.utils import get_user_service_client
 from utils.exceptions import get_error_response
 
@@ -23,6 +26,9 @@ def document_data():
     }
 
 
+# OWNER-RELATED ACTIONS
+
+
 @freeze_time("2021-06-30T12:00:00+03:00")
 def test_create_attachment(user, service, document_data, snapshot):
     api_client = get_user_service_client(user, service)
@@ -34,8 +40,7 @@ def test_create_attachment(user, service, document_data, snapshot):
     )
 
     response = api_client.post(
-        reverse("documents-attachments-list", args=[document.id]),
-        document_data,
+        reverse("documents-attachments-list", args=[document.id]), document_data
     )
 
     assert response.status_code == status.HTTP_201_CREATED
@@ -55,12 +60,10 @@ def test_create_attachment_other_document(user, service):
     api_client = get_user_service_client(user, service)
 
     response = api_client.post(
-        reverse("documents-attachments-list", args=[document.id]),
-        {},
+        reverse("documents-attachments-list", args=[document.id]), {}
     )
 
     body = response.json()
-
     assert response.status_code == status.HTTP_404_NOT_FOUND
     assert body == get_error_response(
         "NOT_FOUND",
@@ -84,7 +87,6 @@ def test_create_attachment_document_not_draft(user, service):
     )
 
     body = response.json()
-
     assert response.status_code == status.HTTP_403_FORBIDDEN
     assert body == get_error_response(
         "DOCUMENT_LOCKED",
@@ -97,12 +99,10 @@ def test_create_attachment_missing_document_id(user, service, document_data, sna
     api_client = get_user_service_client(user, service)
 
     response = api_client.post(
-        reverse("documents-attachments-list", args=[None]),
-        document_data,
+        reverse("documents-attachments-list", args=[None]), document_data
     )
 
     body = response.json()
-
     assert response.status_code == status.HTTP_400_BAD_REQUEST
     assert body == get_error_response(
         "MISSING_PARAMETER",
@@ -119,7 +119,6 @@ def test_create_document_file_limit(user, service, snapshot, settings):
         service=service,
         draft=True,
     )
-
     data = {
         "file": SimpleUploadedFile(
             "document1.pdf",
@@ -142,6 +141,53 @@ def test_create_document_file_limit(user, service, snapshot, settings):
     )
 
 
+# STAFF-RELATED ACTION
+
+
+@freeze_time("2021-06-30T12:00:00+03:00")
+@pytest.mark.parametrize("has_permission", [True, False])
+def test_create_attachment_staff(
+    user, service, document_data, snapshot, has_permission
+):
+    api_client = get_user_service_client(user, service)
+
+    group = GroupFactory()
+    assign_perm(ServicePermissions.VIEW_DOCUMENTS.value, group, service)
+    assign_perm(ServicePermissions.VIEW_ATTACHMENTS.value, group, service)
+    if has_permission:
+        assign_perm(ServicePermissions.ADD_ATTACHMENTS.value, group, service)
+    user.groups.add(group)
+
+    document = DocumentFactory(
+        id="5209bdd0-e626-4a7d-aa4d-73aaf961a93f",
+        service=service,
+        draft=True,
+    )
+
+    response = api_client.post(
+        reverse("documents-attachments-list", args=[document.id]), document_data
+    )
+
+    if has_permission:
+        assert response.status_code == status.HTTP_201_CREATED
+        body = response.json()
+        attachment_id = body.pop("id")
+        assert document.attachments.count() == 1
+        assert document.attachments.first().id == attachment_id
+        snapshot.assert_match(body)
+    else:
+        body = response.json()
+        assert document.attachments.count() == 0
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert body == get_error_response(
+            "PERMISSION_DENIED",
+            "You do not have permission to perform this action.",
+        )
+
+
+# OTHER STUFF
+
+
 def test_audit_log_is_created_when_creating(user, service, document_data, snapshot):
     api_client = get_user_service_client(user, service)
     document = DocumentFactory(
@@ -152,8 +198,7 @@ def test_audit_log_is_created_when_creating(user, service, document_data, snapsh
     )
 
     response = api_client.post(
-        reverse("documents-attachments-list", args=[document.id]),
-        document_data,
+        reverse("documents-attachments-list", args=[document.id]), document_data
     ).json()
 
     assert document.attachments.count() == 1
