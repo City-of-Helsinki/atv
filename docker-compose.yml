@@ -13,6 +13,27 @@ services:
           - pgdata:/var/lib/postgresql/data
         container_name: atv-db
 
+    elastic:
+        image: docker.elastic.co/elasticsearch/elasticsearch:7.15.2
+        environment:
+            - discovery.type=single-node
+            - bootstrap.memory_lock=true
+            - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+        volumes:
+            - elastic-data:/usr/share/elasticsearch/data
+        ports:
+            - 9200:9200
+        container_name: atv-elastic
+
+    kibana:
+        image: docker.elastic.co/kibana/kibana:7.15.2
+        ports:
+            - 5601:5601
+        environment:
+            ELASTICSEARCH_URL: http://atv-elastic:9200
+            ELASTICSEARCH_HOSTS: '["http://atv-elastic:9200"]'
+        container_name: atv-kibana
+
     django:
         build:
             context: .
@@ -33,6 +54,8 @@ services:
 
 volumes:
         pgdata:
+            driver: local
+        elastic-data:
             driver: local
         django-media-volume:
 

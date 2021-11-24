@@ -6,7 +6,7 @@ from audit_log.models import AuditLogEntry
 @admin.register(AuditLogEntry)
 class AuditLogEntryAdmin(admin.ModelAdmin):
     fields = ("id", "created_at", "message")
-    list_display = ("__str__", "created_at")
+    list_display = ("__str__", "created_at", "is_sent")
     list_filter = ("created_at", "is_sent")
     readonly_fields = ("id", "created_at", "message")
 

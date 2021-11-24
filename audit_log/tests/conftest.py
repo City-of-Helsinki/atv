@@ -25,9 +25,9 @@ def setup_audit_logging(settings):
     settings.ENABLE_SEND_AUDIT_LOG = True
     settings.CLEAR_AUDIT_LOG_ENTRIES = True
     settings.USE_X_FORWARDED_FOR = True
-    settings.ELASTICSEARCH_CLOUD_ID = "example:ZXhhbXBsZS5jb20kMSQx"
-    settings.ELASTICSEARCH_API_ID = "ELASTICSEARCH_API_ID"
-    settings.ELASTICSEARCH_API_KEY = "ELASTICSEARCH_API_KEY"
+    settings.ELASTIC_HOST = "localhost"
+    settings.ELASTIC_AUDIT_LOG_INDEX = "atv-test"
+    settings.ELASTIC_CREATE_DATA_STREAM = False
 
 
 register(AuditLogEntryFactory)
