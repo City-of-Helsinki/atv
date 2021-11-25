@@ -28,7 +28,7 @@ def test_send_audit_log_success(
         else:
             send_audit_log_entries()
 
-        assert AuditLogEntry.objects.first().is_sent == expected_status
+    assert AuditLogEntry.objects.first().is_sent == expected_status
 
 
 @pytest.mark.parametrize("management_command", [True, False])

@@ -19,27 +19,30 @@ def send_audit_log_entries():
         logger.info("Sending audit logs not enabled, skipping.")
         return
 
-    if not (
-        settings.ELASTICSEARCH_CLOUD_ID
-        and settings.ELASTICSEARCH_API_ID
-        and settings.ELASTICSEARCH_API_KEY
-    ):
+    if not (settings.ELASTIC_HOST and settings.ELASTIC_AUDIT_LOG_INDEX):
         logger.warning(
             "Trying to send audit logs to Elasticsearch without proper configuration, process skipped"
         )
         return
 
     es = Elasticsearch(
-        cloud_id=settings.ELASTICSEARCH_CLOUD_ID,
-        api_key=(settings.ELASTICSEARCH_API_ID, settings.ELASTICSEARCH_API_KEY),
+        host=settings.ELASTIC_HOST,
+        port=settings.ELASTIC_PORT,
+        use_ssl=settings.ELASTIC_SSL,
+        http_auth=(settings.ELASTIC_USERNAME, settings.ELASTIC_PASSWORD),
     )
     entries = AuditLogEntry.objects.filter(is_sent=False).order_by("created_at")
 
+    if settings.ELASTIC_CREATE_DATA_STREAM:
+        es.indices.create_data_stream(name=settings.ELASTIC_AUDIT_LOG_INDEX, ignore=400)
+
     for entry in entries.iterator():
+        # Elastic data stream require @timestamp
+        body = {"@timestamp": entry.timestamp, **entry.message}
+
         response = es.index(
-            index=settings.ELASTICSEARCH_APP_AUDIT_LOG_INDEX,
-            id=entry.id,
-            body=entry.message,
+            index=settings.ELASTIC_AUDIT_LOG_INDEX,
+            body=body,
         )
         if response.get("result") in ES_GOOD_STATUSES:
             AuditLogEntry.objects.filter(pk=entry.pk).update(is_sent=True)
