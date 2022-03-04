@@ -11,6 +11,7 @@ from rest_framework.reverse import reverse
 from audit_log.models import AuditLogEntry
 from documents.models import Attachment, Document
 from services.tests.utils import get_user_service_client
+from users.models import User
 from utils.exceptions import get_error_response
 
 VALID_DOCUMENT_DATA = {
@@ -253,3 +254,34 @@ def test_audit_log_is_created_when_creating(service_api_client, attachments):
         ).count()
         == 1
     )
+
+
+def test_create_document_user_id(service_api_client):
+    user_id = "6345c12c-36c8-4e81-bd18-d66e9b1f754d"
+    data = {**VALID_DOCUMENT_DATA, "user_id": user_id}
+
+    response = service_api_client.post(
+        reverse("documents-list"), data, format="multipart"
+    )
+    body = response.json()
+    assert response.status_code == status.HTTP_201_CREATED
+    assert Document.objects.count() == 1
+    assert User.objects.filter(uuid=user_id).exists() is True
+    assert body.get("user_id") == user_id
+
+
+def test_create_document_owner_user_id(user, service):
+    data = {
+        **VALID_DOCUMENT_DATA,
+        "user_id": "6345c12c-36c8-4e81-bd18-d66e9b1f754d"
+    }
+    api_client = get_user_service_client(user, service)
+
+    response = api_client.post(
+        reverse("documents-list"), data, format="multipart"
+    )
+    assert response.status_code == status.HTTP_403_FORBIDDEN
+
+    body = response.json()
+
+    assert body == get_error_response(code="PERMISSION_DENIED", detail="INVALID FIELD: user_id. API key required.")

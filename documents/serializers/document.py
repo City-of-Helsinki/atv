@@ -3,12 +3,14 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
+from rest_framework.exceptions import PermissionDenied
 
 from atv.exceptions import (
     DocumentLockedException,
     InvalidFieldException,
     MaximumFileCountExceededException,
 )
+from users.models import User
 
 from ..models import Document
 from .attachment import AttachmentSerializer, CreateAttachmentSerializer
@@ -52,6 +54,18 @@ class DocumentSerializer(serializers.ModelSerializer):
         if document.locked_after and document.locked_after <= now():
             raise DocumentLockedException()
 
+        user_id = self.initial_data.get("user_id", None)
+        if user_id:
+            if document.user_id:
+                raise PermissionDenied(detail="Document owner can not be changed.", code="invalid field: user_id")
+
+            user, created = User.objects.get_or_create(
+                uuid=user_id,
+                defaults={"username": f"User-{user_id}"}
+            )
+            document.user = user
+            document.save()
+
         return super().update(document, validated_data)
 
 
@@ -61,7 +75,7 @@ class CreateAnonymousDocumentSerializer(serializers.ModelSerializer):
 
     Also handles the creation of the associated Attachments through `CreateAttachmentSerializer`.
     """
-
+    user_id = serializers.UUIDField(source="user.uuid", required=False, default=None)
     attachments = serializers.ListField(child=serializers.FileField(), required=False)
     content = serializers.JSONField(
         required=True, decoder=None, encoder=DjangoJSONEncoder
@@ -73,6 +87,7 @@ class CreateAnonymousDocumentSerializer(serializers.ModelSerializer):
             "status",
             "type",
             "transaction_id",
+            "user_id",
             "business_id",
             "tos_function_id",
             "tos_record_id",
