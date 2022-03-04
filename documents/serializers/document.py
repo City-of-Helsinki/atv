@@ -24,6 +24,7 @@ class DocumentSerializer(serializers.ModelSerializer):
     content = serializers.JSONField(
         required=True, decoder=None, encoder=DjangoJSONEncoder
     )
+    service = serializers.CharField(source="service.name", required=False, read_only=True)
 
     class Meta:
         model = Document
@@ -33,6 +34,7 @@ class DocumentSerializer(serializers.ModelSerializer):
             "updated_at",
             "status",
             "type",
+            "service",
             "transaction_id",
             "user_id",
             "business_id",
