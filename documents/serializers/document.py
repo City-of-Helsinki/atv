@@ -12,8 +12,9 @@ from atv.exceptions import (
 )
 from users.models import User
 
-from ..models import Document
 from .attachment import AttachmentSerializer, CreateAttachmentSerializer
+from .status_history import StatusHistorySerializer
+from ..models import Document
 
 
 class DocumentSerializer(serializers.ModelSerializer):
@@ -26,7 +27,10 @@ class DocumentSerializer(serializers.ModelSerializer):
     content = serializers.JSONField(
         required=True, decoder=None, encoder=DjangoJSONEncoder
     )
-    service = serializers.CharField(source="service.name", required=False, read_only=True)
+    service = serializers.CharField(
+        source="service.name", required=False, read_only=True
+    )
+    status_histories = StatusHistorySerializer(many=True, read_only=True)
 
     class Meta:
         model = Document
@@ -35,6 +39,7 @@ class DocumentSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
             "status",
+            "status_histories",
             "type",
             "service",
             "transaction_id",
@@ -57,16 +62,26 @@ class DocumentSerializer(serializers.ModelSerializer):
         user_id = self.initial_data.get("user_id", None)
         if user_id:
             if document.user_id:
-                raise PermissionDenied(detail="Document owner can not be changed.", code="invalid field: user_id")
+                raise PermissionDenied(
+                    detail="Document owner can not be changed.",
+                    code="invalid field: user_id",
+                )
 
             user, created = User.objects.get_or_create(
-                uuid=user_id,
-                defaults={"username": f"User-{user_id}"}
+                uuid=user_id, defaults={"username": f"User-{user_id}"}
             )
             document.user = user
             document.save()
 
-        return super().update(document, validated_data)
+        return super().update(document, validated_data) if validated_data else document
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation["status"] = {
+            "value": representation["status"],
+            "timestamp": representation["updated_at"],
+        }
+        return representation
 
 
 class CreateAnonymousDocumentSerializer(serializers.ModelSerializer):
@@ -75,6 +90,7 @@ class CreateAnonymousDocumentSerializer(serializers.ModelSerializer):
 
     Also handles the creation of the associated Attachments through `CreateAttachmentSerializer`.
     """
+
     user_id = serializers.UUIDField(source="user.uuid", required=False, default=None)
     attachments = serializers.ListField(child=serializers.FileField(), required=False)
     content = serializers.JSONField(

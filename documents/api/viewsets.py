@@ -32,6 +32,7 @@ from ..serializers import (
     CreateAttachmentSerializer,
     DocumentSerializer,
 )
+from ..serializers.status_history import StatusHistorySerializer
 
 
 @extend_schema_view(**attachment_viewset_docs)
@@ -193,8 +194,7 @@ class DocumentViewSet(AuditLoggingModelViewSet):
         user_id = data.get("user_id")
         if user_id and api_key:
             user, created = User.objects.get_or_create(
-                uuid=user_id,
-                defaults={"username": f"User-{user_id}"}
+                uuid=user_id, defaults={"username": f"User-{user_id}"}
             )
         elif user_id and not api_key:
             raise PermissionDenied(detail="INVALID FIELD: user_id. API key required.")
@@ -255,6 +255,18 @@ class DocumentViewSet(AuditLoggingModelViewSet):
             attachment_serializer = CreateAttachmentSerializer(data=data)
             attachment_serializer.is_valid(raise_exception=True)
             attachment_serializer.save()
+        # Don't update history if patch has no data.
+        if request.data:
+            status_history_serializer = StatusHistorySerializer(
+                data={
+                    "document": document.id,
+                    "value": document.status,
+                    "timestamp": document.updated_at,
+                }
+            )
+            status_history_serializer.is_valid(raise_exception=True)
+            status_history_serializer.save()
+
         return super().partial_update(request, pk, *args, **kwargs)
 
     def update(self, request, *args, **kwargs):

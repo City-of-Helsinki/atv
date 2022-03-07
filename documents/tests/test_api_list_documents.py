@@ -161,7 +161,7 @@ def test_list_document_filter(superuser_api_client, service, param, value):
     body = results[0]
 
     assert body.get("id") == "ffd80e3d-07d7-42db-ba58-b4c4ede2bc0d" == str(document.id)
-    assert body.get("status") == "processed" == str(document.status)
+    assert body.get("status").get("value") == "processed" == str(document.status)
     assert body.get("type") == "application" == str(document.type)
     assert body.get("business_id") == "1234567-8" == str(document.business_id)
     assert (

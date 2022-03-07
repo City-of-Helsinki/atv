@@ -271,17 +271,14 @@ def test_create_document_user_id(service_api_client):
 
 
 def test_create_document_owner_user_id(user, service):
-    data = {
-        **VALID_DOCUMENT_DATA,
-        "user_id": "6345c12c-36c8-4e81-bd18-d66e9b1f754d"
-    }
+    data = {**VALID_DOCUMENT_DATA, "user_id": "6345c12c-36c8-4e81-bd18-d66e9b1f754d"}
     api_client = get_user_service_client(user, service)
 
-    response = api_client.post(
-        reverse("documents-list"), data, format="multipart"
-    )
+    response = api_client.post(reverse("documents-list"), data, format="multipart")
     assert response.status_code == status.HTTP_403_FORBIDDEN
 
     body = response.json()
 
-    assert body == get_error_response(code="PERMISSION_DENIED", detail="INVALID FIELD: user_id. API key required.")
+    assert body == get_error_response(
+        code="PERMISSION_DENIED", detail="INVALID FIELD: user_id. API key required."
+    )

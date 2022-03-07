@@ -21,8 +21,11 @@ snapshots["test_update_document_owner 1"] = {
     "id": "2d2b7a36-a306-4e35-990f-13aea04263ff",
     "locked_after": None,
     "metadata": {"created_by": "alex", "testing": True},
-    "service": "service 118",
-    "status": "handled",
+    "service": "service 120",
+    "status": {"timestamp": "2021-06-30T12:00:00+03:00", "value": "handled"},
+    "status_histories": [
+        {"timestamp": "2021-06-30T12:00:00+03:00", "value": "handled"}
+    ],
     "tos_function_id": "f917d43aab76420bb2ec53f6684da7f7",
     "tos_record_id": "89837a682b5d410e861f8f3688154163",
     "transaction_id": "cf0a341b-6bfd-4f59-8d7c-87bf62ba837b",
@@ -45,8 +48,11 @@ snapshots["test_update_document_staff 1"] = {
     "id": "2d2b7a36-a306-4e35-990f-13aea04263ff",
     "locked_after": None,
     "metadata": {"created_by": "alex", "testing": True},
-    "service": "service 124",
-    "status": "handled",
+    "service": "service 126",
+    "status": {"timestamp": "2021-06-30T12:00:00+03:00", "value": "handled"},
+    "status_histories": [
+        {"timestamp": "2021-06-30T12:00:00+03:00", "value": "handled"}
+    ],
     "tos_function_id": "f917d43aab76420bb2ec53f6684da7f7",
     "tos_record_id": "89837a682b5d410e861f8f3688154163",
     "transaction_id": "cf0a341b-6bfd-4f59-8d7c-87bf62ba837b",
@@ -70,8 +76,11 @@ snapshots["test_update_document_staff_non_draft 1"] = {
     "id": "2d2b7a36-a306-4e35-990f-13aea04263ff",
     "locked_after": None,
     "metadata": {"created_by": "alex", "testing": True},
-    "service": "service 126",
-    "status": "handled",
+    "service": "service 128",
+    "status": {"timestamp": "2021-06-30T12:00:00+03:00", "value": "handled"},
+    "status_histories": [
+        {"timestamp": "2021-06-30T12:00:00+03:00", "value": "handled"}
+    ],
     "tos_function_id": "f917d43aab76420bb2ec53f6684da7f7",
     "tos_record_id": "89837a682b5d410e861f8f3688154163",
     "transaction_id": "cf0a341b-6bfd-4f59-8d7c-87bf62ba837b",

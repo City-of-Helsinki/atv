@@ -11,6 +11,7 @@ from ..models import Attachment, Document
 class DocumentFactory(factory.django.DjangoModelFactory):
     service = factory.SubFactory(ServiceFactory)
     user = factory.SubFactory(UserFactory)
+    status = "testing"
     transaction_id = factory.LazyFunction(uuid4)
     tos_function_id = factory.LazyFunction(lambda: str(uuid4()).replace("-", ""))
     tos_record_id = factory.LazyFunction(lambda: str(uuid4()).replace("-", ""))
