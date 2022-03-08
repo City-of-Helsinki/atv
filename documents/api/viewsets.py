@@ -21,9 +21,7 @@ from services.enums import ServicePermissions
 from services.utils import get_service_api_key_from_request, get_service_from_request
 from users.models import User
 from utils.uuid import is_valid_uuid
-from .docs import attachment_viewset_docs, document_viewset_docs
-from .filtersets import DocumentFilterSet
-from .querysets import get_attachment_queryset, get_document_queryset
+
 from ..consts import VALID_OWNER_PATCH_FIELDS
 from ..models import Attachment, Document
 from ..serializers import (
@@ -33,6 +31,9 @@ from ..serializers import (
     DocumentSerializer,
 )
 from ..serializers.status_history import StatusHistorySerializer
+from .docs import attachment_viewset_docs, document_viewset_docs
+from .filtersets import DocumentFilterSet
+from .querysets import get_attachment_queryset, get_document_queryset
 
 
 @extend_schema_view(**attachment_viewset_docs)

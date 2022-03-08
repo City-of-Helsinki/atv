@@ -16,7 +16,6 @@ from services.enums import ServicePermissions
 from services.tests.utils import get_user_service_client
 from utils.exceptions import get_error_response
 
-
 # OWNER-RELATED ACTIONS
 
 

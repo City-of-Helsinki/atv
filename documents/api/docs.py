@@ -67,17 +67,11 @@ example_document = OpenApiExample(
         "updated_at": "2022-03-07T17:59:39.580394+02:00",
         "status": {
             "value": "BEING_PROCESSED",
-            "timestamp": "2022-03-07T17:59:39.580394+02:00"
+            "timestamp": "2022-03-07T17:59:39.580394+02:00",
         },
         "status_histories": [
-            {
-                "value": "RECEIVED",
-                "timestamp": "2022-03-07T17:48:23.143416+02:00"
-            },
-            {
-                "value": "SENT",
-                "timestamp": "2022-03-07T16:08:39.580394+02:00"
-            },
+            {"value": "RECEIVED", "timestamp": "2022-03-07T17:48:23.143416+02:00"},
+            {"value": "SENT", "timestamp": "2022-03-07T16:08:39.580394+02:00"},
         ],
         "type": "APPLICATION_FOR_RESIDENTIAL_PARKING_PERMIT",
         "service": "Parking Permits",
@@ -110,7 +104,7 @@ example_document = OpenApiExample(
                 "mediaType": "application/pdf",
                 "size": 123223,
                 "href": "https://transactions-storage.com/api/v1/documents/97c0b7a5-0b4c-4470-9a41-48d79454f233/"
-                        "attachments/12994",
+                "attachments/12994",
             },
             {
                 "id": 12995,
@@ -120,7 +114,7 @@ example_document = OpenApiExample(
                 "mediaType": "image/jpeg",
                 "size": 512884,
                 "href": "https://transactions-storage.com/api/v1/documents/97c0b7a5-0b4c-4470-9a41-48d79454f233/"
-                        "attachments/12995",
+                "attachments/12995",
             },
         ],
     },

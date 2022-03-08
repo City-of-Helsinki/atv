@@ -5,7 +5,9 @@ from ..models import Document
 
 class DocumentFilterSet(filters.FilterSet):
     user_id = filters.UUIDFilter(field_name="user__uuid")
-    service_name = filters.CharFilter(field_name="service__name", label="Service's name")
+    service_name = filters.CharFilter(
+        field_name="service__name", label="Service's name"
+    )
     created_before = filters.DateFilter(
         field_name="created_at", lookup_expr="lt", label="Created before"
     )

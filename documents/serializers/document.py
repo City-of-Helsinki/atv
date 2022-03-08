@@ -12,9 +12,9 @@ from atv.exceptions import (
 )
 from users.models import User
 
+from ..models import Document
 from .attachment import AttachmentSerializer, CreateAttachmentSerializer
 from .status_history import StatusHistorySerializer
-from ..models import Document
 
 
 class DocumentSerializer(serializers.ModelSerializer):
