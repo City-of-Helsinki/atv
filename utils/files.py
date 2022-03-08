@@ -30,4 +30,4 @@ def remove_directory(path: Union[Path, str]):
 
 def b_to_mb(b: int):
     """Convert bytes to MB."""
-    return round(float(b) / (1024 ** 2), 2)
+    return round(float(b) / (1024**2), 2)
