@@ -10,7 +10,7 @@ from rest_framework.reverse import reverse
 
 from atv.tests.factories import GroupFactory
 from audit_log.models import AuditLogEntry
-from documents.models import Document
+from documents.models import Document, StatusHistory
 from documents.tests.factories import DocumentFactory
 from services.enums import ServicePermissions
 from services.tests.utils import get_user_service_client
@@ -214,6 +214,33 @@ def test_destroy_document_not_found(superuser_api_client):
         "NOT_FOUND",
         "No Document matches the given query.",
     )
+
+
+@freeze_time("2021-06-30T12:00:00+03:00")
+def test_statushistory_is_destroyed_with_document(user, service):
+    api_client = get_user_service_client(user, service)
+
+    group = GroupFactory()
+    assign_perm(ServicePermissions.VIEW_DOCUMENTS.value, group, service)
+    assign_perm(ServicePermissions.CHANGE_DOCUMENTS.value, group, service)
+    assign_perm(ServicePermissions.DELETE_DOCUMENTS.value, group, service)
+    user.groups.add(group)
+
+    document = DocumentFactory(draft=True, service=service, status="status")
+    assert Document.objects.count() == 1
+
+    # Patch to create status history
+    response = api_client.patch(
+        reverse("documents-detail", args=[document.id]), {"type": "updated"}
+    )
+    assert response.status_code == status.HTTP_200_OK
+    assert StatusHistory.objects.count() == 1
+
+    response = api_client.delete(reverse("documents-detail", args=[document.id]))
+
+    assert response.status_code == status.HTTP_204_NO_CONTENT
+    assert Document.objects.count() == 0
+    assert StatusHistory.objects.count() == 0
 
 
 def test_audit_log_is_created_when_destroying(user, service):

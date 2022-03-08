@@ -3,15 +3,18 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
+from rest_framework.exceptions import PermissionDenied
 
 from atv.exceptions import (
     DocumentLockedException,
     InvalidFieldException,
     MaximumFileCountExceededException,
 )
+from users.models import User
 
 from ..models import Document
 from .attachment import AttachmentSerializer, CreateAttachmentSerializer
+from .status_history import StatusHistorySerializer
 
 
 class DocumentSerializer(serializers.ModelSerializer):
@@ -24,6 +27,10 @@ class DocumentSerializer(serializers.ModelSerializer):
     content = serializers.JSONField(
         required=True, decoder=None, encoder=DjangoJSONEncoder
     )
+    service = serializers.CharField(
+        source="service.name", required=False, read_only=True
+    )
+    status_histories = StatusHistorySerializer(many=True, read_only=True)
 
     class Meta:
         model = Document
@@ -32,9 +39,11 @@ class DocumentSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
             "status",
+            "status_histories",
             "type",
-            "transaction_id",
+            "service",
             "user_id",
+            "transaction_id",
             "business_id",
             "tos_function_id",
             "tos_record_id",
@@ -50,7 +59,29 @@ class DocumentSerializer(serializers.ModelSerializer):
         if document.locked_after and document.locked_after <= now():
             raise DocumentLockedException()
 
-        return super().update(document, validated_data)
+        user_id = self.initial_data.get("user_id", None)
+        if user_id:
+            if document.user_id:
+                raise PermissionDenied(
+                    detail="Document owner can not be changed.",
+                    code="invalid field: user_id",
+                )
+
+            user, created = User.objects.get_or_create(
+                uuid=user_id, defaults={"username": f"User-{user_id}"}
+            )
+            document.user = user
+            document.save()
+
+        return super().update(document, validated_data) if validated_data else document
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation["status"] = {
+            "value": representation["status"],
+            "timestamp": representation["updated_at"],
+        }
+        return representation
 
 
 class CreateAnonymousDocumentSerializer(serializers.ModelSerializer):
@@ -60,6 +91,7 @@ class CreateAnonymousDocumentSerializer(serializers.ModelSerializer):
     Also handles the creation of the associated Attachments through `CreateAttachmentSerializer`.
     """
 
+    user_id = serializers.UUIDField(source="user.uuid", required=False, default=None)
     attachments = serializers.ListField(child=serializers.FileField(), required=False)
     content = serializers.JSONField(
         required=True, decoder=None, encoder=DjangoJSONEncoder
@@ -70,6 +102,7 @@ class CreateAnonymousDocumentSerializer(serializers.ModelSerializer):
         fields = (
             "status",
             "type",
+            "user_id",
             "transaction_id",
             "business_id",
             "tos_function_id",

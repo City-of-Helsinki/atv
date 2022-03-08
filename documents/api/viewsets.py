@@ -19,6 +19,7 @@ from atv.exceptions import (
 from audit_log.viewsets import AuditLoggingModelViewSet
 from services.enums import ServicePermissions
 from services.utils import get_service_api_key_from_request, get_service_from_request
+from users.models import User
 from utils.uuid import is_valid_uuid
 
 from ..consts import VALID_OWNER_PATCH_FIELDS
@@ -29,6 +30,7 @@ from ..serializers import (
     CreateAttachmentSerializer,
     DocumentSerializer,
 )
+from ..serializers.status_history import StatusHistorySerializer
 from .docs import attachment_viewset_docs, document_viewset_docs
 from .filtersets import DocumentFilterSet
 from .querysets import get_attachment_queryset, get_document_queryset
@@ -190,6 +192,14 @@ class DocumentViewSet(AuditLoggingModelViewSet):
 
         data = request.data
 
+        user_id = data.get("user_id")
+        if user_id and api_key:
+            user, created = User.objects.get_or_create(
+                uuid=user_id, defaults={"username": f"User-{user_id}"}
+            )
+        elif user_id and not api_key:
+            raise PermissionDenied(detail="INVALID FIELD: user_id. API key required.")
+
         serializer = CreateAnonymousDocumentSerializer(data=data)
 
         # If the data is not valid, it will raise a ValidationError and return Bad Request
@@ -246,6 +256,17 @@ class DocumentViewSet(AuditLoggingModelViewSet):
             attachment_serializer = CreateAttachmentSerializer(data=data)
             attachment_serializer.is_valid(raise_exception=True)
             attachment_serializer.save()
+        # Don't update history if patch has no data.
+        if request.data:
+            status_history_serializer = StatusHistorySerializer(
+                data={
+                    "document": document.id,
+                    "value": document.status,
+                    "timestamp": document.updated_at,
+                }
+            )
+            status_history_serializer.is_valid(raise_exception=True)
+            status_history_serializer.save()
 
         return super().partial_update(request, pk, *args, **kwargs)
 

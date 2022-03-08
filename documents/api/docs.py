@@ -63,22 +63,30 @@ example_document = OpenApiExample(
     status_codes=[str(status.HTTP_200_OK), str(status.HTTP_201_CREATED)],
     value={
         "id": "f6fe8acc-3b91-41b3-a176-9d2feab2d2bb",
-        "createdAt": "2021-04-21T13:17:15.511Z",
-        "updatedAt": "2021-04-21T13:17:15.511Z",
-        "status": "BEING_PROCESSED",
+        "created_at": "2022-03-07T16:08:39.580394+02:00",
+        "updated_at": "2022-03-07T17:59:39.580394+02:00",
+        "status": {
+            "value": "BEING_PROCESSED",
+            "timestamp": "2022-03-07T17:59:39.580394+02:00",
+        },
+        "status_histories": [
+            {"value": "RECEIVED", "timestamp": "2022-03-07T17:48:23.143416+02:00"},
+            {"value": "SENT", "timestamp": "2022-03-07T16:08:39.580394+02:00"},
+        ],
         "type": "APPLICATION_FOR_RESIDENTIAL_PARKING_PERMIT",
-        "transactionId": "some transaction id 1234",
-        "userId": "97c0b7a5-0b4c-4470-9a41-48d79454f233",
-        "businessId": "0874691-5",
-        "tosFunctionId": "eb30af1d9d654ebc98287ca25f231bf6",
-        "tosRecordId": "521317ab6b4a4157a1714f5cc9fd69de",
+        "service": "Parking Permits",
+        "user_id": "97c0b7a5-0b4c-4470-9a41-48d79454f233",
+        "transaction_id": "some transaction id 1234",
+        "business_id": "0874691-5",
+        "tosFunction_id": "eb30af1d9d654ebc98287ca25f231bf6",
+        "tosRecord_id": "521317ab6b4a4157a1714f5cc9fd69de",
         "metadata": {
             "some-field": "some value relevant to the calling service",
             "status": "some-arbitrary-status",
             "handler": "sstallone",
         },
         "draft": True,
-        "lockedAfter": "2021-08-01T00:00:00.0Z",
+        "locked_after": "2021-08-01T00:00:00.0Z",
         "content": {
             "formData": {
                 "firstName": "Dolph",
@@ -109,7 +117,6 @@ example_document = OpenApiExample(
                 "attachments/12995",
             },
         ],
-        "href": "https://transactions-storage.com/api/v1/documents/97c0b7a5-0b4c-4470-9a41-48d79454f233",
     },
 )
 

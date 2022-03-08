@@ -23,7 +23,11 @@ def get_document_queryset(
 
     # If the user is a superuser, return the whole set
     if user.is_superuser:
-        return Document.objects.all()
+        return (
+            Document.objects.all()
+            .select_related("user", "service")
+            .prefetch_related("attachments", "status_histories")
+        )
 
     # If the user is anonymous, don't return anything,
     # even if they're associated to a Service.
@@ -43,7 +47,11 @@ def get_document_queryset(
 
         qs_filters["user_id"] = user.id
 
-    return Document.objects.filter(**qs_filters)
+    return (
+        Document.objects.filter(**qs_filters)
+        .select_related("user", "service")
+        .prefetch_related("attachments", "status_histories")
+    )
 
 
 def get_attachment_queryset(

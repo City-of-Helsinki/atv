@@ -14,32 +14,14 @@ from atv.tests.factories import GroupFactory
 from audit_log.models import AuditLogEntry
 from documents.models import Document
 from documents.tests.factories import DocumentFactory
+from documents.tests.test_api_create_document import VALID_DOCUMENT_DATA
 from services.enums import ServicePermissions
 from services.tests.utils import get_user_service_client
+from users.models import User
 from utils.exceptions import get_error_response
 
 VALID_OWNER_DOCUMENT_DATA = {
     "draft": False,
-    "metadata": json.dumps({"created_by": "alex", "testing": True}),
-    "content": json.dumps(
-        {
-            "formData": {
-                "firstName": "Dolph",
-                "lastName": "Lundgren",
-                "birthDate": "3.11.1957",
-            },
-            "reasonForApplication": "No reason, just testing",
-        }
-    ),
-}
-
-VALID_DOCUMENT_DATA = {
-    "status": "handled",
-    "type": "mysterious form",
-    "transaction_id": "cf0a341b-6bfd-4f59-8d7c-87bf62ba837b",
-    "business_id": "1234567-8",
-    "tos_function_id": "f917d43aab76420bb2ec53f6684da7f7",
-    "tos_record_id": "89837a682b5d410e861f8f3688154163",
     "metadata": json.dumps({"created_by": "alex", "testing": True}),
     "content": json.dumps(
         {
@@ -216,7 +198,10 @@ def test_update_document_staff(user, service, snapshot):
     user.groups.add(group)
 
     document = DocumentFactory(
-        id="2d2b7a36-a306-4e35-990f-13aea04263ff", draft=True, service=service
+        id="2d2b7a36-a306-4e35-990f-13aea04263ff",
+        draft=True,
+        service=service,
+        status="handled",
     )
     assert Document.objects.count() == 1
 
@@ -265,7 +250,10 @@ def test_update_document_staff_non_draft(user, service, snapshot):
     user.groups.add(group)
 
     document = DocumentFactory(
-        id="2d2b7a36-a306-4e35-990f-13aea04263ff", service=service, draft=False
+        id="2d2b7a36-a306-4e35-990f-13aea04263ff",
+        service=service,
+        draft=False,
+        status="handled",
     )
 
     data = {**VALID_DOCUMENT_DATA}
@@ -326,6 +314,84 @@ def test_update_document_staff_another_service(user, service):
     assert response.status_code == status.HTTP_404_NOT_FOUND
     assert body == get_error_response(
         "NOT_FOUND", "No Document matches the given query."
+    )
+
+
+@freeze_time("2021-06-30T12:00:00")
+def test_add_user_anonymous_document(service_api_client):
+    data = {
+        **VALID_DOCUMENT_DATA,
+    }
+
+    response = service_api_client.post(
+        reverse("documents-list"), data, format="multipart"
+    )
+    assert response.status_code == status.HTTP_201_CREATED
+    document_id = response.json().get("id")
+
+    user_id = "6345c12c-36c8-4e81-bd18-d66e9b1f754d"
+    response = service_api_client.patch(
+        reverse("documents-detail", args=[document_id]), {"user_id": user_id}
+    )
+    assert response.status_code == status.HTTP_200_OK
+    assert User.objects.filter(uuid=user_id).exists() is True
+
+    body = response.json()
+    assert body.get("user_id") == user_id
+
+
+@freeze_time("2021-06-30T12:00:00")
+def test_update_document_user(service_api_client):
+    user_id = "6345c12c-36c8-4e81-bd18-d66e9b1f754d"
+    data = {**VALID_DOCUMENT_DATA, "user_id": user_id}
+
+    response = service_api_client.post(
+        reverse("documents-list"), data, format="multipart"
+    )
+    body = response.json()
+
+    assert response.status_code == status.HTTP_201_CREATED
+    assert User.objects.filter(uuid=user_id).exists() is True
+    assert body.get("user_id") == user_id
+
+    document_id = body.get("id")
+    response = service_api_client.patch(
+        reverse("documents-detail", args=[document_id]), {"user_id": user_id}
+    )
+    assert response.status_code == status.HTTP_403_FORBIDDEN
+
+    assert response.json() == get_error_response(
+        "INVALID FIELD: USER_ID", "Document owner can not be changed."
+    )
+
+
+@freeze_time("2021-06-30T12:00:00")
+def test_update_document_owner_user_id(user):
+    document = DocumentFactory(
+        id="2d2b7a36-a306-4e35-990f-13aea04263ff",
+        draft=True,
+        user=user,
+        status="handled",
+        type="mysterious form",
+        transaction_id="cf0a341b-6bfd-4f59-8d7c-87bf62ba837b",
+        business_id="1234567-8",
+        tos_function_id="f917d43aab76420bb2ec53f6684da7f7",
+        tos_record_id="89837a682b5d410e861f8f3688154163",
+    )
+
+    assert Document.objects.count() == 1
+    api_client = get_user_service_client(user, document.service)
+
+    user_id = "6345c12c-36c8-4e81-bd18-d66e9b1f754d"
+    data = {**VALID_OWNER_DOCUMENT_DATA, "user_id": user_id}
+    response = api_client.patch(
+        reverse("documents-detail", args=[document.id]), data, format="multipart"
+    )
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert not User.objects.filter(uuid=user_id).exists()
+
+    assert response.json() == get_error_response(
+        code="INVALID_FIELD", detail="Got invalid input fields: user_id."
     )
 
 

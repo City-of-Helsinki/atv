@@ -13,6 +13,17 @@ from services.models import Service
 from utils.models import TimestampedModel, UUIDModel
 
 
+class StatusHistory(models.Model):
+    document = models.ForeignKey(
+        "Document", on_delete=models.CASCADE, related_name="status_histories"
+    )
+    value = models.CharField(max_length=255, blank=True)
+    timestamp = models.DateTimeField()
+
+    class Meta:
+        ordering = ["-timestamp"]
+
+
 class Attachment(TimestampedModel):
     document = models.ForeignKey(
         "Document",
