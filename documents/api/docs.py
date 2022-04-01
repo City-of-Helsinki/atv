@@ -9,6 +9,7 @@ from drf_spectacular.utils import (
 from rest_framework import serializers, status
 
 from documents.serializers import AttachmentSerializer, DocumentSerializer
+from documents.serializers.document import DocumentMetadataSerializer
 
 error_serializer = inline_serializer(
     "ErrorResponse",
@@ -116,6 +117,27 @@ example_document = OpenApiExample(
                 "href": "https://transactions-storage.com/api/v1/documents/97c0b7a5-0b4c-4470-9a41-48d79454f233/"
                 "attachments/12995",
             },
+        ],
+    },
+)
+
+example_document_metadata = OpenApiExample(
+    name="DocumentExample",
+    response_only=True,
+    status_codes=[str(status.HTTP_200_OK), str(status.HTTP_201_CREATED)],
+    value={
+        "id": "f6fe8acc-3b91-41b3-a176-9d2feab2d2bb",
+        "type": "APPLICATION_FOR_RESIDENTIAL_PARKING_PERMIT",
+        "created_at": "2022-03-07T16:08:39.580394+02:00",
+        "updated_at": "2022-03-07T17:59:39.580394+02:00",
+        "service": "Parking Permits",
+        "status": {
+            "value": "BEING_PROCESSED",
+            "timestamp": "2022-03-07T17:59:39.580394+02:00",
+        },
+        "status_histories": [
+            {"value": "RECEIVED", "timestamp": "2022-03-07T17:48:23.143416+02:00"},
+            {"value": "SENT", "timestamp": "2022-03-07T16:08:39.580394+02:00"},
         ],
     },
 )
@@ -464,4 +486,35 @@ document_viewset_docs = {
     ),
     # Not implementing
     "update": extend_schema(exclude=True),
+}
+
+document_metadata_viewset_docs = {
+    "retrieve": extend_schema(
+        summary="List and filter non sensitive parts of users documents.",
+        description="""List users documents parts that doesn't contain sensitive information to easily see current
+        applications and documents of a single user across services.""",
+        # "of that organization.",
+        responses={
+            (status.HTTP_200_OK, "application/json"): OpenApiResponse(
+                response=DocumentMetadataSerializer,
+                description="User was found and their documents are listed.",
+            ),
+            (status.HTTP_400_BAD_REQUEST, "application/json"): _base_400_response(),
+            status.HTTP_401_UNAUTHORIZED: _base_401_response(),
+            status.HTTP_403_FORBIDDEN: OpenApiResponse(
+                description="Current authentication doesn't allow viewing of this users documents"
+            ),
+            status.HTTP_404_NOT_FOUND: OpenApiResponse(
+                description="No user matches the given query.",
+            ),
+            status.HTTP_500_INTERNAL_SERVER_ERROR: _base_500_response(),
+        },
+        examples=[example_document_metadata, example_error],
+    ),
+    # Not implementing
+    "list": extend_schema(exclude=True),
+    "update": extend_schema(exclude=True),
+    "partial_update": extend_schema(exclude=True),
+    "destroy": extend_schema(exclude=True),
+    "create": extend_schema(exclude=True),
 }

@@ -5,7 +5,7 @@ from django.utils.timezone import now
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import filters, status
-from rest_framework.exceptions import MethodNotAllowed, PermissionDenied
+from rest_framework.exceptions import MethodNotAllowed, NotFound, PermissionDenied
 from rest_framework.parsers import FileUploadParser, MultiPartParser
 from rest_framework.response import Response
 from rest_framework_extensions.mixins import NestedViewSetMixin
@@ -20,6 +20,7 @@ from audit_log.viewsets import AuditLoggingModelViewSet
 from services.enums import ServicePermissions
 from services.utils import get_service_api_key_from_request, get_service_from_request
 from users.models import User
+from utils.api import PageNumberPagination
 from utils.uuid import is_valid_uuid
 
 from ..consts import VALID_OWNER_PATCH_FIELDS
@@ -30,10 +31,70 @@ from ..serializers import (
     CreateAttachmentSerializer,
     DocumentSerializer,
 )
+from ..serializers.document import DocumentMetadataSerializer
 from ..serializers.status_history import StatusHistorySerializer
-from .docs import attachment_viewset_docs, document_viewset_docs
-from .filtersets import DocumentFilterSet
-from .querysets import get_attachment_queryset, get_document_queryset
+from .docs import (
+    attachment_viewset_docs,
+    document_metadata_viewset_docs,
+    document_viewset_docs,
+)
+from .filtersets import DocumentFilterSet, DocumentMetadataFilterSet
+from .querysets import (
+    get_attachment_queryset,
+    get_document_metadata_queryset,
+    get_document_queryset,
+)
+
+
+@extend_schema_view(**document_metadata_viewset_docs)
+class DocumentMetadataViewSet(AuditLoggingModelViewSet):
+    serializer_class = DocumentMetadataSerializer
+    queryset = Document.objects.none()
+    filter_backends = [DjangoFilterBackend]
+    lookup_field = "user__uuid"
+    pagination_class = PageNumberPagination
+    filterset_class = DocumentMetadataFilterSet
+
+    def get_queryset(self):
+        super().get_queryset()
+        user = self.request.user
+        service_api_key = get_service_api_key_from_request(self.request)
+        return get_document_metadata_queryset(user, service_api_key)
+
+    # Use retrieve to allow using user__uuid as a lookup_field to list documents of single user
+    def retrieve(self, request, *args, **kwargs):
+        with self.record_action():
+            service_api_key = get_service_api_key_from_request(request)
+            if request.user.uuid != kwargs[self.lookup_field] and not service_api_key:
+                if not request.user.is_superuser:
+                    raise PermissionDenied()
+            queryset = self.filter_queryset(self.get_queryset())
+            queryset = queryset.filter(**kwargs)
+            if not queryset.exists():
+                raise NotFound(detail="No user matches the given query.")
+            page = self.paginate_queryset(queryset)
+            if page is not None:
+                serializer = self.get_serializer(page, many=True)
+                return self.get_paginated_response(serializer.data)
+
+            serializer = self.get_serializer(queryset, many=True)
+            return Response(serializer.data)
+
+    @not_allowed()
+    def list(self, request, *args, **kwargs):
+        """Method not allowed"""
+
+    @not_allowed()
+    def create(self, request, *args, **kwargs):
+        """Method not allowed"""
+
+    @not_allowed()
+    def partial_update(self, request, *args, **kwargs):
+        """Method not allowed"""
+
+    @not_allowed()
+    def update(self, request, *args, **kwargs):
+        """Method not allowed"""
 
 
 @extend_schema_view(**attachment_viewset_docs)

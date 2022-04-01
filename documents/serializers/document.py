@@ -17,6 +17,37 @@ from .attachment import AttachmentSerializer, CreateAttachmentSerializer
 from .status_history import StatusHistorySerializer
 
 
+def status_to_representation(representation):
+    representation["status"] = {
+        "value": representation["status"],
+        "timestamp": representation["created_at"],
+    }
+    return representation
+
+
+class DocumentMetadataSerializer(serializers.HyperlinkedModelSerializer):
+    status_histories = StatusHistorySerializer(many=True, read_only=True)
+    service = serializers.CharField(
+        source="service.name", required=False, read_only=True
+    )
+
+    class Meta:
+        model = Document
+        fields = (
+            "id",
+            "type",
+            "created_at",
+            "updated_at",
+            "service",
+            "status",
+            "status_histories",
+        )
+
+    def to_representation(self, instance):
+        rep = super().to_representation(instance)
+        return status_to_representation(rep)
+
+
 class DocumentSerializer(serializers.ModelSerializer):
     """Basic "read" serializer for the Document model"""
 
@@ -77,11 +108,7 @@ class DocumentSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
-        representation["status"] = {
-            "value": representation["status"],
-            "timestamp": representation["updated_at"],
-        }
-        return representation
+        return status_to_representation(representation)
 
 
 class CreateAnonymousDocumentSerializer(serializers.ModelSerializer):

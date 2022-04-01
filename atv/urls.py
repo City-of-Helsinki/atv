@@ -10,6 +10,7 @@ from drf_spectacular.views import (
 from rest_framework_extensions.routers import ExtendedSimpleRouter
 
 from documents.api import AttachmentViewSet, DocumentViewSet
+from documents.api.viewsets import DocumentMetadataViewSet
 
 router = ExtendedSimpleRouter()
 
@@ -19,6 +20,7 @@ router.register(r"documents", DocumentViewSet, basename="documents").register(
     basename="documents-attachments",
     parents_query_lookups=["document_id"],
 )
+router.register(r"userdocuments", DocumentMetadataViewSet, basename="userdocuments")
 
 
 urlpatterns = [

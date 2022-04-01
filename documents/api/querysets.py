@@ -8,6 +8,34 @@ from users.models import User
 from ..models import Attachment, Document
 
 
+def get_document_metadata_queryset(
+    user: User, api_key: ServiceAPIKey = None
+) -> QuerySet:
+    """
+    Superusers and staff(API key) are allowed to see document metadata of all services for all users.
+    Token users can only see their own documents metadata from across all services.
+    """
+    queryset = (
+        Document.objects.only(
+            "created_at",
+            "updated_at",
+            "status",
+            "id",
+            "service__name",
+            "type",
+            "user__id",
+        )
+        .select_related("service", "user")
+        .prefetch_related("status_histories")
+        .order_by("-updated_at")
+    )
+
+    if user.is_superuser or api_key:
+        return queryset
+    else:
+        return queryset.filter(user=user)
+
+
 def get_document_queryset(
     user: User, service: Service, api_key: ServiceAPIKey = None
 ) -> QuerySet:
