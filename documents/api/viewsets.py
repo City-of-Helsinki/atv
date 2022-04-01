@@ -56,7 +56,6 @@ class DocumentMetadataViewSet(AuditLoggingModelViewSet):
     filterset_class = DocumentMetadataFilterSet
 
     def get_queryset(self):
-        super().get_queryset()
         user = self.request.user
         service_api_key = get_service_api_key_from_request(self.request)
         return get_document_metadata_queryset(user, service_api_key)

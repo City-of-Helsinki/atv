@@ -20,7 +20,7 @@ from .status_history import StatusHistorySerializer
 def status_to_representation(representation):
     representation["status"] = {
         "value": representation["status"],
-        "timestamp": representation["created_at"],
+        "timestamp": representation["updated_at"],
     }
     return representation
 

@@ -105,7 +105,7 @@ def test_get_user_document_metadatas_superuser(superuser_api_client):
     expected_document_id = "485af718-d9d1-46b9-ad7b-33ea054126e3"
     expected_user_id = "66d0bfd0-308c-484d-aa22-301512899ae3"
 
-    document = DocumentFactory(
+    DocumentFactory(
         id=expected_document_id,
         user__uuid=expected_user_id,
         tos_function_id="81eee139736f4e52b046a1b27211c202",
@@ -126,7 +126,7 @@ def test_get_user_document_metadatas_service_api_key(user, service_api_client):
     service = ServiceFactory()
     other_service = ServiceFactory()
 
-    document = DocumentFactory(
+    DocumentFactory(
         id="485af718-d9d1-46b9-ad7b-33ea054126e3",
         user=user,
         service=service,
@@ -134,7 +134,7 @@ def test_get_user_document_metadatas_service_api_key(user, service_api_client):
         tos_record_id="0f499febb6414e1dafc93febca5ef312",
         transaction_id="bd3fd958-cfeb-4ab1-bea4-5c058e8fee5c",
     )
-    document = DocumentFactory(
+    DocumentFactory(
         id="585af718-d9d1-46b9-ad7b-33ea054126e3",
         user=user,
         service=other_service,
@@ -152,7 +152,7 @@ def test_get_user_document_metadatas_service_api_key(user, service_api_client):
 def test_get_user_document_metadatas_user(user, service):
     api_client = get_user_service_client(user, service)
 
-    document = DocumentFactory(
+    DocumentFactory(
         id="485af718-d9d1-46b9-ad7b-33ea054126e3",
         user=user,
         tos_function_id="81eee139736f4e52b046a1b27211c202",
@@ -171,7 +171,7 @@ def test_get_user_document_metadatas_wrong_user(user, service):
     api_client = get_user_service_client(user, service)
 
     other_user = UserFactory()
-    document = DocumentFactory(
+    DocumentFactory(
         id="485af718-d9d1-46b9-ad7b-33ea054126e3",
         user=other_user,
         tos_function_id="81eee139736f4e52b046a1b27211c202",
