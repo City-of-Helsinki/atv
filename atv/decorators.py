@@ -57,7 +57,7 @@ def staff_required(required_permission=ServicePermissions.VIEW_DOCUMENTS):
 
     @_use_request_tests(_require_service_permission(required_permission.value))
     def check_permission():
-        f"""Decorator that checks for {required_permission} permission."""
+        """Decorator that checks for required permission."""
 
     return check_permission
 

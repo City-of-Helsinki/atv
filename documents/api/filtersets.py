@@ -3,8 +3,7 @@ from django_filters import rest_framework as filters
 from ..models import Document
 
 
-class DocumentFilterSet(filters.FilterSet):
-    user_id = filters.UUIDFilter(field_name="user__uuid")
+class DocumentMetadataFilterSet(filters.FilterSet):
     service_name = filters.CharFilter(
         field_name="service__name", label="Service's name"
     )
@@ -20,6 +19,14 @@ class DocumentFilterSet(filters.FilterSet):
     updated_after = filters.DateFilter(
         field_name="updated_at", lookup_expr="gt", label="Updated after"
     )
+
+    class Meta:
+        model = Document
+        fields = ["status", "type"]
+
+
+class DocumentFilterSet(DocumentMetadataFilterSet):
+    user_id = filters.UUIDFilter(field_name="user__uuid")
 
     class Meta:
         model = Document
