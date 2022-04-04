@@ -182,3 +182,11 @@ def test_get_user_document_metadatas_wrong_user(user, service):
     response = api_client.get(reverse("userdocuments-detail", args=[other_user.uuid]))
 
     assert response.status_code == status.HTTP_403_FORBIDDEN
+
+
+def test_get_user_document_metadatas_user_doesnt_exist(service_api_client):
+    response = service_api_client.get(
+        reverse("userdocuments-detail", args=["bd3fd958-cfeb-4ab1-bea4-5c058e8fee5c"])
+    )
+
+    assert response.status_code == status.HTTP_404_NOT_FOUND
