@@ -69,7 +69,7 @@ class DocumentMetadataViewSet(AuditLoggingModelViewSet):
                     raise PermissionDenied()
             queryset = self.filter_queryset(self.get_queryset())
             queryset = queryset.filter(**kwargs)
-            if not queryset.exists():
+            if not User.objects.filter(uuid=kwargs[self.lookup_field]).exists():
                 raise NotFound(detail="No user matches the given query.")
             page = self.paginate_queryset(queryset)
             if page is not None:

@@ -21,7 +21,7 @@ snapshots["test_update_document_owner 1"] = {
     "id": "2d2b7a36-a306-4e35-990f-13aea04263ff",
     "locked_after": None,
     "metadata": {"created_by": "alex", "testing": True},
-    "service": "service 120",
+    "service": "service 122",
     "status": {"timestamp": "2021-06-30T12:00:00+03:00", "value": "handled"},
     "status_histories": [
         {"timestamp": "2021-06-30T12:00:00+03:00", "value": "handled"}
@@ -48,7 +48,7 @@ snapshots["test_update_document_staff 1"] = {
     "id": "2d2b7a36-a306-4e35-990f-13aea04263ff",
     "locked_after": None,
     "metadata": {"created_by": "alex", "testing": True},
-    "service": "service 126",
+    "service": "service 128",
     "status": {"timestamp": "2021-06-30T12:00:00+03:00", "value": "handled"},
     "status_histories": [
         {"timestamp": "2021-06-30T12:00:00+03:00", "value": "handled"}
@@ -76,7 +76,7 @@ snapshots["test_update_document_staff_non_draft 1"] = {
     "id": "2d2b7a36-a306-4e35-990f-13aea04263ff",
     "locked_after": None,
     "metadata": {"created_by": "alex", "testing": True},
-    "service": "service 128",
+    "service": "service 130",
     "status": {"timestamp": "2021-06-30T12:00:00+03:00", "value": "handled"},
     "status_histories": [
         {"timestamp": "2021-06-30T12:00:00+03:00", "value": "handled"}

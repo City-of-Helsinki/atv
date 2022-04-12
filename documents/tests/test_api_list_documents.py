@@ -128,8 +128,8 @@ def test_list_document_anonymous_user(api_client):
         ("status", "processed"),
         ("type", "application"),
         ("business_id", "1234567-8"),
-        ("user_id", "65352f2c-7b35-4c0d-8209-1d685f30cce9"),
         ("transaction_id", "49bee2d108be4a68a79d2e5e85791ec8"),
+        ("lookfor", "search"),
     ],
 )
 def test_list_document_filter(superuser_api_client, service, param, value):
@@ -141,6 +141,7 @@ def test_list_document_filter(superuser_api_client, service, param, value):
         business_id="1234567-8",
         transaction_id="49bee2d108be4a68a79d2e5e85791ec8",
         user__uuid="65352f2c-7b35-4c0d-8209-1d685f30cce9",
+        metadata={"test": "search"},
     )
     DocumentFactory(
         service=service,
@@ -174,6 +175,44 @@ def test_list_document_filter(superuser_api_client, service, param, value):
         == "65352f2c-7b35-4c0d-8209-1d685f30cce9"
         == str(document.user.uuid)
     )
+
+
+def test_list_document_filter_user_id(superuser_api_client):
+
+    document = DocumentFactory(
+        id="8ce91dde-b7ba-4e20-8dd0-835d2060c9d3",
+        user=None,
+    )
+    document1 = DocumentFactory(
+        id="ffd80e3d-07d7-42db-ba58-b4c4ede2bc0d",
+        user__uuid="66d0bfd0-308c-484d-aa22-301512899ae3",
+    )
+
+    url = f"{reverse('documents-list')}?user_id=null"
+    response = superuser_api_client.get(url)
+    results = response.json().get("results", [])
+
+    assert len(results) == 1
+    body = results[0]
+    assert body.get("id") == "8ce91dde-b7ba-4e20-8dd0-835d2060c9d3" == str(document.id)
+
+    url = f"{reverse('documents-list')}?user_id=66d0bfd0-308c-484d-aa22-301512899ae3"
+    response = superuser_api_client.get(url)
+    results = response.json().get("results", [])
+
+    assert len(results) == 1
+    body = results[0]
+    assert body.get("id") == "ffd80e3d-07d7-42db-ba58-b4c4ede2bc0d" == str(document1.id)
+
+    url = reverse("documents-list")
+    response = superuser_api_client.get(url)
+    results = response.json().get("results", [])
+
+    assert len(results) == 2
+
+    url = f"{reverse('documents-list')}?user_id=NotValidUUID"
+    response = superuser_api_client.get(url)
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
 
 
 @pytest.mark.parametrize(
