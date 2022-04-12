@@ -1,6 +1,23 @@
-from django_filters import rest_framework as filters
+from django.db.models import TextField
+from django.db.models.functions import Cast
+from django_filters import Filter, rest_framework as filters
+from django_filters.constants import EMPTY_VALUES
 
 from ..models import Document
+
+
+class MetadataJSONFilter(Filter):
+    """
+    Custom filter for free searching from metadata field.
+    Cast json to text and annotate it to queryset for filtering
+    """
+
+    def filter(self, qs, value):
+        if value in EMPTY_VALUES:
+            return qs
+        return qs.annotate(metatext=Cast("metadata", TextField())).filter(
+            metatext__contains=value
+        )
 
 
 class DocumentMetadataFilterSet(filters.FilterSet):
@@ -27,6 +44,7 @@ class DocumentMetadataFilterSet(filters.FilterSet):
 
 class DocumentFilterSet(DocumentMetadataFilterSet):
     user_id = filters.UUIDFilter(field_name="user__uuid")
+    lookfor = MetadataJSONFilter(field_name="metadata", label="Look for")
 
     class Meta:
         model = Document
