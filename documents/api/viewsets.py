@@ -1,6 +1,7 @@
 from django.db import transaction
 from django.http import FileResponse
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
 from django.utils.timezone import now
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema, extend_schema_view
@@ -316,17 +317,22 @@ class DocumentViewSet(AuditLoggingModelViewSet):
             attachment_serializer = CreateAttachmentSerializer(data=data)
             attachment_serializer.is_valid(raise_exception=True)
             attachment_serializer.save()
-        # Don't update history if patch has no data.
-        if request.data:
+        # Update history only if status changed.
+        if request.data.get("status"):
             status_history_serializer = StatusHistorySerializer(
                 data={
                     "document": document.id,
                     "value": document.status,
-                    "timestamp": document.updated_at,
+                    "timestamp": document.status_timestamp,
                 }
             )
             status_history_serializer.is_valid(raise_exception=True)
             status_history_serializer.save()
+
+            # Make sure the request data query dict is mutable, assign status_timestamp field to be updated.
+            request.data._mutable = True
+            request.data["status_timestamp"] = timezone.now()
+            request.data._mutable = False
 
         return super().partial_update(request, pk, *args, **kwargs)
 

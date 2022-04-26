@@ -20,6 +20,7 @@ def get_document_metadata_queryset(
             "created_at",
             "updated_at",
             "status",
+            "status_timestamp",
             "id",
             "service__name",
             "type",
@@ -27,7 +28,7 @@ def get_document_metadata_queryset(
         )
         .select_related("service", "user")
         .prefetch_related("status_histories")
-        .order_by("-updated_at")
+        .order_by("-status_timestamp")
     )
 
     if user.is_superuser or api_key:
