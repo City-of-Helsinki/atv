@@ -6,7 +6,12 @@ from django.utils.timezone import now
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import filters, status
-from rest_framework.exceptions import MethodNotAllowed, NotFound, PermissionDenied
+from rest_framework.exceptions import (
+    MethodNotAllowed,
+    NotAuthenticated,
+    NotFound,
+    PermissionDenied,
+)
 from rest_framework.parsers import FileUploadParser, MultiPartParser
 from rest_framework.response import Response
 from rest_framework_extensions.mixins import NestedViewSetMixin
@@ -58,6 +63,8 @@ class DocumentMetadataViewSet(AuditLoggingModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
+        if user.is_anonymous:
+            raise NotAuthenticated()
         service_api_key = get_service_api_key_from_request(self.request)
         return get_document_metadata_queryset(user, service_api_key)
 
@@ -68,10 +75,10 @@ class DocumentMetadataViewSet(AuditLoggingModelViewSet):
             if request.user.uuid != kwargs[self.lookup_field] and not service_api_key:
                 if not request.user.is_superuser:
                     raise PermissionDenied()
-            queryset = self.filter_queryset(self.get_queryset())
-            queryset = queryset.filter(**kwargs)
             if not User.objects.filter(uuid=kwargs[self.lookup_field]).exists():
                 raise NotFound(detail="No user matches the given query.")
+            queryset = self.filter_queryset(self.get_queryset())
+            queryset = queryset.filter(**kwargs)
             page = self.paginate_queryset(queryset)
             if page is not None:
                 serializer = self.get_serializer(page, many=True)
