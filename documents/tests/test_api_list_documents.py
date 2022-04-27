@@ -304,6 +304,7 @@ def test_audit_log_is_created_when_listing(user):
             message__audit_event__target__type="Document",
             message__audit_event__target__id="",
             message__audit_event__operation="READ",
+            message__audit_event__actor__service=service.name,
         ).count()
         == 1
     )
