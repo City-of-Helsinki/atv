@@ -3,6 +3,7 @@ from django.contrib.postgres.indexes import GinIndex
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from encrypted_fields import fields
 
@@ -166,6 +167,15 @@ class Document(UUIDModel, TimestampedModel):
         help_text=_(
             "Status information given by the owning service. "
             "Could be e.g. some constant string."
+        ),
+    )
+    status_timestamp = models.DateTimeField(
+        blank=True,
+        null=True,
+        default=timezone.now,
+        verbose_name=_("status_timestamp"),
+        help_text=_(
+            "Date and time when document status was last changed. Field is automatically set."
         ),
     )
     type = models.CharField(

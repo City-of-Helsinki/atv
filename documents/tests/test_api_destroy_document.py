@@ -231,7 +231,8 @@ def test_statushistory_is_destroyed_with_document(user, service):
 
     # Patch to create status history
     response = api_client.patch(
-        reverse("documents-detail", args=[document.id]), {"type": "updated"}
+        reverse("documents-detail", args=[document.id]),
+        {"status": "new_status", "type": "updated"},
     )
     assert response.status_code == status.HTTP_200_OK
     assert StatusHistory.objects.count() == 1
@@ -255,6 +256,7 @@ def test_audit_log_is_created_when_destroying(user, service):
             message__audit_event__target__type="Document",
             message__audit_event__target__id=str(document.pk),
             message__audit_event__operation="DELETE",
+            message__audit_event__actor__service=service.name,
         ).count()
         == 1
     )

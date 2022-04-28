@@ -13,6 +13,7 @@ from rest_framework.viewsets import ModelViewSet
 
 from audit_log import audit_logging
 from audit_log.enums import Operation, Status
+from services.utils import get_service_from_request
 
 User = get_user_model()
 
@@ -35,6 +36,7 @@ class AuditLoggingModelViewSet(ModelViewSet):
             self._get_target(),
             Status.FORBIDDEN,
             ip_address=self._get_ip_address(),
+            service=get_service_from_request(request, raise_exception=False),
         )
         super().permission_denied(request, message, code)
 
@@ -74,6 +76,7 @@ class AuditLoggingModelViewSet(ModelViewSet):
         actor = copy(self._get_actor())  # May be destroyed if actor is also the target
         actor_backend = self._get_actor_backend()
         operation = self._get_operation()
+        service = get_service_from_request(self.request, raise_exception=False)
         try:
             with transaction.atomic():
                 yield
@@ -83,6 +86,7 @@ class AuditLoggingModelViewSet(ModelViewSet):
                     operation,
                     target or self._get_target(),
                     ip_address=self._get_ip_address(),
+                    service=service,
                 )
         except (NotAuthenticated, PermissionDenied):
             audit_logging.log(
@@ -92,6 +96,7 @@ class AuditLoggingModelViewSet(ModelViewSet):
                 target or self._get_target(),
                 Status.FORBIDDEN,
                 ip_address=self._get_ip_address(),
+                service=service,
             )
             raise
 

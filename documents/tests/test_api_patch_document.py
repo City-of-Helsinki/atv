@@ -12,7 +12,7 @@ from rest_framework.reverse import reverse
 
 from atv.tests.factories import GroupFactory
 from audit_log.models import AuditLogEntry
-from documents.models import Document
+from documents.models import Document, StatusHistory
 from documents.tests.factories import DocumentFactory
 from documents.tests.test_api_create_document import VALID_DOCUMENT_DATA
 from services.enums import ServicePermissions
@@ -393,6 +393,35 @@ def test_update_document_owner_user_id(user):
     assert response.json() == get_error_response(
         code="INVALID_FIELD", detail="Got invalid input fields: user_id."
     )
+
+
+@freeze_time("2021-06-30T12:00:00")
+def test_create_status_history(service_api_client):
+    data = {
+        **VALID_DOCUMENT_DATA,
+    }
+
+    response = service_api_client.post(
+        reverse("documents-list"), data, format="multipart"
+    )
+    assert response.status_code == status.HTTP_201_CREATED
+    document_id = response.json().get("id")
+
+    # Patch shouldn't create status history object
+    response = service_api_client.patch(
+        reverse("documents-detail", args=[document_id]), {"type": "new type"}
+    )
+    assert response.status_code == status.HTTP_200_OK
+    assert StatusHistory.objects.count() == 0
+
+    # Creates status history object when status field changes
+    response = service_api_client.patch(
+        reverse("documents-detail", args=[document_id]),
+        {"status": "created status history object"},
+    )
+
+    assert response.status_code == status.HTTP_200_OK
+    assert StatusHistory.objects.count() == 1
 
 
 # OTHER STUFF

@@ -7,6 +7,7 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 
 from atv.tests.factories import GroupFactory
+from audit_log.enums import Role
 from audit_log.models import AuditLogEntry
 from documents.models import Attachment
 from documents.tests.factories import DocumentFactory
@@ -207,6 +208,8 @@ def test_audit_log_is_created_when_creating(user, service, document_data, snapsh
             message__audit_event__target__type="Attachment",
             message__audit_event__target__id=str(response["id"]),
             message__audit_event__operation="CREATE",
+            message__audit_event__actor__service=service.name,
+            message__audit_event__actor__role=Role.USER,
         ).count()
         == 1
     )

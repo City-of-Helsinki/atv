@@ -211,6 +211,7 @@ def test_audit_log_is_created_when_destroying(user, service):
             message__audit_event__target__type="Attachment",
             message__audit_event__target__id=str(attachment.pk),
             message__audit_event__operation="DELETE",
+            message__audit_event__actor__service=service.name,
         ).count()
         == 1
     )

@@ -32,6 +32,7 @@ def log(
     get_time: Callable[[], datetime] = _now,
     ip_address: str = "",
     additional_information: str = "",
+    service=None,
 ):
     """
     Write an event to the audit log.
@@ -53,18 +54,24 @@ def log(
     else:
         role = Role.USER
 
+    actor_data = {
+        "role": role.value,
+        "user_id": user_id,
+        "provider": actor_backend if actor_backend else "",
+        "ip_address": ip_address,
+    }
+    if service:
+        actor_data["service"] = service.name
+        actor_data["authentication"] = (
+            "API-Key" if hasattr(actor, "service_api_key") else "Token"
+        )
     message = {
         "audit_event": {
             "origin": settings.AUDIT_LOG_ORIGIN,
             "status": status.value,
             "date_time_epoch": int(current_time.timestamp() * 1000),
             "date_time": _iso8601_date(current_time),
-            "actor": {
-                "role": role.value,
-                "user_id": user_id,
-                "provider": actor_backend if actor_backend else "",
-                "ip_address": ip_address,
-            },
+            "actor": actor_data,
             "operation": operation.value,
             "additional_information": additional_information,
             "target": {

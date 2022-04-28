@@ -1,11 +1,17 @@
 from django.db import transaction
 from django.http import FileResponse
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
 from django.utils.timezone import now
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import filters, status
-from rest_framework.exceptions import MethodNotAllowed, NotFound, PermissionDenied
+from rest_framework.exceptions import (
+    MethodNotAllowed,
+    NotAuthenticated,
+    NotFound,
+    PermissionDenied,
+)
 from rest_framework.parsers import FileUploadParser, MultiPartParser
 from rest_framework.response import Response
 from rest_framework_extensions.mixins import NestedViewSetMixin
@@ -57,6 +63,8 @@ class DocumentMetadataViewSet(AuditLoggingModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
+        if user.is_anonymous:
+            raise NotAuthenticated()
         service_api_key = get_service_api_key_from_request(self.request)
         return get_document_metadata_queryset(user, service_api_key)
 
@@ -67,10 +75,10 @@ class DocumentMetadataViewSet(AuditLoggingModelViewSet):
             if request.user.uuid != kwargs[self.lookup_field] and not service_api_key:
                 if not request.user.is_superuser:
                     raise PermissionDenied()
-            queryset = self.filter_queryset(self.get_queryset())
-            queryset = queryset.filter(**kwargs)
             if not User.objects.filter(uuid=kwargs[self.lookup_field]).exists():
                 raise NotFound(detail="No user matches the given query.")
+            queryset = self.filter_queryset(self.get_queryset())
+            queryset = queryset.filter(**kwargs)
             page = self.paginate_queryset(queryset)
             if page is not None:
                 serializer = self.get_serializer(page, many=True)
@@ -316,17 +324,22 @@ class DocumentViewSet(AuditLoggingModelViewSet):
             attachment_serializer = CreateAttachmentSerializer(data=data)
             attachment_serializer.is_valid(raise_exception=True)
             attachment_serializer.save()
-        # Don't update history if patch has no data.
-        if request.data:
+        # Update history only if status changed.
+        if request.data.get("status"):
             status_history_serializer = StatusHistorySerializer(
                 data={
                     "document": document.id,
                     "value": document.status,
-                    "timestamp": document.updated_at,
+                    "timestamp": document.status_timestamp,
                 }
             )
             status_history_serializer.is_valid(raise_exception=True)
             status_history_serializer.save()
+
+            # Make sure the request data query dict is mutable, assign status_timestamp field to be updated.
+            request.data._mutable = True
+            request.data["status_timestamp"] = timezone.now()
+            request.data._mutable = False
 
         return super().partial_update(request, pk, *args, **kwargs)
 
