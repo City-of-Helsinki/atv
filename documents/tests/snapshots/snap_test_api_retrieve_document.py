@@ -9,7 +9,7 @@ snapshots = Snapshot()
 snapshots["test_list_document_service_user 1"] = {
     "attachments": [],
     "business_id": "",
-    "content": "",
+    "content": {},
     "created_at": "2020-06-01T03:00:00+03:00",
     "draft": False,
     "id": "485af718-d9d1-46b9-ad7b-33ea054126e3",
@@ -28,7 +28,7 @@ snapshots["test_list_document_service_user 1"] = {
 snapshots["test_list_document_superuser 1"] = {
     "attachments": [],
     "business_id": "",
-    "content": "",
+    "content": {},
     "created_at": "2020-06-01T03:00:00+03:00",
     "draft": False,
     "id": "485af718-d9d1-46b9-ad7b-33ea054126e3",
@@ -47,7 +47,7 @@ snapshots["test_list_document_superuser 1"] = {
 snapshots["test_retrieve_document_owner 1"] = {
     "attachments": [],
     "business_id": "",
-    "content": "",
+    "content": {},
     "created_at": "2020-06-01T03:00:00+03:00",
     "draft": False,
     "id": "485af718-d9d1-46b9-ad7b-33ea054126e3",

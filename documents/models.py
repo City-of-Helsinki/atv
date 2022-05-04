@@ -5,9 +5,9 @@ from django.db import models
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
-from encrypted_fields import fields
 
 from atv.exceptions import MaximumFileSizeExceededException
+from documents.fields import EncryptedJSONField
 from documents.utils import get_attachment_file_path
 from documents.validators import BusinessIDValidator
 from services.models import Service
@@ -158,8 +158,8 @@ class Document(UUIDModel, TimestampedModel):
             "filter/sort documents, e.g. the handler of the document."
         ),
     )
-    content = fields.EncryptedTextField(
-        help_text=_("Encrypted content of the document.")
+    content = EncryptedJSONField(
+        help_text=_("Encrypted content of the document."), default=dict, blank=True
     )
     status = models.CharField(
         max_length=255,

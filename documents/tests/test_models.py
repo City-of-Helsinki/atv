@@ -1,4 +1,3 @@
-import ast
 from uuid import uuid4
 
 import pytest  # noqa
@@ -36,8 +35,8 @@ def test_content_is_encrypted(service, user):
         assert "test_content" not in row[0]
 
     data = field.decrypt(row[0])
-    assert data == str(content)
-    assert document.content == ast.literal_eval(data)
+    assert data == content
+    assert document.content == data
     assert isinstance(document.content, dict)
 
 
