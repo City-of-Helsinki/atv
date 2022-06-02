@@ -1,4 +1,5 @@
 import json
+from unittest import mock
 from uuid import uuid4
 
 import pytest
@@ -64,10 +65,12 @@ def test_update_document_owner(user, snapshot):
             ),
         ],
     }
-
-    response = api_client.patch(
-        reverse("documents-detail", args=[document.id]), data, format="multipart"
-    )
+    with mock.patch(
+        "documents.serializers.attachment.virus_scan_attachment_file", return_value=None
+    ):
+        response = api_client.patch(
+            reverse("documents-detail", args=[document.id]), data, format="multipart"
+        )
 
     assert Document.objects.count() == 1
     assert document.attachments.count() == 1
@@ -213,10 +216,12 @@ def test_update_document_staff(user, service, snapshot):
             ),
         ],
     }
-
-    response = api_client.patch(
-        reverse("documents-detail", args=[document.id]), data, format="multipart"
-    )
+    with mock.patch(
+        "documents.serializers.attachment.virus_scan_attachment_file", return_value=None
+    ):
+        response = api_client.patch(
+            reverse("documents-detail", args=[document.id]), data, format="multipart"
+        )
 
     assert Document.objects.count() == 1
     assert document.attachments.count() == 1
@@ -455,8 +460,10 @@ def test_audit_log_is_created_when_patching(user, attachments):
             )
             for i in range(attachments)
         ]
-
-    api_client.patch(reverse("documents-detail", args=[document.id]), data)
+    with mock.patch(
+        "documents.serializers.attachment.virus_scan_attachment_file", return_value=None
+    ):
+        api_client.patch(reverse("documents-detail", args=[document.id]), data)
 
     assert (
         AuditLogEntry.objects.filter(

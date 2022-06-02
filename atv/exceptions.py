@@ -82,3 +82,9 @@ class MissingParameterException(APIException):
             detail = f"{detail}: {parameter}."
 
         super().__init__(detail=detail, code=code or self.default_code)
+
+
+class MaliciousFileException(APIException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    default_code = "MALICIOUS FILE DETECTED"
+    default_detail = _("Malware detected.")

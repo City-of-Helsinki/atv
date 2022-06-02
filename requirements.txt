@@ -76,6 +76,8 @@ pyasn1==0.4.8
     # via
     #   python-jose
     #   rsa
+pyclamd==0.4.0
+    # via -r requirements.in
 pycryptodome==3.11.0
     # via django-searchable-encrypted-fields
 pycryptodomex==3.11.0

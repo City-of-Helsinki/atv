@@ -1,3 +1,5 @@
+from unittest import mock
+
 import pytest
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import override_settings
@@ -39,10 +41,13 @@ def test_create_attachment(user, service, document_data, snapshot):
         service=service,
         draft=True,
     )
+    with mock.patch(
+        "documents.serializers.attachment.virus_scan_attachment_file", return_value=None
+    ):
 
-    response = api_client.post(
-        reverse("documents-attachments-list", args=[document.id]), document_data
-    )
+        response = api_client.post(
+            reverse("documents-attachments-list", args=[document.id]), document_data
+        )
 
     assert response.status_code == status.HTTP_201_CREATED
 
@@ -164,10 +169,12 @@ def test_create_attachment_staff(
         service=service,
         draft=True,
     )
-
-    response = api_client.post(
-        reverse("documents-attachments-list", args=[document.id]), document_data
-    )
+    with mock.patch(
+        "documents.serializers.attachment.virus_scan_attachment_file", return_value=None
+    ):
+        response = api_client.post(
+            reverse("documents-attachments-list", args=[document.id]), document_data
+        )
 
     if has_permission:
         assert response.status_code == status.HTTP_201_CREATED
@@ -197,10 +204,12 @@ def test_audit_log_is_created_when_creating(user, service, document_data, snapsh
         service=service,
         draft=True,
     )
-
-    response = api_client.post(
-        reverse("documents-attachments-list", args=[document.id]), document_data
-    ).json()
+    with mock.patch(
+        "documents.serializers.attachment.virus_scan_attachment_file", return_value=None
+    ):
+        response = api_client.post(
+            reverse("documents-attachments-list", args=[document.id]), document_data
+        ).json()
 
     assert document.attachments.count() == 1
     assert (
