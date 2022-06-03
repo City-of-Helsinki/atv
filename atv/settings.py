@@ -59,6 +59,7 @@ env = environ.Env(
     TOKEN_AUTH_ACCEPTED_SCOPE_PREFIX=(str, ""),
     TOKEN_AUTH_REQUIRE_SCOPE=(bool, False),
     TOKEN_AUTH_AUTHSERVER_URL=(str, ""),
+    CLAMAV_HOST=(str, "atv-clamav"),
 )
 if os.path.exists(env_file):
     env.read_env(env_file)
@@ -266,3 +267,6 @@ LOGGING = {
     },
     "loggers": {"": {"handlers": ["console"], "level": env("DJANGO_LOG_LEVEL")}},
 }
+
+# Malware Protection
+CLAMAV_HOST = env("CLAMAV_HOST")

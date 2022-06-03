@@ -1,5 +1,6 @@
 import json
 import uuid
+from unittest import mock
 
 import pytest
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -48,10 +49,12 @@ def test_create_anonymous_document(service_api_client, snapshot):
             ),
         ],
     }
-
-    response = service_api_client.post(
-        reverse("documents-list"), data, format="multipart"
-    )
+    with mock.patch(
+        "documents.serializers.attachment.virus_scan_attachment_file", return_value=None
+    ):
+        response = service_api_client.post(
+            reverse("documents-list"), data, format="multipart"
+        )
 
     assert response.status_code == status.HTTP_201_CREATED
     assert Document.objects.count() == 1
@@ -238,10 +241,12 @@ def test_audit_log_is_created_when_creating(service_api_client, attachments):
             )
             for i in range(attachments)
         ]
-
-    response = service_api_client.post(
-        reverse("documents-list"), data, format="multipart"
-    ).json()
+    with mock.patch(
+        "documents.serializers.attachment.virus_scan_attachment_file", return_value=None
+    ):
+        response = service_api_client.post(
+            reverse("documents-list"), data, format="multipart"
+        ).json()
 
     assert Document.objects.count() == 1
 

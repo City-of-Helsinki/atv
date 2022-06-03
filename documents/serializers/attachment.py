@@ -5,6 +5,7 @@ from atv.exceptions import MaximumFileSizeExceededException
 from utils.files import b_to_mb
 
 from ..models import Attachment
+from ..utils import virus_scan_attachment_file
 
 
 class AttachmentSerializer(serializers.ModelSerializer):
@@ -43,7 +44,10 @@ class CreateAttachmentSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         """Validate that the uploaded files are smaller than settings.MAX_FILE_SIZE."""
-        if (size := attrs.get("file").size) > settings.MAX_FILE_SIZE:
+        file = attrs.get("file")
+        if (size := file.size) > settings.MAX_FILE_SIZE:
             raise MaximumFileSizeExceededException(file_size=b_to_mb(size))
-
+        data = file.read()
+        file.seek(0)
+        virus_scan_attachment_file(data)
         return attrs
