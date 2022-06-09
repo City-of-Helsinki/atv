@@ -39,6 +39,7 @@ from ..serializers import (
 )
 from ..serializers.document import DocumentMetadataSerializer
 from ..serializers.status_history import StatusHistorySerializer
+from ..utils import get_decrypted_file
 from .docs import (
     attachment_viewset_docs,
     document_metadata_viewset_docs,
@@ -121,9 +122,12 @@ class AttachmentViewSet(AuditLoggingModelViewSet, NestedViewSetMixin):
 
     def retrieve(self, request, *args, **kwargs):
         attachment: Attachment = self.get_object()
-
+        decrypted_file = get_decrypted_file(
+            attachment.file.read(), attachment.file.name
+        )
+        attachment.file.close()
         return FileResponse(
-            attachment.file,
+            decrypted_file,
             as_attachment=True,
         )
 
