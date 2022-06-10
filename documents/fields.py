@@ -25,8 +25,6 @@ class EncryptedFileField(models.FileField):
     @staticmethod
     def encrypt_file(file):
         data_to_encrypt = file.read()
-        if not isinstance(data_to_encrypt, str):
-            data_to_encrypt = data_to_encrypt
         cipher = AES.new(bytes.fromhex(FIELD_ENCRYPTION_KEYS[0]), AES.MODE_GCM)
         nonce = cipher.nonce
         cypher_text, tag = cipher.encrypt_and_digest(data_to_encrypt)

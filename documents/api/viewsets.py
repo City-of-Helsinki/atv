@@ -122,9 +122,7 @@ class AttachmentViewSet(AuditLoggingModelViewSet, NestedViewSetMixin):
 
     def retrieve(self, request, *args, **kwargs):
         attachment: Attachment = self.get_object()
-        decrypted_file = get_decrypted_file(
-            attachment.file.read(), attachment.file.name
-        )
+        decrypted_file = get_decrypted_file(attachment.file.read(), attachment.filename)
         attachment.file.close()
         return FileResponse(
             decrypted_file,
