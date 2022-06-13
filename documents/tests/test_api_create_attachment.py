@@ -33,7 +33,7 @@ def document_data():
 
 
 @freeze_time("2021-06-30T12:00:00+03:00")
-def test_create_attachment(user, service, document_data, snapshot):
+def test_create_and_retrieve_attachment(user, service, document_data, snapshot):
     api_client = get_user_service_client(user, service)
     document = DocumentFactory(
         id="5209bdd0-e626-4a7d-aa4d-73aaf961a93f",
@@ -56,6 +56,11 @@ def test_create_attachment(user, service, document_data, snapshot):
 
     assert document.attachments.count() == 1
     assert document.attachments.first().id == attachment_id
+
+    response = api_client.get(
+        reverse("documents-attachments-detail", args=[document.id, attachment_id])
+    )
+    assert response.status_code == status.HTTP_200_OK
 
     snapshot.assert_match(body)
 

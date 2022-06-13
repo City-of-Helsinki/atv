@@ -7,7 +7,7 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from atv.exceptions import MaximumFileSizeExceededException
-from documents.fields import EncryptedJSONField
+from documents.fields import EncryptedFileField, EncryptedJSONField
 from documents.utils import get_attachment_file_path
 from documents.validators import BusinessIDValidator
 from services.models import Service
@@ -48,8 +48,7 @@ class Attachment(TimestampedModel):
         verbose_name=_("filename"),
         help_text=_("The original filename of the attachment."),
     )
-    # TODO: The file is not being encrypted yet
-    file = models.FileField(
+    file = EncryptedFileField(
         upload_to=get_attachment_file_path,
         verbose_name=_("file"),
         help_text=_("Encrypted file."),

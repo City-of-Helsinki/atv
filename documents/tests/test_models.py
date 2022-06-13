@@ -9,6 +9,7 @@ from django.test import override_settings
 from atv.exceptions import MaximumFileSizeExceededException
 
 from ..models import Attachment, Document
+from ..utils import get_decrypted_file
 from .utils import generate_tos_uuid
 
 User = get_user_model()
@@ -51,6 +52,26 @@ def test_attachment_file_size_exceeded(document):
                 content_type="application/pdf",
             ),
         )
+
+
+def test_attachment_is_encrypted(document):
+    """Data stored in DB is actually encrypted."""
+
+    attachment = Attachment.objects.create(
+        document=document,
+        media_type="txt",
+        file=SimpleUploadedFile(
+            "document1.txt",
+            b"this is testing text",
+            content_type="text/plain",
+        ),
+    )
+
+    file_content = attachment.file.read()
+    assert b"this is testing text" not in file_content
+
+    data = get_decrypted_file(file_content, "document.txt").read()
+    assert data == b"this is testing text"
 
 
 def test_model_str(document, attachment):
