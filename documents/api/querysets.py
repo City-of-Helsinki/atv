@@ -24,6 +24,7 @@ def get_document_metadata_queryset(
             "id",
             "service__name",
             "type",
+            "human_readable_type",
             "user__id",
         )
         .select_related("service", "user")

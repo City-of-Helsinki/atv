@@ -186,6 +186,15 @@ class Document(UUIDModel, TimestampedModel):
             "Could be e.g. the type of the document."
         ),
     )
+    human_readable_type = models.JSONField(
+        default=dict,
+        blank=True,
+        verbose_name=_("human_readable_type"),
+        help_text=_(
+            "Document type and translations for end user."
+            " It's recommended to use ISO 639-1 language codes as key values."
+        ),
+    )
 
     class Meta:
         verbose_name = _("document")

@@ -37,6 +37,7 @@ class DocumentMetadataSerializer(serializers.HyperlinkedModelSerializer):
         fields = (
             "id",
             "type",
+            "human_readable_type",
             "created_at",
             "updated_at",
             "service",
@@ -75,6 +76,7 @@ class DocumentSerializer(serializers.ModelSerializer):
             "status_timestamp",
             "status_histories",
             "type",
+            "human_readable_type",
             "service",
             "user_id",
             "transaction_id",
@@ -132,6 +134,7 @@ class CreateAnonymousDocumentSerializer(serializers.ModelSerializer):
         fields = (
             "status",
             "type",
+            "human_readable_type",
             "user_id",
             "transaction_id",
             "business_id",

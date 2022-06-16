@@ -28,6 +28,7 @@ snapshots["test_update_document_owner 1"] = {
     "tos_record_id": "89837a682b5d410e861f8f3688154163",
     "transaction_id": "cf0a341b-6bfd-4f59-8d7c-87bf62ba837b",
     "type": "mysterious form",
+    "human_readable_type": {},
     "updated_at": "2021-06-30T12:00:00+03:00",
 }
 
@@ -55,6 +56,7 @@ snapshots["test_update_document_staff 1"] = {
     "tos_record_id": "89837a682b5d410e861f8f3688154163",
     "transaction_id": "cf0a341b-6bfd-4f59-8d7c-87bf62ba837b",
     "type": "mysterious form",
+    "human_readable_type": {"en": "Mysterious Form"},
     "updated_at": "2021-06-30T12:00:00+03:00",
 }
 
@@ -83,5 +85,6 @@ snapshots["test_update_document_staff_non_draft 1"] = {
     "tos_record_id": "89837a682b5d410e861f8f3688154163",
     "transaction_id": "cf0a341b-6bfd-4f59-8d7c-87bf62ba837b",
     "type": "mysterious form",
+    "human_readable_type": {"en": "Mysterious Form"},
     "updated_at": "2021-06-30T12:00:00+03:00",
 }

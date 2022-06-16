@@ -22,6 +22,7 @@ snapshots["test_list_document_service_user 1"] = {
     "tos_record_id": "0f499febb6414e1dafc93febca5ef312",
     "transaction_id": "bd3fd958-cfeb-4ab1-bea4-5c058e8fee5c",
     "type": "",
+    "human_readable_type": {},
     "updated_at": "2020-06-01T03:00:00+03:00",
 }
 
@@ -41,6 +42,7 @@ snapshots["test_list_document_superuser 1"] = {
     "tos_record_id": "0f499febb6414e1dafc93febca5ef312",
     "transaction_id": "bd3fd958-cfeb-4ab1-bea4-5c058e8fee5c",
     "type": "",
+    "human_readable_type": {},
     "updated_at": "2020-06-01T03:00:00+03:00",
 }
 
@@ -60,5 +62,6 @@ snapshots["test_retrieve_document_owner 1"] = {
     "tos_record_id": "0f499febb6414e1dafc93febca5ef312",
     "transaction_id": "bd3fd958-cfeb-4ab1-bea4-5c058e8fee5c",
     "type": "",
+    "human_readable_type": {},
     "updated_at": "2020-06-01T03:00:00+03:00",
 }

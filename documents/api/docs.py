@@ -75,6 +75,7 @@ example_document = OpenApiExample(
             {"value": "SENT", "timestamp": "2022-03-07T16:08:39.580394+02:00"},
         ],
         "type": "APPLICATION_FOR_RESIDENTIAL_PARKING_PERMIT",
+        "human_readable_type": {"en": "Form", "fi": "Lomake"},
         "service": "Parking Permits",
         "user_id": "97c0b7a5-0b4c-4470-9a41-48d79454f233",
         "transaction_id": "some transaction id 1234",
@@ -128,6 +129,7 @@ example_document_metadata = OpenApiExample(
     value={
         "id": "f6fe8acc-3b91-41b3-a176-9d2feab2d2bb",
         "type": "APPLICATION_FOR_RESIDENTIAL_PARKING_PERMIT",
+        "human_readable_type": {"en": "Form", "fi": "Lomake"},
         "created_at": "2022-03-07T16:08:39.580394+02:00",
         "updated_at": "2022-03-07T17:59:39.580394+02:00",
         "service": "Parking Permits",
