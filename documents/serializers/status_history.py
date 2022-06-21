@@ -6,5 +6,5 @@ from documents.models import StatusHistory
 class StatusHistorySerializer(serializers.ModelSerializer):
     class Meta:
         model = StatusHistory
-        fields = ("document", "value", "timestamp")
+        fields = ("document", "value", "status_display_values", "timestamp")
         extra_kwargs = {"document": {"write_only": True}}

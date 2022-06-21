@@ -48,7 +48,11 @@ snapshots["test_create_authenticated_document 1"] = {
     "locked_after": None,
     "metadata": {"created_by": "alex", "testing": True},
     "service": "service 34",
-    "status": {"timestamp": "2021-06-30T12:00:00+03:00", "value": "handled"},
+    "status": {
+        "timestamp": "2021-06-30T12:00:00+03:00",
+        "value": "handled",
+        "status_display_values": {"fi": "Käsitelty"},
+    },
     "status_histories": [],
     "tos_function_id": "f917d43aab76420bb2ec53f6684da7f7",
     "tos_record_id": "89837a682b5d410e861f8f3688154163",

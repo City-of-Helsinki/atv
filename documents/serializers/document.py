@@ -19,8 +19,10 @@ from .status_history import StatusHistorySerializer
 
 def status_to_representation(representation):
     status_timestamp = representation.pop("status_timestamp")
+    status_display_values = representation.pop("status_display_values")
     representation["status"] = {
         "value": representation["status"],
+        "status_display_values": status_display_values,
         "timestamp": status_timestamp,
     }
     return representation
@@ -42,6 +44,7 @@ class DocumentMetadataSerializer(serializers.HyperlinkedModelSerializer):
             "updated_at",
             "service",
             "status",
+            "status_display_values",
             "status_timestamp",
             "status_histories",
         )
@@ -73,6 +76,7 @@ class DocumentSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
             "status",
+            "status_display_values",
             "status_timestamp",
             "status_histories",
             "type",
@@ -133,6 +137,7 @@ class CreateAnonymousDocumentSerializer(serializers.ModelSerializer):
         model = Document
         fields = (
             "status",
+            "status_display_values",
             "type",
             "human_readable_type",
             "user_id",

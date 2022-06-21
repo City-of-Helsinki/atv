@@ -332,6 +332,7 @@ class DocumentViewSet(AuditLoggingModelViewSet):
                 data={
                     "document": document.id,
                     "value": document.status,
+                    "status_display_values": document.status_display_values,
                     "timestamp": document.status_timestamp,
                 }
             )
