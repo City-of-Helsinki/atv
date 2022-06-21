@@ -17,7 +17,9 @@ from utils.exceptions import get_error_response
 
 VALID_DOCUMENT_DATA = {
     "status": "handled",
+    "status_display_values": json.dumps({"fi": "Käsitelty"}),
     "type": "mysterious form",
+    "human_readable_type": json.dumps({"en": "Mysterious Form"}),
     "transaction_id": "cf0a341b-6bfd-4f59-8d7c-87bf62ba837b",
     "business_id": "1234567-8",
     "tos_function_id": "f917d43aab76420bb2ec53f6684da7f7",

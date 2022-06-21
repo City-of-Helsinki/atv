@@ -19,6 +19,15 @@ class StatusHistory(models.Model):
         "Document", on_delete=models.CASCADE, related_name="status_histories"
     )
     value = models.CharField(max_length=255, blank=True)
+    status_display_values = models.JSONField(
+        default=dict,
+        blank=True,
+        verbose_name=_("status_display_values"),
+        help_text=_(
+            "Status display values/translations."
+            " It's recommended to use ISO 639-1 language codes as key values."
+        ),
+    )
     timestamp = models.DateTimeField()
 
     class Meta:
@@ -168,6 +177,15 @@ class Document(UUIDModel, TimestampedModel):
             "Could be e.g. some constant string."
         ),
     )
+    status_display_values = models.JSONField(
+        default=dict,
+        blank=True,
+        verbose_name=_("status_display_values"),
+        help_text=_(
+            "Status display values/translations."
+            " It's recommended to use ISO 639-1 language codes as key values."
+        ),
+    )
     status_timestamp = models.DateTimeField(
         blank=True,
         null=True,
@@ -184,6 +202,15 @@ class Document(UUIDModel, TimestampedModel):
         help_text=_(
             "Type information given by the owning service. "
             "Could be e.g. the type of the document."
+        ),
+    )
+    human_readable_type = models.JSONField(
+        default=dict,
+        blank=True,
+        verbose_name=_("human_readable_type"),
+        help_text=_(
+            "Document type and translations for end user."
+            " It's recommended to use ISO 639-1 language codes as key values."
         ),
     )
 

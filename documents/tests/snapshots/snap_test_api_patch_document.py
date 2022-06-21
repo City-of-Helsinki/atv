@@ -22,12 +22,17 @@ snapshots["test_update_document_owner 1"] = {
     "locked_after": None,
     "metadata": {"created_by": "alex", "testing": True},
     "service": "service 122",
-    "status": {"timestamp": "2021-06-30T12:00:00+03:00", "value": "handled"},
+    "status": {
+        "timestamp": "2021-06-30T12:00:00+03:00",
+        "value": "handled",
+        "status_display_values": {},
+    },
     "status_histories": [],
     "tos_function_id": "f917d43aab76420bb2ec53f6684da7f7",
     "tos_record_id": "89837a682b5d410e861f8f3688154163",
     "transaction_id": "cf0a341b-6bfd-4f59-8d7c-87bf62ba837b",
     "type": "mysterious form",
+    "human_readable_type": {},
     "updated_at": "2021-06-30T12:00:00+03:00",
 }
 
@@ -47,14 +52,23 @@ snapshots["test_update_document_staff 1"] = {
     "locked_after": None,
     "metadata": {"created_by": "alex", "testing": True},
     "service": "service 128",
-    "status": {"timestamp": "2021-06-30T12:00:00+03:00", "value": "handled"},
+    "status": {
+        "timestamp": "2021-06-30T12:00:00+03:00",
+        "value": "handled",
+        "status_display_values": {"fi": "Käsitelty"},
+    },
     "status_histories": [
-        {"timestamp": "2021-06-30T12:00:00+03:00", "value": "handled"}
+        {
+            "timestamp": "2021-06-30T12:00:00+03:00",
+            "value": "handled",
+            "status_display_values": {},
+        }
     ],
     "tos_function_id": "f917d43aab76420bb2ec53f6684da7f7",
     "tos_record_id": "89837a682b5d410e861f8f3688154163",
     "transaction_id": "cf0a341b-6bfd-4f59-8d7c-87bf62ba837b",
     "type": "mysterious form",
+    "human_readable_type": {"en": "Mysterious Form"},
     "updated_at": "2021-06-30T12:00:00+03:00",
 }
 
@@ -75,13 +89,22 @@ snapshots["test_update_document_staff_non_draft 1"] = {
     "locked_after": None,
     "metadata": {"created_by": "alex", "testing": True},
     "service": "service 130",
-    "status": {"timestamp": "2021-06-30T12:00:00+03:00", "value": "handled"},
+    "status": {
+        "timestamp": "2021-06-30T12:00:00+03:00",
+        "value": "handled",
+        "status_display_values": {"fi": "Käsitelty"},
+    },
     "status_histories": [
-        {"timestamp": "2021-06-30T12:00:00+03:00", "value": "handled"}
+        {
+            "timestamp": "2021-06-30T12:00:00+03:00",
+            "value": "handled",
+            "status_display_values": {},
+        }
     ],
     "tos_function_id": "f917d43aab76420bb2ec53f6684da7f7",
     "tos_record_id": "89837a682b5d410e861f8f3688154163",
     "transaction_id": "cf0a341b-6bfd-4f59-8d7c-87bf62ba837b",
     "type": "mysterious form",
+    "human_readable_type": {"en": "Mysterious Form"},
     "updated_at": "2021-06-30T12:00:00+03:00",
 }

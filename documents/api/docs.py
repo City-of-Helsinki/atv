@@ -67,14 +67,24 @@ example_document = OpenApiExample(
         "created_at": "2022-03-07T16:08:39.580394+02:00",
         "updated_at": "2022-03-07T17:59:39.580394+02:00",
         "status": {
-            "value": "BEING_PROCESSED",
-            "timestamp": "2022-03-07T17:59:39.580394+02:00",
+            "value": "PROCESSING",
+            "status_display_values": {"fi": "Käsittelyssä"},
+            "timestamp": "2022-06-21T13:13:54.247974+03:00",
         },
         "status_histories": [
-            {"value": "RECEIVED", "timestamp": "2022-03-07T17:48:23.143416+02:00"},
-            {"value": "SENT", "timestamp": "2022-03-07T16:08:39.580394+02:00"},
+            {
+                "value": "RECEIVED",
+                "status_display_values": {"fi": "Vastaanotettu"},
+                "timestamp": "2022-06-21T13:13:54.247974+03:00",
+            },
+            {
+                "value": "SUBMITTED",
+                "status_display_values": {"fi": "Lähetetty"},
+                "timestamp": "2022-06-21T13:13:54.247974+03:00",
+            },
         ],
         "type": "APPLICATION_FOR_RESIDENTIAL_PARKING_PERMIT",
+        "human_readable_type": {"en": "Form", "fi": "Lomake"},
         "service": "Parking Permits",
         "user_id": "97c0b7a5-0b4c-4470-9a41-48d79454f233",
         "transaction_id": "some transaction id 1234",
@@ -128,16 +138,26 @@ example_document_metadata = OpenApiExample(
     value={
         "id": "f6fe8acc-3b91-41b3-a176-9d2feab2d2bb",
         "type": "APPLICATION_FOR_RESIDENTIAL_PARKING_PERMIT",
+        "human_readable_type": {"en": "Form", "fi": "Lomake"},
         "created_at": "2022-03-07T16:08:39.580394+02:00",
         "updated_at": "2022-03-07T17:59:39.580394+02:00",
         "service": "Parking Permits",
         "status": {
-            "value": "BEING_PROCESSED",
-            "timestamp": "2022-03-07T17:59:39.580394+02:00",
+            "value": "PROCESSING",
+            "status_display_values": {"fi": "Käsittelyssä"},
+            "timestamp": "2022-06-21T13:13:54.247974+03:00",
         },
         "status_histories": [
-            {"value": "RECEIVED", "timestamp": "2022-03-07T17:48:23.143416+02:00"},
-            {"value": "SENT", "timestamp": "2022-03-07T16:08:39.580394+02:00"},
+            {
+                "value": "RECEIVED",
+                "status_display_values": {"fi": "Vastaanotettu"},
+                "timestamp": "2022-06-21T13:13:54.247974+03:00",
+            },
+            {
+                "value": "SUBMITTED",
+                "status_display_values": {"fi": "Lähetetty"},
+                "timestamp": "2022-06-21T13:13:54.247974+03:00",
+            },
         ],
     },
 )

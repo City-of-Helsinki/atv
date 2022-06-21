@@ -20,10 +20,12 @@ def get_document_metadata_queryset(
             "created_at",
             "updated_at",
             "status",
+            "status_display_values",
             "status_timestamp",
             "id",
             "service__name",
             "type",
+            "human_readable_type",
             "user__id",
         )
         .select_related("service", "user")

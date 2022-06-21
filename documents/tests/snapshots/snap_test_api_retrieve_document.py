@@ -16,12 +16,17 @@ snapshots["test_list_document_service_user 1"] = {
     "locked_after": None,
     "metadata": {},
     "service": "service 154",
-    "status": {"timestamp": "2020-06-01T03:00:00+03:00", "value": "testing"},
+    "status": {
+        "timestamp": "2020-06-01T03:00:00+03:00",
+        "value": "testing",
+        "status_display_values": {},
+    },
     "status_histories": [],
     "tos_function_id": "81eee139736f4e52b046a1b27211c202",
     "tos_record_id": "0f499febb6414e1dafc93febca5ef312",
     "transaction_id": "bd3fd958-cfeb-4ab1-bea4-5c058e8fee5c",
     "type": "",
+    "human_readable_type": {},
     "updated_at": "2020-06-01T03:00:00+03:00",
 }
 
@@ -35,12 +40,17 @@ snapshots["test_list_document_superuser 1"] = {
     "locked_after": None,
     "metadata": {},
     "service": "service 157",
-    "status": {"timestamp": "2020-06-01T03:00:00+03:00", "value": "testing"},
+    "status": {
+        "timestamp": "2020-06-01T03:00:00+03:00",
+        "value": "testing",
+        "status_display_values": {},
+    },
     "status_histories": [],
     "tos_function_id": "81eee139736f4e52b046a1b27211c202",
     "tos_record_id": "0f499febb6414e1dafc93febca5ef312",
     "transaction_id": "bd3fd958-cfeb-4ab1-bea4-5c058e8fee5c",
     "type": "",
+    "human_readable_type": {},
     "updated_at": "2020-06-01T03:00:00+03:00",
 }
 
@@ -54,11 +64,16 @@ snapshots["test_retrieve_document_owner 1"] = {
     "locked_after": None,
     "metadata": {},
     "service": "service 156",
-    "status": {"timestamp": "2020-06-01T03:00:00+03:00", "value": "testing"},
+    "status": {
+        "timestamp": "2020-06-01T03:00:00+03:00",
+        "value": "testing",
+        "status_display_values": {},
+    },
     "status_histories": [],
     "tos_function_id": "81eee139736f4e52b046a1b27211c202",
     "tos_record_id": "0f499febb6414e1dafc93febca5ef312",
     "transaction_id": "bd3fd958-cfeb-4ab1-bea4-5c058e8fee5c",
     "type": "",
+    "human_readable_type": {},
     "updated_at": "2020-06-01T03:00:00+03:00",
 }
