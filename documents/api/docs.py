@@ -347,6 +347,13 @@ document_viewset_docs = {
                 OpenApiTypes.STR,
                 description="Search for documents with the given transaction id",
             ),
+            OpenApiParameter(
+                "lookfor",
+                OpenApiTypes.STR,
+                description="Search for documents with metadata matching key:value pairs separated by comma."
+                " ( key:value, key:value )."
+                " Lookup method for value is 'contains', key must be exact and is case sensitive.",
+            ),
         ],
         responses={
             (status.HTTP_200_OK, "application/json"): OpenApiResponse(
