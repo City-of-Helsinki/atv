@@ -1,5 +1,3 @@
-from django.db.models import TextField
-from django.db.models.functions import Cast
 from django_filters import CharFilter, Filter, rest_framework as filters
 from django_filters.constants import EMPTY_VALUES
 from rest_framework.exceptions import ValidationError
@@ -31,16 +29,30 @@ class UserUUIDFilter(CharFilter):
 
 class MetadataJSONFilter(Filter):
     """
-    Custom filter for free searching from metadata field.
-    Cast json to text and annotate it to queryset for filtering
+    Custom filter for metadata field.
+    Query can be made with key value pairs like "key:value, ..." without quotes
     """
 
     def filter(self, qs, value):
         if value in EMPTY_VALUES:
             return qs
-        return qs.annotate(metatext=Cast("metadata", TextField())).filter(
-            metatext__contains=value
-        )
+        query_parts = [val.strip() for val in value.split(",")]
+        for part in query_parts:
+            try:
+                key, value = part.split(":", maxsplit=1)
+                qs = qs.filter(
+                    metadata__has_key=key, **{"metadata__" + key + "__icontains": value}
+                )
+            except ValueError:
+                raise ValidationError(
+                    detail={
+                        "Invalid Query": [
+                            "Enter query in format 'key:value' without quotes."
+                            " You can have multiple key and value pairs, separated by comma"
+                        ]
+                    }
+                )
+        return qs
 
 
 class DocumentMetadataFilterSet(filters.FilterSet):

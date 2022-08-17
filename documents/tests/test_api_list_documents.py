@@ -129,7 +129,7 @@ def test_list_document_anonymous_user(api_client):
         ("type", "application"),
         ("business_id", "1234567-8"),
         ("transaction_id", "49bee2d108be4a68a79d2e5e85791ec8"),
-        ("lookfor", "search"),
+        ("lookfor", "test:search, search:test"),
     ],
 )
 def test_list_document_filter(superuser_api_client, service, param, value):
@@ -141,7 +141,7 @@ def test_list_document_filter(superuser_api_client, service, param, value):
         business_id="1234567-8",
         transaction_id="49bee2d108be4a68a79d2e5e85791ec8",
         user__uuid="65352f2c-7b35-4c0d-8209-1d685f30cce9",
-        metadata={"test": "search"},
+        metadata={"test": "search", "search": "test"},
     )
     DocumentFactory(
         service=service,
