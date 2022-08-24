@@ -124,8 +124,16 @@ class AuditLoggingModelViewSet(ModelViewSet):
         client_ip = None
 
         if settings.USE_X_FORWARDED_FOR:
-            forwarded_for = self.request.META.get("HTTP_X_FORWARDED_FOR", "")
-            client_ip = forwarded_for.split(",")[0] or None
+            forwarded_for = self.request.META.get("HTTP_X_FORWARDED_FOR", "").split(",")
+            # Exclude private IP addresses to log the actual user's IP
+            forwarded_for_public_ips = [
+                ip
+                for ip in forwarded_for
+                if not ip.startswith(("192.168.", "10.", "172.16.", "172.31."))
+                and ip != ""
+            ]
+            if forwarded_for_public_ips:
+                client_ip = forwarded_for_public_ips[0]
 
         if not client_ip:
             client_ip = self.request.META.get("REMOTE_ADDR")
