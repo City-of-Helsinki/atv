@@ -1,3 +1,5 @@
+import ipaddress
+import re
 from contextlib import contextmanager
 from copy import copy
 from typing import Optional, Union
@@ -121,21 +123,22 @@ class AuditLoggingModelViewSet(ModelViewSet):
         return target or self.created_instance or self.get_queryset().model
 
     def _get_ip_address(self) -> str:
-        client_ip = None
-
         if settings.USE_X_FORWARDED_FOR:
-            forwarded_for = self.request.META.get("HTTP_X_FORWARDED_FOR", "").split(",")
-            # Exclude private IP addresses to log the actual user's IP
-            forwarded_for_public_ips = [
-                ip
-                for ip in forwarded_for
-                if not ip.startswith(("192.168.", "10.", "172.16.", "172.31."))
-                and ip != ""
+            forwarded_for = [
+                ip.strip()
+                for ip in self.request.META.get("HTTP_X_FORWARDED_FOR", "").split(",")
             ]
-            if forwarded_for_public_ips:
-                client_ip = forwarded_for_public_ips[0]
+            for ip in forwarded_for:
+                try:
+                    # This regexp matches IPv4 addresses without including the port number
+                    regexp_for_ipv4 = re.match(
+                        r"(^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4})", ip
+                    )
+                    if ipaddress.ip_address(
+                        regexp_for_ipv4[0] if regexp_for_ipv4 else ip
+                    ).is_global:
+                        return regexp_for_ipv4[0] if regexp_for_ipv4 else ip
+                except ValueError:
+                    continue
 
-        if not client_ip:
-            client_ip = self.request.META.get("REMOTE_ADDR")
-
-        return client_ip
+        return self.request.META.get("REMOTE_ADDR")

@@ -201,7 +201,12 @@ def test_create_attachment_staff(
 # OTHER STUFF
 
 
-def test_audit_log_is_created_when_creating(user, service, document_data, snapshot):
+@pytest.mark.parametrize(
+    "ip_address", ["213.255.180.34", "2345:0425:2CA1::0567:5673:23b5"]
+)
+def test_audit_log_is_created_when_creating(
+    user, service, document_data, snapshot, ip_address
+):
     api_client = get_user_service_client(user, service)
     document = DocumentFactory(
         id="5209bdd0-e626-4a7d-aa4d-73aaf961a93f",
@@ -213,7 +218,9 @@ def test_audit_log_is_created_when_creating(user, service, document_data, snapsh
         "documents.serializers.attachment.virus_scan_attachment_file", return_value=None
     ):
         response = api_client.post(
-            reverse("documents-attachments-list", args=[document.id]), document_data
+            reverse("documents-attachments-list", args=[document.id]),
+            document_data,
+            HTTP_X_FORWARDED_FOR=ip_address,
         ).json()
 
     assert document.attachments.count() == 1
@@ -224,6 +231,7 @@ def test_audit_log_is_created_when_creating(user, service, document_data, snapsh
             message__audit_event__operation="CREATE",
             message__audit_event__actor__service=service.name,
             message__audit_event__actor__role=Role.USER,
+            message__audit_event__actor__ip_address=ip_address,
         ).count()
         == 1
     )

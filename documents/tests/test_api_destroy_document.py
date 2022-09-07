@@ -1,6 +1,7 @@
 from datetime import timezone
 from uuid import uuid4
 
+import pytest
 from dateutil.relativedelta import relativedelta
 from dateutil.utils import today
 from freezegun import freeze_time
@@ -244,12 +245,17 @@ def test_statushistory_is_destroyed_with_document(user, service):
     assert StatusHistory.objects.count() == 0
 
 
-def test_audit_log_is_created_when_destroying(user, service):
+@pytest.mark.parametrize(
+    "ip_address", ["213.255.180.34", "2345:0425:2CA1::0567:5673:23b5"]
+)
+def test_audit_log_is_created_when_destroying(user, service, ip_address):
     api_client = get_user_service_client(user, service)
 
     document = DocumentFactory(draft=True, user=user, service=service)
 
-    api_client.delete(reverse("documents-detail", args=[document.id]))
+    api_client.delete(
+        reverse("documents-detail", args=[document.id]), HTTP_X_FORWARDED_FOR=ip_address
+    )
 
     assert (
         AuditLogEntry.objects.filter(
@@ -257,6 +263,7 @@ def test_audit_log_is_created_when_destroying(user, service):
             message__audit_event__target__id=str(document.pk),
             message__audit_event__operation="DELETE",
             message__audit_event__actor__service=service.name,
+            message__audit_event__actor__ip_address=ip_address,
         ).count()
         == 1
     )
