@@ -20,7 +20,7 @@ snapshots["test_create_anonymous_document 1"] = {
     "draft": False,
     "locked_after": None,
     "metadata": {"created_by": "alex", "testing": True},
-    "service": "service 32",
+    "service": "service 34",
     "status": {
         "timestamp": "2021-06-30T12:00:00+03:00",
         "value": "handled",
@@ -51,7 +51,7 @@ snapshots["test_create_authenticated_document 1"] = {
     "draft": False,
     "locked_after": None,
     "metadata": {"created_by": "alex", "testing": True},
-    "service": "service 34",
+    "service": "service 36",
     "status": {
         "timestamp": "2021-06-30T12:00:00+03:00",
         "value": "handled",

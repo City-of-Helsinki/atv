@@ -448,7 +448,10 @@ def test_update_document_not_found(superuser_api_client):
 
 
 @pytest.mark.parametrize("attachments", [0, 1, 2])
-def test_audit_log_is_created_when_patching(user, attachments):
+@pytest.mark.parametrize(
+    "ip_address", ["213.255.180.34", "2345:0425:2CA1::0567:5673:23b5"]
+)
+def test_audit_log_is_created_when_patching(user, attachments, ip_address):
     document = DocumentFactory(draft=True, user=user)
     api_client = get_user_service_client(user, document.service)
     data = {**VALID_OWNER_DOCUMENT_DATA}
@@ -463,13 +466,18 @@ def test_audit_log_is_created_when_patching(user, attachments):
     with mock.patch(
         "documents.serializers.attachment.virus_scan_attachment_file", return_value=None
     ):
-        api_client.patch(reverse("documents-detail", args=[document.id]), data)
+        api_client.patch(
+            reverse("documents-detail", args=[document.id]),
+            data,
+            HTTP_X_FORWARDED_FOR=ip_address,
+        )
 
     assert (
         AuditLogEntry.objects.filter(
             message__audit_event__target__type="Document",
             message__audit_event__target__id=str(document.pk),
             message__audit_event__operation="UPDATE",
+            message__audit_event__actor__ip_address=ip_address,
         ).count()
         == 1
     )

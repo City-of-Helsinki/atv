@@ -190,7 +190,10 @@ def test_destroy_attachment_not_found(superuser_api_client, document):
     )
 
 
-def test_audit_log_is_created_when_destroying(user, service):
+@pytest.mark.parametrize(
+    "ip_address", ["213.255.180.34", "2345:0425:2CA1::0567:5673:23b5"]
+)
+def test_audit_log_is_created_when_destroying(user, service, ip_address):
     api_client = get_user_service_client(user, service)
 
     attachment = AttachmentFactory(
@@ -203,7 +206,8 @@ def test_audit_log_is_created_when_destroying(user, service):
         reverse(
             "documents-attachments-detail",
             args=[attachment.document.id, attachment.id],
-        )
+        ),
+        HTTP_X_FORWARDED_FOR=ip_address,
     )
 
     assert (
@@ -212,6 +216,7 @@ def test_audit_log_is_created_when_destroying(user, service):
             message__audit_event__target__id=str(attachment.pk),
             message__audit_event__operation="DELETE",
             message__audit_event__actor__service=service.name,
+            message__audit_event__actor__ip_address=ip_address,
         ).count()
         == 1
     )

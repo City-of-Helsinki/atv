@@ -288,7 +288,10 @@ def test_list_document_filter_created_at_range(
     assert isoparse(document.get(field)) == isoparse(expected)
 
 
-def test_audit_log_is_created_when_listing(user):
+@pytest.mark.parametrize(
+    "ip_address", ["213.255.180.34", "2345:0425:2CA1::0567:5673:23b5"]
+)
+def test_audit_log_is_created_when_listing(user, ip_address):
     service = ServiceFactory()
     group = GroupFactory()
     user.groups.add(group)
@@ -296,7 +299,9 @@ def test_audit_log_is_created_when_listing(user):
     DocumentFactory.create_batch(2, service=service)
 
     api_client = get_user_service_client(user, service)
-    response = api_client.get(reverse("documents-list"))
+    response = api_client.get(
+        reverse("documents-list"), HTTP_X_FORWARDED_FOR=ip_address
+    )
 
     assert response.status_code == status.HTTP_200_OK
     assert (
@@ -305,6 +310,7 @@ def test_audit_log_is_created_when_listing(user):
             message__audit_event__target__id="",
             message__audit_event__operation="READ",
             message__audit_event__actor__service=service.name,
+            message__audit_event__actor__ip_address=ip_address,
         ).count()
         == 1
     )

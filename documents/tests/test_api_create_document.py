@@ -234,7 +234,12 @@ def test_create_document_no_attachments(service_api_client):
 
 
 @pytest.mark.parametrize("attachments", [0, 1, 2])
-def test_audit_log_is_created_when_creating(service_api_client, attachments):
+@pytest.mark.parametrize(
+    "ip_address", ["213.255.180.34", "2345:0425:2CA1::0567:5673:23b5"]
+)
+def test_audit_log_is_created_when_creating(
+    service_api_client, attachments, ip_address
+):
     data = {**VALID_DOCUMENT_DATA}
     if attachments:
         data["attachments"] = [
@@ -247,7 +252,10 @@ def test_audit_log_is_created_when_creating(service_api_client, attachments):
         "documents.serializers.attachment.virus_scan_attachment_file", return_value=None
     ):
         response = service_api_client.post(
-            reverse("documents-list"), data, format="multipart"
+            reverse("documents-list"),
+            data,
+            format="multipart",
+            HTTP_X_FORWARDED_FOR=ip_address,
         ).json()
 
     assert Document.objects.count() == 1
@@ -258,6 +266,7 @@ def test_audit_log_is_created_when_creating(service_api_client, attachments):
             message__audit_event__target__type="Document",
             message__audit_event__target__id=response["id"],
             message__audit_event__operation="CREATE",
+            message__audit_event__actor__ip_address=ip_address,
         ).count()
         == 1
     )
