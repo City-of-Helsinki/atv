@@ -124,7 +124,10 @@ class AuditLoggingModelViewSet(ModelViewSet):
 
     def _get_ip_address(self) -> str:
         if settings.USE_X_FORWARDED_FOR:
-            forwarded_for = self.request.META.get("HTTP_X_FORWARDED_FOR", "").split(",")
+            forwarded_for = [
+                ip.strip()
+                for ip in self.request.META.get("HTTP_X_FORWARDED_FOR", "").split(",")
+            ]
             for ip in forwarded_for:
                 try:
                     # This regexp matches IPv4 addresses without including the port number

@@ -235,7 +235,7 @@ def test_create_document_no_attachments(service_api_client):
 
 @pytest.mark.parametrize("attachments", [0, 1, 2])
 @pytest.mark.parametrize(
-    "ip_address", ["213.255.180.34", "2345:0425:2CA1::0567:5673:23b5"]
+    "ip_address", [" 213.255.180.34 ", "2345:0425:2CA1::0567:5673:23b5"]
 )
 def test_audit_log_is_created_when_creating(
     service_api_client, attachments, ip_address
@@ -266,7 +266,7 @@ def test_audit_log_is_created_when_creating(
             message__audit_event__target__type="Document",
             message__audit_event__target__id=response["id"],
             message__audit_event__operation="CREATE",
-            message__audit_event__actor__ip_address=ip_address,
+            message__audit_event__actor__ip_address=ip_address.strip(),  # remove whitespaces to verify correct parsing
         ).count()
         == 1
     )
