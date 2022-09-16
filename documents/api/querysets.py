@@ -27,6 +27,7 @@ def get_document_metadata_queryset(
             "type",
             "human_readable_type",
             "user__id",
+            "transaction_id",
         )
         .select_related("service", "user")
         .prefetch_related("status_histories")

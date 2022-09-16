@@ -74,7 +74,7 @@ class DocumentMetadataFilterSet(filters.FilterSet):
 
     class Meta:
         model = Document
-        fields = ["status", "type"]
+        fields = ["status", "type", "transaction_id"]
 
 
 class DocumentFilterSet(DocumentMetadataFilterSet):
