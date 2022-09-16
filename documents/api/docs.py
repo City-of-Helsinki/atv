@@ -537,6 +537,23 @@ document_metadata_viewset_docs = {
             status.HTTP_500_INTERNAL_SERVER_ERROR: _base_500_response(),
         },
         examples=[example_document_metadata, example_error],
+        parameters=[
+            OpenApiParameter(
+                "status",
+                OpenApiTypes.STR,
+                description="Search for documents with the given status",
+            ),
+            OpenApiParameter(
+                "type",
+                OpenApiTypes.STR,
+                description="Search for documents with the given type",
+            ),
+            OpenApiParameter(
+                "transaction_id",
+                OpenApiTypes.STR,
+                description="Search for documents with the given transaction id",
+            ),
+        ],
     ),
     # Not implementing
     "list": extend_schema(exclude=True),

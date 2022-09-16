@@ -199,3 +199,31 @@ def test_get_user_document_metadatas_anonymous_user(api_client):
     )
 
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+
+def test_user_document_metadatas_filtering_user(user, service):
+    api_client = get_user_service_client(user, service)
+    transaction_id = "bd3fd958-cfeb-4ab1-bea4-5c058e8fee5c"
+    DocumentFactory(
+        id="485af718-d9d1-46b9-ad7b-33ea054126e3",
+        user=user,
+        tos_function_id="81eee139736f4e52b046a1b27211c202",
+        tos_record_id="0f499febb6414e1dafc93febca5ef312",
+        transaction_id=transaction_id,
+    )
+    DocumentFactory(
+        id="485af718-d9d1-46b9-ad7b-33ea054126e4",
+        user=user,
+        tos_function_id="81eee139736f4e52b046a1b27211c202",
+        tos_record_id="0f499febb6414e1dafc93febca5ef312",
+        transaction_id="bd3fd958-cfeb-4ab1-bea4-5c058e8fee5f",
+    )
+
+    response = api_client.get(
+        reverse("userdocuments-detail", args=[user.uuid])
+        + f"?transaction_id={transaction_id}"
+    )
+
+    assert response.status_code == status.HTTP_200_OK
+
+    assert response.json().get("count") == 1
