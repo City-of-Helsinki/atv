@@ -1,4 +1,5 @@
 from datetime import timezone
+from unittest import mock
 from uuid import uuid4
 
 import pytest
@@ -231,21 +232,24 @@ def test_gdpr_delete_user_data_service_user(user, service_api_client):
             ),
         ],
     }
-    response = service_api_client.post(
-        reverse("documents-list"), data, format="multipart"
-    )
-    assert response.status_code == status.HTTP_201_CREATED
+    with mock.patch(
+        "documents.serializers.attachment.virus_scan_attachment_file", return_value=None
+    ):
+        response = service_api_client.post(
+            reverse("documents-list"), data, format="multipart"
+        )
+        assert response.status_code == status.HTTP_201_CREATED
 
-    data["deletable"] = False
-    data["attachments"] = [
-        SimpleUploadedFile(
-            "document2.pdf", b"file_content", content_type="application/pdf"
-        ),
-    ]
-    response = service_api_client.post(
-        reverse("documents-list"), data, format="multipart"
-    )
-    assert response.status_code == status.HTTP_201_CREATED
+        data["deletable"] = False
+        data["attachments"] = [
+            SimpleUploadedFile(
+                "document2.pdf", b"file_content", content_type="application/pdf"
+            ),
+        ]
+        response = service_api_client.post(
+            reverse("documents-list"), data, format="multipart"
+        )
+        assert response.status_code == status.HTTP_201_CREATED
 
     other_service = ServiceFactory()
     DocumentFactory(user=user, service=other_service, deletable=False)
