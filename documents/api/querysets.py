@@ -1,4 +1,4 @@
-from django.db.models import QuerySet
+from django.db.models import Prefetch, QuerySet
 from rest_framework.exceptions import PermissionDenied
 
 from services.enums import ServicePermissions
@@ -6,6 +6,31 @@ from services.models import Service, ServiceAPIKey
 from users.models import User
 
 from ..models import Attachment, Document
+
+
+def get_document_gdpr_data_queryset(user: User, service: Service) -> QuerySet:
+    qs = (
+        Document.objects.only(
+            "id",
+            "created_at",
+            "service",
+            "type",
+            "human_readable_type",
+            "user__uuid",
+            "deletable",
+        )
+        .select_related("service", "user")
+        .prefetch_related(
+            Prefetch(
+                "attachments",
+                queryset=Attachment.objects.only("document_id", "filename"),
+            )
+        )
+    )
+
+    if not user.is_superuser:
+        qs = qs.filter(service=service)
+    return qs
 
 
 def get_document_metadata_queryset(

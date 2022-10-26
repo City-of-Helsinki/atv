@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.core.serializers.json import DjangoJSONEncoder
+from django.db.models import Count
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
@@ -13,7 +14,11 @@ from atv.exceptions import (
 from users.models import User
 
 from ..models import Document
-from .attachment import AttachmentSerializer, CreateAttachmentSerializer
+from .attachment import (
+    AttachmentSerializer,
+    CreateAttachmentSerializer,
+    GDPRAttachmentSerializer,
+)
 from .status_history import StatusHistorySerializer
 
 
@@ -26,6 +31,49 @@ def status_to_representation(representation):
         "timestamp": status_timestamp,
     }
     return representation
+
+
+class GDPRDocumentSerializer(serializers.ModelSerializer):
+    service = serializers.CharField(
+        source="service.name", required=False, read_only=True
+    )
+    attachments = GDPRAttachmentSerializer(many=True)
+    attachment_count = serializers.IntegerField()
+    user_id = serializers.UUIDField(source="user.uuid", read_only=True)
+
+    class Meta:
+        model = Document
+        fields = (
+            "id",
+            "created_at",
+            "user_id",
+            "service",
+            "type",
+            "human_readable_type",
+            "deletable",
+            "attachment_count",
+            "attachments",
+        )
+
+
+class GDPRSerializer(serializers.Serializer):  # noqa
+    data = serializers.SerializerMethodField()
+
+    def get_data(self, documents_qs):
+        documents_qs = documents_qs.annotate(attachment_count=Count("attachments"))
+        total_deletable = 0
+        total_undeletable = 0
+        total = documents_qs.count()
+        deletable = documents_qs.filter(deletable=True).count()
+        total_deletable += deletable
+        total_undeletable += total - deletable
+
+        stats = {
+            "total_deletable": total_deletable,
+            "total_undeletable": total_undeletable,
+            "documents": GDPRDocumentSerializer(documents_qs, many=True).data,
+        }
+        return stats
 
 
 class DocumentMetadataSerializer(serializers.HyperlinkedModelSerializer):
@@ -91,6 +139,7 @@ class DocumentSerializer(serializers.ModelSerializer):
             "content",
             "draft",
             "locked_after",
+            "deletable",
             "attachments",
         )
 
@@ -150,6 +199,7 @@ class CreateAnonymousDocumentSerializer(serializers.ModelSerializer):
             "draft",
             "locked_after",
             "attachments",
+            "deletable",
         )
 
     def validate(self, attrs):

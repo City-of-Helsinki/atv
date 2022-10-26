@@ -10,7 +10,7 @@ from drf_spectacular.views import (
 from rest_framework_extensions.routers import ExtendedSimpleRouter
 
 from documents.api import AttachmentViewSet, DocumentViewSet
-from documents.api.viewsets import DocumentMetadataViewSet
+from documents.api.viewsets import DocumentMetadataViewSet, GDPRDataViewSet
 
 router = ExtendedSimpleRouter()
 
@@ -21,6 +21,7 @@ router.register(r"documents", DocumentViewSet, basename="documents").register(
     parents_query_lookups=["document_id"],
 )
 router.register(r"userdocuments", DocumentMetadataViewSet, basename="userdocuments")
+router.register(r"gdpr-api", GDPRDataViewSet, basename="gdpr-api")
 
 
 urlpatterns = [

@@ -37,20 +37,79 @@ from ..serializers import (
     CreateAttachmentSerializer,
     DocumentSerializer,
 )
-from ..serializers.document import DocumentMetadataSerializer
+from ..serializers.document import DocumentMetadataSerializer, GDPRSerializer
 from ..serializers.status_history import StatusHistorySerializer
 from ..utils import get_decrypted_file
 from .docs import (
     attachment_viewset_docs,
+    document_gdpr_viewset,
     document_metadata_viewset_docs,
     document_viewset_docs,
 )
 from .filtersets import DocumentFilterSet, DocumentMetadataFilterSet
 from .querysets import (
     get_attachment_queryset,
+    get_document_gdpr_data_queryset,
     get_document_metadata_queryset,
     get_document_queryset,
 )
+
+
+@extend_schema_view(**document_gdpr_viewset)
+class GDPRDataViewSet(AuditLoggingModelViewSet):
+    queryset = Document.objects.none()
+    serializer_class = GDPRSerializer
+    pagination_class = None
+    filter_backends = [DjangoFilterBackend]
+    lookup_field = "user__uuid"
+    http_method_names = ["get", "delete"]
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_anonymous:
+            raise NotAuthenticated()
+        if not get_service_api_key_from_request(self.request) and not user.is_superuser:
+            raise PermissionDenied()
+        service = get_service_from_request(self.request)
+        return get_document_gdpr_data_queryset(user, service)
+
+    def retrieve(self, request, *args, **kwargs):
+        with self.record_action():
+            queryset = self.filter_queryset(self.get_queryset()).filter(**kwargs)
+            serializer = self.get_serializer(queryset)
+            return Response(
+                serializer.data,
+                status=status.HTTP_204_NO_CONTENT
+                if request.method == "DELETE"
+                else status.HTTP_200_OK,
+            )
+
+    def destroy(self, request, *args, **kwargs):
+        with self.record_action():
+            # Anonymize data
+            with transaction.atomic():
+                qs = self.filter_queryset(self.get_queryset()).filter(
+                    deletable=True, **kwargs
+                )
+                Attachment.objects.filter(document__in=qs).delete()
+                qs.update(user=None, content={}, business_id="")
+            return self.retrieve(request, **kwargs)
+
+    @not_allowed()
+    def list(self, request, *args, **kwargs):
+        """Method not allowed"""
+
+    @not_allowed()
+    def create(self, request, *args, **kwargs):
+        """Method not allowed"""
+
+    @not_allowed()
+    def partial_update(self, request, *args, **kwargs):
+        """Method not allowed"""
+
+    @not_allowed()
+    def update(self, request, *args, **kwargs):
+        """Method not allowed"""
 
 
 @extend_schema_view(**document_metadata_viewset_docs)

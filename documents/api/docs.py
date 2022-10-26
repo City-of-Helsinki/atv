@@ -9,7 +9,7 @@ from drf_spectacular.utils import (
 from rest_framework import serializers, status
 
 from documents.serializers import AttachmentSerializer, DocumentSerializer
-from documents.serializers.document import DocumentMetadataSerializer
+from documents.serializers.document import DocumentMetadataSerializer, GDPRSerializer
 
 error_serializer = inline_serializer(
     "ErrorResponse",
@@ -159,6 +159,41 @@ example_document_metadata = OpenApiExample(
                 "timestamp": "2022-06-21T13:13:54.247974+03:00",
             },
         ],
+    },
+)
+
+example_gdpr_api_repsonse = OpenApiExample(
+    name="GDPR List Response",
+    status_codes=[str(status.HTTP_200_OK), str(status.HTTP_204_NO_CONTENT)],
+    value={
+        "data": {
+            "total_deletable": 0,
+            "total_undeletable": 1,
+            "documents": [
+                {
+                    "id": "0576d4e7-a84d-411f-9285-bf7dcc864ae0",
+                    "created_at": "2022-06-27T17:51:59.374880+03:00",
+                    "user_id": "a67dec08-cc7c-11ec-a4fb-00155dcd8647",
+                    "service": "TestService",
+                    "type": "mysterious form",
+                    "human_readable_type": {"en": "Mysterious Form"},
+                    "deletable": True,
+                    "attachment_count": 0,
+                    "attachments": [],
+                },
+                {
+                    "id": "05d3497b-b5ab-46c4-a7bf-5b6cbfc344b0",
+                    "created_at": "2022-06-09T17:16:49.565282+03:00",
+                    "user_id": "a67dec08-cc7c-11ec-a4fb-00155dcd8647",
+                    "service": "TestService",
+                    "type": "mysterious form",
+                    "human_readable_type": {},
+                    "deletable": False,
+                    "attachment_count": 1,
+                    "attachments": ["myfavoritesong.mp3"],
+                },
+            ],
+        }
     },
 )
 
@@ -560,5 +595,51 @@ document_metadata_viewset_docs = {
     "update": extend_schema(exclude=True),
     "partial_update": extend_schema(exclude=True),
     "destroy": extend_schema(exclude=True),
+    "create": extend_schema(exclude=True),
+}
+
+document_gdpr_viewset = {
+    "retrieve": extend_schema(
+        examples=[example_gdpr_api_repsonse],
+        responses={
+            (status.HTTP_200_OK, "application/json"): OpenApiResponse(
+                response=GDPRSerializer,
+                description="User was found and their documents are listed."
+                " Number of deletable and undeletable documents are included.",
+            ),
+            (status.HTTP_400_BAD_REQUEST, "application/json"): _base_400_response(),
+            status.HTTP_401_UNAUTHORIZED: _base_401_response(),
+            status.HTTP_403_FORBIDDEN: OpenApiResponse(
+                description="Current authentication doesn't allow viewing of this users documents"
+            ),
+            status.HTTP_500_INTERNAL_SERVER_ERROR: _base_500_response(),
+        },
+    ),
+    "destroy": extend_schema(
+        examples=[example_gdpr_api_repsonse],
+        responses={
+            (status.HTTP_204_NO_CONTENT, "application/json"): OpenApiResponse(
+                response=GDPRSerializer,
+                description="User was found and their deletable documents and attachments have been removed. "
+                "Documents with contractual oblications are returned in response body."
+                " Field 'total_deletable' should now be zero.",
+            ),
+            (status.HTTP_400_BAD_REQUEST, "application/json"): _base_400_response(),
+            status.HTTP_401_UNAUTHORIZED: OpenApiResponse(
+                description="Authorization not provided. API Key authentication required."
+            ),
+            status.HTTP_403_FORBIDDEN: OpenApiResponse(
+                description="Current authentication doesn't allow viewing of this users documents"
+            ),
+            status.HTTP_404_NOT_FOUND: OpenApiResponse(
+                description="No user matches the given query.",
+            ),
+            status.HTTP_500_INTERNAL_SERVER_ERROR: _base_500_response(),
+        },
+    ),
+    # Not implementing
+    "list": extend_schema(exclude=True),
+    "update": extend_schema(exclude=True),
+    "partial_update": extend_schema(exclude=True),
     "create": extend_schema(exclude=True),
 }
