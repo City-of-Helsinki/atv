@@ -608,7 +608,9 @@ document_gdpr_viewset = {
                 " Number of deletable and undeletable documents are included.",
             ),
             (status.HTTP_400_BAD_REQUEST, "application/json"): _base_400_response(),
-            status.HTTP_401_UNAUTHORIZED: _base_401_response(),
+            status.HTTP_401_UNAUTHORIZED: OpenApiResponse(
+                description="Authorization not provided. API Key authentication required."
+            ),
             status.HTTP_403_FORBIDDEN: OpenApiResponse(
                 description="Current authentication doesn't allow viewing of this users documents"
             ),
