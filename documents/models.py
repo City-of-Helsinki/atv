@@ -213,6 +213,13 @@ class Document(UUIDModel, TimestampedModel):
             " It's recommended to use ISO 639-1 language codes as key values."
         ),
     )
+    deletable = models.BooleanField(
+        default=True,
+        blank=False,
+        null=False,
+        verbose_name=_("deletable"),
+        help_text=_("Is document deletable by user."),
+    )
 
     class Meta:
         verbose_name = _("document")

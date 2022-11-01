@@ -8,6 +8,18 @@ from ..models import Attachment
 from ..utils import virus_scan_attachment_file
 
 
+class GDPRAttachmentSerializer(serializers.ModelSerializer):
+    """Basic "read" serializer for the Attachment model"""
+
+    class Meta:
+        model = Attachment
+        fields = ("filename",)
+
+    def to_representation(self, instance):
+        rep = super().to_representation(instance)
+        return rep["filename"]
+
+
 class AttachmentSerializer(serializers.ModelSerializer):
     """Basic "read" serializer for the Attachment model"""
 

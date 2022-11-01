@@ -1,9 +1,11 @@
 from datetime import timezone
+from unittest import mock
 from uuid import uuid4
 
 import pytest
 from dateutil.relativedelta import relativedelta
 from dateutil.utils import today
+from django.core.files.uploadedfile import SimpleUploadedFile
 from freezegun import freeze_time
 from guardian.shortcuts import assign_perm
 from rest_framework import status
@@ -11,9 +13,11 @@ from rest_framework.reverse import reverse
 
 from atv.tests.factories import GroupFactory
 from audit_log.models import AuditLogEntry
-from documents.models import Document, StatusHistory
+from documents.models import Attachment, Document, StatusHistory
 from documents.tests.factories import DocumentFactory
+from documents.tests.test_api_create_document import VALID_DOCUMENT_DATA
 from services.enums import ServicePermissions
+from services.tests.factories import ServiceFactory
 from services.tests.utils import get_user_service_client
 from utils.exceptions import get_error_response
 
@@ -215,6 +219,81 @@ def test_destroy_document_not_found(superuser_api_client):
         "NOT_FOUND",
         "No Document matches the given query.",
     )
+
+
+def test_gdpr_delete_user_data_service_user(user, service_api_client):
+    data = {
+        **VALID_DOCUMENT_DATA,
+        "user_id": user.uuid,
+        "deletable": True,
+        "attachments": [
+            SimpleUploadedFile(
+                "document1.pdf", b"file_content", content_type="application/pdf"
+            ),
+        ],
+    }
+    with mock.patch(
+        "documents.serializers.attachment.virus_scan_attachment_file", return_value=None
+    ):
+        response = service_api_client.post(
+            reverse("documents-list"), data, format="multipart"
+        )
+        assert response.status_code == status.HTTP_201_CREATED
+
+        data["deletable"] = False
+        data["attachments"] = [
+            SimpleUploadedFile(
+                "document2.pdf", b"file_content", content_type="application/pdf"
+            ),
+        ]
+        response = service_api_client.post(
+            reverse("documents-list"), data, format="multipart"
+        )
+        assert response.status_code == status.HTTP_201_CREATED
+
+    other_service = ServiceFactory()
+    DocumentFactory(user=user, service=other_service, deletable=False)
+
+    assert Document.objects.count() == 3
+    assert Attachment.objects.count() == 2
+
+    response = service_api_client.get(reverse("gdpr-api-detail", args=[user.uuid]))
+    assert response.status_code == status.HTTP_200_OK
+    body = response.data
+    assert body["data"]["total_deletable"] == 1
+    assert body["data"]["total_undeletable"] == 1
+
+    response = service_api_client.delete(reverse("gdpr-api-detail", args=[user.uuid]))
+    assert response.status_code == status.HTTP_204_NO_CONTENT
+
+    body = response.data
+    assert body["data"]["total_deletable"] == 0
+    assert body["data"]["total_undeletable"] == 1
+
+    # Documents are anonymized
+    assert Document.objects.count() == 3
+    for document in Document.objects.filter(deletable=True).values(
+        "content", "business_id", "user_id"
+    ):
+        assert document["content"] == {}
+        assert document["business_id"] == ""
+        assert document["user_id"] is None
+
+    assert Attachment.objects.count() == 1
+
+
+def test_gdpr_delete_user(user, service):
+    api_client = get_user_service_client(user, service)
+
+    response = api_client.delete(reverse("gdpr-api-detail", args=[user.uuid]))
+
+    assert response.status_code == status.HTTP_403_FORBIDDEN
+
+
+def test_gdpr_delete_anonymous(api_client, user):
+    response = api_client.delete(reverse("gdpr-api-detail", args=[user.uuid]))
+
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
 
 @freeze_time("2021-06-30T12:00:00+03:00")

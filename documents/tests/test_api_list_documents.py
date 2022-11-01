@@ -7,10 +7,13 @@ from rest_framework.reverse import reverse
 
 from atv.tests.factories import GroupFactory
 from audit_log.models import AuditLogEntry
+from documents.models import Document
 from documents.tests.factories import DocumentFactory
+from documents.tests.test_api_create_document import VALID_DOCUMENT_DATA
 from services.enums import ServicePermissions
 from services.tests.factories import ServiceFactory
 from services.tests.utils import get_user_service_client
+from users.tests.factories import UserFactory
 
 
 def test_list_document_service_admin_user(user):
@@ -120,6 +123,59 @@ def test_list_document_anonymous_user(api_client):
     response = api_client.get(reverse("documents-list"))
 
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+
+def test_gdpr_api_list_service_api_key(user, service_api_client):
+    data = {**VALID_DOCUMENT_DATA, "user_id": user.uuid, "deletable": True}
+    other_service = ServiceFactory()
+    response = service_api_client.post(
+        reverse("documents-list"), data, format="multipart"
+    )
+    assert response.status_code == status.HTTP_201_CREATED
+    data["deletable"] = False
+    response = service_api_client.post(
+        reverse("documents-list"), data, format="multipart"
+    )
+    assert response.status_code == status.HTTP_201_CREATED
+    DocumentFactory(service=other_service, user=user, deletable=False)
+
+    assert Document.objects.count() == 3
+
+    response = service_api_client.get(reverse("gdpr-api-detail", args=[user.uuid]))
+
+    assert response.status_code == status.HTTP_200_OK
+    body = response.data
+    assert body["data"]["total_deletable"] == 1
+    assert body["data"]["total_undeletable"] == 1
+
+
+def test_gdpr_api_list_anonymous(api_client, user, service):
+    other_service = ServiceFactory()
+    other_user = UserFactory()
+    DocumentFactory(service=service, user=user, deletable=True)
+    DocumentFactory(service=other_service, user=user, deletable=False)
+    DocumentFactory(service=other_service, user=other_user, deletable=False)
+
+    assert Document.objects.count() == 3
+
+    response = api_client.get(reverse("gdpr-api-detail", args=[user.uuid]))
+
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+
+def test_gdpr_api_list_user(user, service):
+    api_client = get_user_service_client(user, service)
+    other_service = ServiceFactory()
+    other_user = UserFactory()
+    DocumentFactory(service=service, user=user, deletable=True)
+    DocumentFactory(service=other_service, user=user, deletable=False)
+    DocumentFactory(service=other_service, user=other_user, deletable=False)
+
+    assert Document.objects.count() == 3
+
+    response = api_client.get(reverse("gdpr-api-detail", args=[user.uuid]))
+
+    assert response.status_code == status.HTTP_403_FORBIDDEN
 
 
 @pytest.mark.parametrize(
