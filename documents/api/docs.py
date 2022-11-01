@@ -601,6 +601,8 @@ document_metadata_viewset_docs = {
 document_gdpr_viewset = {
     "retrieve": extend_schema(
         examples=[example_gdpr_api_repsonse],
+        description="Used to fetch GDPR data of an user from single service.",
+        summary="List user's document details and number of deletable and undeletable documents.",
         responses={
             (status.HTTP_200_OK, "application/json"): OpenApiResponse(
                 response=GDPRSerializer,
@@ -619,8 +621,10 @@ document_gdpr_viewset = {
     ),
     "destroy": extend_schema(
         examples=[example_gdpr_api_repsonse],
+        description="Delete user's documents from a single service that aren't under contractual obligation.",
+        summary="List user's documents that weren't deleted. Deletable field should be zero.",
         responses={
-            (status.HTTP_204_NO_CONTENT, "application/json"): OpenApiResponse(
+            (status.HTTP_200_OK, "application/json"): OpenApiResponse(
                 response=GDPRSerializer,
                 description="User was found and their deletable documents and attachments have been removed. "
                 "Documents with contractual oblications are returned in response body."
@@ -632,9 +636,6 @@ document_gdpr_viewset = {
             ),
             status.HTTP_403_FORBIDDEN: OpenApiResponse(
                 description="Current authentication doesn't allow viewing of this users documents"
-            ),
-            status.HTTP_404_NOT_FOUND: OpenApiResponse(
-                description="No user matches the given query.",
             ),
             status.HTTP_500_INTERNAL_SERVER_ERROR: _base_500_response(),
         },

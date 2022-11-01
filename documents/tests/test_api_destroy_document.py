@@ -264,7 +264,7 @@ def test_gdpr_delete_user_data_service_user(user, service_api_client):
     assert body["data"]["total_undeletable"] == 1
 
     response = service_api_client.delete(reverse("gdpr-api-detail", args=[user.uuid]))
-    assert response.status_code == status.HTTP_204_NO_CONTENT
+    assert response.status_code == status.HTTP_200_OK
 
     body = response.data
     assert body["data"]["total_deletable"] == 0

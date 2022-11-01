@@ -77,12 +77,7 @@ class GDPRDataViewSet(AuditLoggingModelViewSet):
         with self.record_action():
             queryset = self.filter_queryset(self.get_queryset()).filter(**kwargs)
             serializer = self.get_serializer(queryset)
-            return Response(
-                serializer.data,
-                status=status.HTTP_204_NO_CONTENT
-                if request.method == "DELETE"
-                else status.HTTP_200_OK,
-            )
+            return Response(serializer.data)
 
     def destroy(self, request, *args, **kwargs):
         with self.record_action():
@@ -93,6 +88,7 @@ class GDPRDataViewSet(AuditLoggingModelViewSet):
                 )
                 Attachment.objects.filter(document__in=qs).delete()
                 qs.update(user=None, content={}, business_id="")
+            # Return details on documents that weren't deleted
             return self.retrieve(request, **kwargs)
 
     @not_allowed()
