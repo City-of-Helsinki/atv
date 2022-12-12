@@ -215,6 +215,8 @@ def test_audit_log_is_created_when_destroying(user, service, ip_address):
             message__audit_event__target__type="Attachment",
             message__audit_event__target__id=str(attachment.pk),
             message__audit_event__operation="DELETE",
+            message__audit_event__target__lookup_field="pk",
+            message__audit_event__target__endpoint="Attachment Instance",
             message__audit_event__actor__service=service.name,
             message__audit_event__actor__ip_address=ip_address,
         ).count()

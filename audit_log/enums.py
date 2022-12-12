@@ -14,6 +14,7 @@ class Role(TextChoices):
     USER = "USER", _("User")
     SYSTEM = "SYSTEM", _("System")
     ANONYMOUS = "ANONYMOUS", _("Anonymous")
+    ADMIN = "ADMIN", _("Admin")
 
 
 class Status(TextChoices):

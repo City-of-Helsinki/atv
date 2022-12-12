@@ -78,6 +78,27 @@ def test_log_user_operation(fixed_datetime, user, user_factory, operation, snaps
 
 
 @pytest.mark.parametrize("operation", list(Operation))
+def test_log_admin_operation(fixed_datetime, user, user_factory, operation, snapshot):
+    other_user = user_factory()
+
+    user.is_superuser = True
+    user.save()
+
+    audit_logging.log(
+        user,
+        "",
+        operation,
+        other_user,
+        get_time=fixed_datetime,
+        ip_address="192.168.1.1",
+    )
+
+    message = AuditLogEntry.objects.first().message
+    assert message["audit_event"]["actor"]["role"] == "ADMIN"
+    snapshot.assert_match(message)
+
+
+@pytest.mark.parametrize("operation", list(Operation))
 def test_log_system_operation(fixed_datetime, user, operation, snapshot):
     audit_logging.log(
         None, "", operation, user, get_time=fixed_datetime, ip_address="192.168.1.1"

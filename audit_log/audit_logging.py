@@ -33,6 +33,8 @@ def log(
     ip_address: str = "",
     additional_information: str = "",
     service=None,
+    view_name: str = "",
+    lookup_field: str = "",
 ):
     """
     Write an event to the audit log.
@@ -47,6 +49,8 @@ def log(
 
     if actor is None:
         role = Role.SYSTEM
+    elif actor.is_superuser:
+        role = Role.ADMIN
     elif isinstance(actor, AnonymousUser):
         role = Role.ANONYMOUS
     elif actor.id == target.pk:
@@ -65,6 +69,7 @@ def log(
         actor_data["authentication"] = (
             "API-Key" if hasattr(actor, "service_api_key") else "Token"
         )
+    target_id = _get_target_id(target)
     message = {
         "audit_event": {
             "origin": settings.AUDIT_LOG_ORIGIN,
@@ -75,8 +80,10 @@ def log(
             "operation": operation.value,
             "additional_information": additional_information,
             "target": {
-                "id": _get_target_id(target),
                 "type": _get_target_type(target),
+                "id": target_id,
+                "lookup_field": lookup_field if target_id else "",
+                "endpoint": view_name,
             },
         },
     }

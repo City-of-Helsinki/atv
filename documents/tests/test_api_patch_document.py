@@ -476,6 +476,8 @@ def test_audit_log_is_created_when_patching(user, attachments, ip_address):
         AuditLogEntry.objects.filter(
             message__audit_event__target__type="Document",
             message__audit_event__target__id=str(document.pk),
+            message__audit_event__target__lookup_field="pk",
+            message__audit_event__target__endpoint="Document Instance",
             message__audit_event__operation="UPDATE",
             message__audit_event__actor__ip_address=ip_address,
         ).count()
