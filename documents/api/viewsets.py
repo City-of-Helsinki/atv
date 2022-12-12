@@ -89,7 +89,9 @@ class GDPRDataViewSet(AuditLoggingModelViewSet):
                 Attachment.objects.filter(document__in=qs).delete()
                 qs.update(user=None, content={}, business_id="")
             # Return details on documents that weren't deleted
-            return self.retrieve(request, **kwargs)
+            queryset = self.filter_queryset(self.get_queryset()).filter(**kwargs)
+            serializer = self.get_serializer(queryset)
+            return Response(serializer.data)
 
     @not_allowed()
     def list(self, request, *args, **kwargs):
@@ -179,10 +181,11 @@ class AttachmentViewSet(AuditLoggingModelViewSet, NestedViewSetMixin):
         attachment: Attachment = self.get_object()
         decrypted_file = get_decrypted_file(attachment.file.read(), attachment.filename)
         attachment.file.close()
-        return FileResponse(
-            decrypted_file,
-            as_attachment=True,
-        )
+        with self.record_action():
+            return FileResponse(
+                decrypted_file,
+                as_attachment=True,
+            )
 
     def destroy(self, request, *args, **kwargs):
         attachment = self.get_object()
