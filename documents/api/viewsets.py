@@ -211,6 +211,10 @@ class AttachmentViewSet(AuditLoggingModelViewSet, NestedViewSetMixin):
                 if is_locked
                 else None
             )
+        if not attachment.document.deletable:
+            raise PermissionDenied(
+                "File can't be deleted due to contractual obligation."
+            )
 
         return super().destroy(request, *args, **kwargs)
 
@@ -434,6 +438,11 @@ class DocumentViewSet(AuditLoggingModelViewSet):
                 locked_after=document.locked_after
                 if is_locked
                 else None
+            )
+
+        if not document.deletable:
+            raise PermissionDenied(
+                detail="Document can't be deleted due to contractual obligation."
             )
 
         return super().destroy(request, *args, **kwargs)
