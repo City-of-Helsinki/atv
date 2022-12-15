@@ -155,6 +155,31 @@ def test_destroy_document_staff_non_draft(user, service):
     assert Document.objects.count() == 0
 
 
+@freeze_time("2021-06-30T12:00:00+03:00")
+def test_destroy_document_deletable_false_staff(user, service):
+    api_client = get_user_service_client(user, service)
+
+    group = GroupFactory()
+    assign_perm(ServicePermissions.VIEW_DOCUMENTS.value, group, service)
+    assign_perm(ServicePermissions.DELETE_DOCUMENTS.value, group, service)
+    user.groups.add(group)
+
+    document = DocumentFactory(
+        draft=False,
+        deletable=False,
+        service=service,
+    )
+    assert Document.objects.count() == 1
+
+    response = api_client.delete(reverse("documents-detail", args=[document.id]))
+
+    assert response.status_code == status.HTTP_403_FORBIDDEN
+    assert response.json() == get_error_response(
+        "PERMISSION_DENIED", "Document can't be deleted due to contractual obligation."
+    )
+    assert Document.objects.count() == 1
+
+
 @freeze_time("2021-06-30T12:00:00")
 def test_destroy_document_staff_after_lock_date(user, service):
     api_client = get_user_service_client(user, service)
@@ -341,6 +366,8 @@ def test_audit_log_is_created_when_destroying(user, service, ip_address):
             message__audit_event__target__type="Document",
             message__audit_event__target__id=str(document.pk),
             message__audit_event__operation="DELETE",
+            message__audit_event__target__lookup_field="pk",
+            message__audit_event__target__endpoint="Document Instance",
             message__audit_event__actor__service=service.name,
             message__audit_event__actor__ip_address=ip_address,
         ).count()

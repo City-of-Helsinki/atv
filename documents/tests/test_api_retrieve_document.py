@@ -6,6 +6,8 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 
 from atv.tests.factories import GroupFactory
+from audit_log.models import AuditLogEntry
+from documents.models import Document
 from documents.tests.factories import DocumentFactory
 from services.enums import ServicePermissions
 from services.tests.factories import ServiceFactory
@@ -227,3 +229,29 @@ def test_user_document_metadatas_filtering_user(user, service):
     assert response.status_code == status.HTTP_200_OK
 
     assert response.json().get("count") == 1
+
+
+def test_audit_log_is_created_when_retrieving(user):
+    service = ServiceFactory()
+    group = GroupFactory()
+    user.groups.add(group)
+    assign_perm(ServicePermissions.VIEW_DOCUMENTS.value, group, service)
+    DocumentFactory.create_batch(2, service=service)
+
+    api_client = get_user_service_client(user, service)
+
+    document_id = Document.objects.first().id
+    response = api_client.get(reverse("documents-detail", args=[document_id]))
+
+    assert response.status_code == status.HTTP_200_OK
+    assert (
+        AuditLogEntry.objects.filter(
+            message__audit_event__target__type="Document",
+            message__audit_event__target__id=str(document_id),
+            message__audit_event__target__endpoint="Document Instance",
+            message__audit_event__target__lookup_field="pk",
+            message__audit_event__operation="READ",
+            message__audit_event__actor__service=service.name,
+        ).count()
+        == 1
+    )

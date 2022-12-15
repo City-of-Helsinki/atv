@@ -190,6 +190,32 @@ def test_destroy_attachment_not_found(superuser_api_client, document):
     )
 
 
+@freeze_time("2021-06-30T12:00:00+03:00")
+def test_destroy_attachment_doc_deletable_false_staff(user, service):
+    api_client = get_user_service_client(user, service)
+
+    group = GroupFactory()
+    assign_perm(ServicePermissions.VIEW_ATTACHMENTS.value, group, service)
+    assign_perm(ServicePermissions.DELETE_ATTACHMENTS.value, group, service)
+    user.groups.add(group)
+
+    attachment = AttachmentFactory(document__service=service, document__deletable=False)
+    assert Attachment.objects.count() == 1
+
+    response = api_client.delete(
+        reverse(
+            "documents-attachments-detail",
+            args=[attachment.document.id, attachment.id],
+        )
+    )
+
+    assert response.status_code == status.HTTP_403_FORBIDDEN
+    assert response.json() == get_error_response(
+        "PERMISSION_DENIED", "File can't be deleted due to contractual obligation."
+    )
+    assert Attachment.objects.count() == 1
+
+
 @pytest.mark.parametrize(
     "ip_address", ["213.255.180.34", "2345:0425:2CA1::0567:5673:23b5"]
 )
@@ -215,6 +241,8 @@ def test_audit_log_is_created_when_destroying(user, service, ip_address):
             message__audit_event__target__type="Attachment",
             message__audit_event__target__id=str(attachment.pk),
             message__audit_event__operation="DELETE",
+            message__audit_event__target__lookup_field="pk",
+            message__audit_event__target__endpoint="Attachment Instance",
             message__audit_event__actor__service=service.name,
             message__audit_event__actor__ip_address=ip_address,
         ).count()

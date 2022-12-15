@@ -79,6 +79,7 @@ class AuditLoggingModelViewSet(ModelViewSet):
         actor_backend = self._get_actor_backend()
         operation = self._get_operation()
         service = get_service_from_request(self.request, raise_exception=False)
+        view_name = self.get_view_name()
         try:
             with transaction.atomic():
                 yield
@@ -89,6 +90,8 @@ class AuditLoggingModelViewSet(ModelViewSet):
                     target or self._get_target(),
                     ip_address=self._get_ip_address(),
                     service=service,
+                    lookup_field=self.lookup_field,
+                    view_name=view_name,
                 )
         except (NotAuthenticated, PermissionDenied):
             audit_logging.log(
@@ -99,6 +102,8 @@ class AuditLoggingModelViewSet(ModelViewSet):
                 Status.FORBIDDEN,
                 ip_address=self._get_ip_address(),
                 service=service,
+                lookup_field=self.lookup_field,
+                view_name=view_name,
             )
             raise
 

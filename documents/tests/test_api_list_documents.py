@@ -364,6 +364,7 @@ def test_audit_log_is_created_when_listing(user, ip_address):
         AuditLogEntry.objects.filter(
             message__audit_event__target__type="Document",
             message__audit_event__target__id="",
+            message__audit_event__target__endpoint="Document List",
             message__audit_event__operation="READ",
             message__audit_event__actor__service=service.name,
             message__audit_event__actor__ip_address=ip_address,
