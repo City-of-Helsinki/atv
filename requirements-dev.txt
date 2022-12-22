@@ -4,50 +4,51 @@
 #
 #    pip-compile requirements-dev.in
 #
-attrs==21.2.0
+asttokens==2.2.1
+    # via stack-data
+attrs==22.1.0
     # via
     #   -c requirements.txt
     #   flake8-bugbear
     #   pytest
 backcall==0.2.0
     # via ipython
-backports.entry-points-selectable==1.1.1
-    # via virtualenv
-black==21.11b1
+black==22.12.0
     # via -r requirements-dev.in
 cfgv==3.3.1
     # via pre-commit
-click==8.0.3
+click==8.1.3
     # via black
-coverage[toml]==6.1.2
+coverage[toml]==6.5.0
     # via pytest-cov
-decorator==5.1.0
+decorator==5.1.1
     # via ipython
-distlib==0.3.3
+distlib==0.3.6
     # via virtualenv
+exceptiongroup==1.0.4
+    # via pytest
+executing==1.2.0
+    # via stack-data
 factory-boy==3.2.1
     # via
     #   -r requirements-dev.in
     #   pytest-factoryboy
-faker==9.8.3
+faker==15.3.4
     # via factory-boy
 fastdiff==0.3.0
     # via snapshottest
-filelock==3.4.0
+filelock==3.8.2
     # via virtualenv
-flake8==4.0.1
+flake8==6.0.0
     # via
     #   -r requirements-dev.in
     #   flake8-bugbear
-    #   flake8-polyfill
     #   pep8-naming
-flake8-bugbear==21.9.2
+flake8-bugbear==22.12.6
     # via -r requirements-dev.in
-flake8-polyfill==1.0.2
-    # via pep8-naming
-freezegun==1.1.0
+freezegun==1.2.2
     # via -r requirements-dev.in
-identify==2.4.0
+identify==2.5.9
     # via pre-commit
 inflection==0.5.1
     # via
@@ -55,69 +56,65 @@ inflection==0.5.1
     #   pytest-factoryboy
 iniconfig==1.1.1
     # via pytest
-ipython==7.29.0
+ipython==8.7.0
     # via -r requirements-dev.in
-isort==5.10.1
+isort==5.11.2
     # via -r requirements-dev.in
-jedi==0.18.1
+jedi==0.18.2
     # via ipython
-matplotlib-inline==0.1.3
+matplotlib-inline==0.1.6
     # via ipython
-mccabe==0.6.1
+mccabe==0.7.0
     # via flake8
 mypy-extensions==0.4.3
     # via black
-nodeenv==1.6.0
+nodeenv==1.7.0
     # via pre-commit
-packaging==21.3
+packaging==22.0
     # via
     #   -c requirements.txt
     #   pytest
-parso==0.8.2
+parso==0.8.3
     # via jedi
-pathspec==0.9.0
+pathspec==0.10.3
     # via black
-pep8-naming==0.12.1
+pep8-naming==0.13.2
     # via -r requirements-dev.in
 pexpect==4.8.0
     # via ipython
 pickleshare==0.7.5
     # via ipython
-platformdirs==2.4.0
+platformdirs==2.6.0
     # via
     #   black
     #   virtualenv
 pluggy==1.0.0
     # via pytest
-pre-commit==2.15.0
+pre-commit==2.20.0
     # via -r requirements-dev.in
-prompt-toolkit==3.0.22
+prompt-toolkit==3.0.36
     # via ipython
 ptyprocess==0.7.0
     # via pexpect
-py==1.11.0
-    # via pytest
-pycodestyle==2.8.0
+pure-eval==0.2.2
+    # via stack-data
+pycodestyle==2.10.0
     # via flake8
-pyflakes==2.4.0
+pyflakes==3.0.1
     # via flake8
-pygments==2.10.0
+pygments==2.13.0
     # via ipython
-pyparsing==3.0.6
-    # via
-    #   -c requirements.txt
-    #   packaging
-pytest==6.2.5
+pytest==7.2.0
     # via
     #   -r requirements-dev.in
     #   pytest-cov
     #   pytest-django
     #   pytest-factoryboy
-pytest-cov==3.0.0
+pytest-cov==4.0.0
     # via -r requirements-dev.in
-pytest-django==4.4.0
+pytest-django==4.5.2
     # via -r requirements-dev.in
-pytest-factoryboy==2.1.0
+pytest-factoryboy==2.5.1
     # via -r requirements-dev.in
 python-dateutil==2.8.2
     # via
@@ -127,39 +124,37 @@ pyyaml==6.0
     # via
     #   -c requirements.txt
     #   pre-commit
-regex==2021.11.10
-    # via black
 six==1.16.0
     # via
     #   -c requirements.txt
     #   python-dateutil
     #   snapshottest
-    #   virtualenv
 snapshottest==0.6.0
     # via -r requirements-dev.in
-termcolor==1.1.0
+stack-data==0.6.2
+    # via ipython
+termcolor==2.1.1
     # via snapshottest
-text-unidecode==1.3
-    # via faker
 toml==0.10.2
-    # via
-    #   pre-commit
-    #   pytest
-tomli==1.2.2
+    # via pre-commit
+tomli==2.0.1
     # via
     #   black
     #   coverage
-traitlets==5.1.1
+    #   pytest
+traitlets==5.7.1
     # via
     #   ipython
     #   matplotlib-inline
-typing-extensions==4.0.0
-    # via black
-virtualenv==20.10.0
+typing-extensions==4.4.0
+    # via
+    #   black
+    #   pytest-factoryboy
+virtualenv==20.17.1
     # via pre-commit
-wasmer==1.0.0
+wasmer==1.1.0
     # via fastdiff
-wasmer-compiler-cranelift==1.0.0
+wasmer-compiler-cranelift==1.1.0
     # via fastdiff
 wcwidth==0.2.5
     # via prompt-toolkit

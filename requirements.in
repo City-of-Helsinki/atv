@@ -12,5 +12,5 @@ drf-oidc-auth==0.10.0
 drf-spectacular
 psycopg2
 sentry_sdk
-elasticsearch
+elasticsearch==7.15.2
 pyclamd
