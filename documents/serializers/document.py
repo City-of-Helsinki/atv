@@ -3,6 +3,7 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models import Count
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
+from helusers.utils import uuid_to_username
 from rest_framework import serializers
 from rest_framework.exceptions import PermissionDenied
 
@@ -157,7 +158,7 @@ class DocumentSerializer(serializers.ModelSerializer):
                 )
 
             user, created = User.objects.get_or_create(
-                uuid=user_id, defaults={"username": f"User-{user_id}"}
+                uuid=user_id, defaults={"username": uuid_to_username(user_id)}
             )
             document.user = user
             document.save()

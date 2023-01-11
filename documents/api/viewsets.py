@@ -5,6 +5,7 @@ from django.utils import timezone
 from django.utils.timezone import now
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema, extend_schema_view
+from helusers.utils import uuid_to_username
 from rest_framework import filters, status
 from rest_framework.exceptions import (
     MethodNotAllowed,
@@ -327,7 +328,7 @@ class DocumentViewSet(AuditLoggingModelViewSet):
         user_id = data.get("user_id")
         if user_id and api_key:
             user, created = User.objects.get_or_create(
-                uuid=user_id, defaults={"username": f"User-{user_id}"}
+                uuid=user_id, defaults={"username": uuid_to_username(user_id)}
             )
         elif user_id and not api_key:
             raise PermissionDenied(detail="INVALID FIELD: user_id. API key required.")
