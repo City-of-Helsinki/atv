@@ -12,6 +12,7 @@ from atv.exceptions import (
     InvalidFieldException,
     MaximumFileCountExceededException,
 )
+from services.models import ServiceAPIKey
 from users.models import User
 
 from ..models import Document
@@ -151,9 +152,11 @@ class DocumentSerializer(serializers.ModelSerializer):
 
         user_id = self.initial_data.get("user_id", None)
         if user_id:
-            if document.user_id:
+            if document.user_id and not isinstance(
+                self.context["request"].auth, ServiceAPIKey
+            ):
                 raise PermissionDenied(
-                    detail="Document owner can not be changed.",
+                    detail="Document owner can be changed only by API key users.",
                     code="invalid field: user_id",
                 )
 

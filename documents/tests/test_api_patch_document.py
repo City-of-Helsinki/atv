@@ -348,6 +348,7 @@ def test_add_user_anonymous_document(service_api_client):
 @freeze_time("2021-06-30T12:00:00")
 def test_update_document_user(service_api_client):
     user_id = "6345c12c-36c8-4e81-bd18-d66e9b1f754d"
+    new_user_id = "6345c12c-36c8-4e81-bd18-d66e9b1f754b"
     data = {**VALID_DOCUMENT_DATA, "user_id": user_id}
 
     response = service_api_client.post(
@@ -361,13 +362,10 @@ def test_update_document_user(service_api_client):
 
     document_id = body.get("id")
     response = service_api_client.patch(
-        reverse("documents-detail", args=[document_id]), {"user_id": user_id}
+        reverse("documents-detail", args=[document_id]), {"user_id": new_user_id}
     )
-    assert response.status_code == status.HTTP_403_FORBIDDEN
-
-    assert response.json() == get_error_response(
-        "INVALID FIELD: USER_ID", "Document owner can not be changed."
-    )
+    assert response.status_code == status.HTTP_200_OK
+    assert str(Document.objects.get(id=document_id).user.uuid) == new_user_id
 
 
 @freeze_time("2021-06-30T12:00:00")
