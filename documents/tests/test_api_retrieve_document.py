@@ -195,7 +195,6 @@ def test_get_user_document_metadatas_user_doesnt_exist(service_api_client):
 
 
 def test_get_user_document_metadatas_anonymous_user(api_client):
-
     response = api_client.get(
         reverse("userdocuments-detail", args=["bd3fd958-cfeb-4ab1-bea4-5c058e8fee5c"])
     )

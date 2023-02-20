@@ -9,7 +9,6 @@ from ..models import Attachment, Document
 
 
 def get_document_statistics_queryset(user: User, service: Service) -> QuerySet:
-
     qs = (
         Document.objects.only(
             "id",

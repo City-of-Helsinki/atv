@@ -44,7 +44,6 @@ def test_create_and_retrieve_attachment(user, service, document_data, snapshot):
     with mock.patch(
         "documents.serializers.attachment.virus_scan_attachment_file", return_value=None
     ):
-
         response = api_client.post(
             reverse("documents-attachments-list", args=[document.id]), document_data
         )

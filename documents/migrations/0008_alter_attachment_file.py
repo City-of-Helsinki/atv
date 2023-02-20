@@ -6,7 +6,6 @@ import documents.utils
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("documents", "0007_alter_document_content"),
     ]

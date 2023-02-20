@@ -5,7 +5,6 @@ import documents.models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("documents", "0006_document_status_timestamp"),
     ]

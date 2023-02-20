@@ -42,7 +42,6 @@ def remove_fine_grained_permissions(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("services", "0004_add_serviceclientid"),
     ]

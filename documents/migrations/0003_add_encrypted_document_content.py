@@ -5,7 +5,6 @@ import encrypted_fields.fields
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("documents", "0002_add_indexes_to_document"),
     ]

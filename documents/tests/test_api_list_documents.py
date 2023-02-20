@@ -234,7 +234,6 @@ def test_list_document_filter(superuser_api_client, service, param, value):
 
 
 def test_list_document_filter_user_id(superuser_api_client):
-
     document = DocumentFactory(
         id="8ce91dde-b7ba-4e20-8dd0-835d2060c9d3",
         user=None,
@@ -381,7 +380,6 @@ def test_list_document_statistics_stats_permission(service, user):
 
 
 def test_list_document_statistics_user(service, user):
-
     api_client = get_user_service_client(user, service)
     response = api_client.get(reverse("document-statistics-list"))
     assert response.status_code == status.HTTP_403_FORBIDDEN
