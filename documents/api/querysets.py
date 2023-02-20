@@ -1,4 +1,4 @@
-from django.db.models import Prefetch, QuerySet
+from django.db.models import Count, Prefetch, QuerySet
 from rest_framework.exceptions import PermissionDenied
 
 from services.enums import ServicePermissions
@@ -6,6 +6,35 @@ from services.models import Service, ServiceAPIKey
 from users.models import User
 
 from ..models import Attachment, Document
+
+
+def get_document_statistics_queryset(user: User, service: Service) -> QuerySet:
+
+    qs = (
+        Document.objects.only(
+            "id",
+            "created_at",
+            "service",
+            "status",
+            "type",
+            "transaction_id",
+            "human_readable_type",
+            "user__uuid",
+            "deletable",
+        )
+        .select_related("service", "user")
+        .prefetch_related(
+            Prefetch(
+                "attachments",
+                queryset=Attachment.objects.only("document_id", "filename"),
+            )
+        )
+        .annotate(attachment_count=Count("attachments"))
+    ).order_by("-created_at")
+    if user.has_perm("users.view_document_statistics") or user.is_superuser:
+        return qs
+
+    return qs.filter(service=service)
 
 
 def get_document_gdpr_data_queryset(user: User, service: Service) -> QuerySet:

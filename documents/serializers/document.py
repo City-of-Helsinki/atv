@@ -17,9 +17,9 @@ from users.models import User
 
 from ..models import Document
 from .attachment import (
+    AttachmentNameSerializer,
     AttachmentSerializer,
     CreateAttachmentSerializer,
-    GDPRAttachmentSerializer,
 )
 from .status_history import StatusHistorySerializer
 
@@ -35,11 +35,36 @@ def status_to_representation(representation):
     return representation
 
 
+class DocumentStatisticsSerializer(serializers.ModelSerializer):
+    service = serializers.CharField(
+        source="service.name", required=False, read_only=True
+    )
+    attachment_count = serializers.IntegerField()
+    attachments = AttachmentNameSerializer(many=True)
+    user_id = serializers.UUIDField(source="user.uuid", read_only=True)
+
+    class Meta:
+        model = Document
+        fields = (
+            "id",
+            "created_at",
+            "user_id",
+            "service",
+            "transaction_id",
+            "type",
+            "human_readable_type",
+            "status",
+            "deletable",
+            "attachment_count",
+            "attachments",
+        )
+
+
 class GDPRDocumentSerializer(serializers.ModelSerializer):
     service = serializers.CharField(
         source="service.name", required=False, read_only=True
     )
-    attachments = GDPRAttachmentSerializer(many=True)
+    attachments = AttachmentNameSerializer(many=True, read_only=True)
     attachment_count = serializers.IntegerField()
     user_id = serializers.UUIDField(source="user.uuid", read_only=True)
 
@@ -78,7 +103,7 @@ class GDPRSerializer(serializers.Serializer):  # noqa
         return stats
 
 
-class DocumentMetadataSerializer(serializers.HyperlinkedModelSerializer):
+class DocumentMetadataSerializer(serializers.ModelSerializer):
     status_histories = StatusHistorySerializer(many=True, read_only=True)
     service = serializers.CharField(
         source="service.name", required=False, read_only=True

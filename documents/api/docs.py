@@ -161,6 +161,20 @@ example_document_metadata = OpenApiExample(
         ],
     },
 )
+example_statistics_data = OpenApiExample(
+    name="DocumentExample",
+    response_only=True,
+    status_codes=[str(status.HTTP_200_OK), str(status.HTTP_201_CREATED)],
+    value={
+        "id": "f6fe8acc-3b91-41b3-a176-9d2feab2d2bb",
+        "type": "APPLICATION_FOR_RESIDENTIAL_PARKING_PERMIT",
+        "human_readable_type": {"en": "Form", "fi": "Lomake"},
+        "created_at": "2022-03-07T16:08:39.580394+02:00",
+        "updated_at": "2022-03-07T17:59:39.580394+02:00",
+        "service": "Parking Permits",
+        "status": "PROCESSING",
+    },
+)
 
 example_gdpr_api_repsonse = OpenApiExample(
     name="GDPR List Response",
@@ -644,5 +658,40 @@ document_gdpr_viewset = {
     "list": extend_schema(exclude=True),
     "update": extend_schema(exclude=True),
     "partial_update": extend_schema(exclude=True),
+    "create": extend_schema(exclude=True),
+}
+
+document_statistics_viewset_docs = {
+    "list": extend_schema(
+        summary="List and filter non sensitive parts of service's documents.",
+        description="""Lists non sensitive data of all documents in ATV. Service staff can fetch data from the
+         respective service. Currently the use case is to verify documents match between ATV and services.""",
+        responses={
+            (status.HTTP_200_OK, "application/json"): OpenApiResponse(
+                response=DocumentMetadataSerializer,
+                description="Request was allowed and documents were listed",
+            ),
+            (status.HTTP_400_BAD_REQUEST, "application/json"): _base_400_response(),
+            status.HTTP_401_UNAUTHORIZED: "Request's credentials are missing or invalid. An API-key is required, or an "
+            "user token associated with statistics service.",
+            status.HTTP_403_FORBIDDEN: OpenApiResponse(
+                description="Current authentication doesn't allow viewing document statistics"
+            ),
+            status.HTTP_500_INTERNAL_SERVER_ERROR: _base_500_response(),
+        },
+        examples=[example_statistics_data, example_error],
+        parameters=[
+            OpenApiParameter(
+                "transaction_id",
+                OpenApiTypes.STR,
+                description="Search for documents with the given transaction id",
+            ),
+        ],
+    ),
+    # Not implementing
+    "retrieve": extend_schema(exclude=True),
+    "update": extend_schema(exclude=True),
+    "partial_update": extend_schema(exclude=True),
+    "destroy": extend_schema(exclude=True),
     "create": extend_schema(exclude=True),
 }

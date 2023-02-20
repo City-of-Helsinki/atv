@@ -344,6 +344,49 @@ def test_list_document_filter_created_at_range(
     assert isoparse(document.get(field)) == isoparse(expected)
 
 
+def test_list_document_statistics_service_staff(service_api_client, user):
+    response = service_api_client.post(
+        reverse("documents-list"), VALID_DOCUMENT_DATA, format="multipart"
+    )
+    assert response.status_code == status.HTTP_201_CREATED
+    service = response.json()["service"]
+
+    other_user = UserFactory()
+    other_service = ServiceFactory()
+    DocumentFactory(service=other_service, user=user, deletable=False)
+    DocumentFactory(service=other_service, user=other_user, deletable=False)
+
+    response = service_api_client.get(reverse("document-statistics-list"))
+    assert response.status_code == status.HTTP_200_OK
+    assert all(
+        [document["service"] == service for document in response.json()["results"]]
+    )
+
+
+def test_list_document_statistics_stats_permission(service, user):
+    other_user = UserFactory()
+    other_service = ServiceFactory()
+    group = GroupFactory()
+    assign_perm("users.view_document_statistics", group)
+    DocumentFactory(service=service, user=user, deletable=True)
+    DocumentFactory(service=service, user=other_user, deletable=True)
+    DocumentFactory(service=other_service, user=user, deletable=False)
+    DocumentFactory(service=other_service, user=other_user, deletable=False)
+
+    user.groups.add(group)
+    api_client = get_user_service_client(user, service)
+    response = api_client.get(reverse("document-statistics-list"))
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json()["count"] == 4
+
+
+def test_list_document_statistics_user(service, user):
+
+    api_client = get_user_service_client(user, service)
+    response = api_client.get(reverse("document-statistics-list"))
+    assert response.status_code == status.HTTP_403_FORBIDDEN
+
+
 @pytest.mark.parametrize(
     "ip_address", ["213.255.180.34", "2345:0425:2CA1::0567:5673:23b5"]
 )

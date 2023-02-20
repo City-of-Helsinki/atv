@@ -38,22 +38,69 @@ from ..serializers import (
     CreateAttachmentSerializer,
     DocumentSerializer,
 )
-from ..serializers.document import DocumentMetadataSerializer, GDPRSerializer
+from ..serializers.document import (
+    DocumentMetadataSerializer,
+    DocumentStatisticsSerializer,
+    GDPRSerializer,
+)
 from ..serializers.status_history import StatusHistorySerializer
 from ..utils import get_decrypted_file
 from .docs import (
     attachment_viewset_docs,
     document_gdpr_viewset,
     document_metadata_viewset_docs,
+    document_statistics_viewset_docs,
     document_viewset_docs,
 )
-from .filtersets import DocumentFilterSet, DocumentMetadataFilterSet
+from .filtersets import (
+    DocumentFilterSet,
+    DocumentMetadataFilterSet,
+    DocumentStatisticsFilterSet,
+)
 from .querysets import (
     get_attachment_queryset,
     get_document_gdpr_data_queryset,
     get_document_metadata_queryset,
     get_document_queryset,
+    get_document_statistics_queryset,
 )
+
+
+@extend_schema_view(**document_statistics_viewset_docs)
+class DocumentStatisticsViewSet(AuditLoggingModelViewSet):
+    queryset = Document.objects.none()
+    serializer_class = DocumentStatisticsSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = DocumentStatisticsFilterSet
+
+    def get_queryset(self):
+        user = self.request.user
+        if not get_service_api_key_from_request(self.request) and not user.has_perm(
+            "users.view_document_statistics"
+        ):
+            raise PermissionDenied()
+        service = get_service_from_request(self.request)
+        return get_document_statistics_queryset(user, service)
+
+    @not_allowed()
+    def retrieve(self, request, *args, **kwargs):
+        """Method not allowed"""
+
+    @not_allowed()
+    def destroy(self, request, *args, **kwargs):
+        """Method not allowed"""
+
+    @not_allowed()
+    def create(self, request, *args, **kwargs):
+        """Method not allowed"""
+
+    @not_allowed()
+    def partial_update(self, request, *args, **kwargs):
+        """Method not allowed"""
+
+    @not_allowed()
+    def update(self, request, *args, **kwargs):
+        """Method not allowed"""
 
 
 @extend_schema_view(**document_gdpr_viewset)

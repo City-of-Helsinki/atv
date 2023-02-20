@@ -55,6 +55,36 @@ class MetadataJSONFilter(Filter):
         return qs
 
 
+class MultiStringFilter(Filter):
+    def filter(self, qs, value):
+        if value in EMPTY_VALUES:
+            return qs
+        query_parts = [val.strip() for val in value.split(",")]
+        return qs.filter(**{f"{self.field_name}__in": query_parts})
+
+
+class DocumentStatisticsFilterSet(filters.FilterSet):
+    created_before = filters.DateFilter(
+        field_name="created_at", lookup_expr="lt", label="Created before"
+    )
+    created_after = filters.DateFilter(
+        field_name="created_at", lookup_expr="gt", label="Created after"
+    )
+    services = MultiStringFilter(
+        field_name="service__name", label="Service names separated by comma"
+    )
+    types = MultiStringFilter(
+        field_name="type", label="Document types separated by comma"
+    )
+    statuses = MultiStringFilter(
+        field_name="status", label="Document statuses separated by comma"
+    )
+
+    class Meta:
+        model = Document
+        fields = ["transaction_id"]
+
+
 class DocumentMetadataFilterSet(filters.FilterSet):
     service_name = filters.CharFilter(
         field_name="service__name", label="Service's name"
