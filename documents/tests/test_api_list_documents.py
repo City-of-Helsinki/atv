@@ -234,7 +234,6 @@ def test_list_document_filter(superuser_api_client, service, param, value):
 
 
 def test_list_document_filter_user_id(superuser_api_client):
-
     document = DocumentFactory(
         id="8ce91dde-b7ba-4e20-8dd0-835d2060c9d3",
         user=None,
@@ -342,6 +341,48 @@ def test_list_document_filter_created_at_range(
 
     document = results[0]
     assert isoparse(document.get(field)) == isoparse(expected)
+
+
+def test_list_document_statistics_service_staff(service_api_client, user):
+    response = service_api_client.post(
+        reverse("documents-list"), VALID_DOCUMENT_DATA, format="multipart"
+    )
+    assert response.status_code == status.HTTP_201_CREATED
+    service = response.json()["service"]
+
+    other_user = UserFactory()
+    other_service = ServiceFactory()
+    DocumentFactory(service=other_service, user=user, deletable=False)
+    DocumentFactory(service=other_service, user=other_user, deletable=False)
+
+    response = service_api_client.get(reverse("document-statistics-list"))
+    assert response.status_code == status.HTTP_200_OK
+    assert all(
+        [document["service"] == service for document in response.json()["results"]]
+    )
+
+
+def test_list_document_statistics_stats_permission(service, user):
+    other_user = UserFactory()
+    other_service = ServiceFactory()
+    group = GroupFactory()
+    assign_perm("users.view_document_statistics", group)
+    DocumentFactory(service=service, user=user, deletable=True)
+    DocumentFactory(service=service, user=other_user, deletable=True)
+    DocumentFactory(service=other_service, user=user, deletable=False)
+    DocumentFactory(service=other_service, user=other_user, deletable=False)
+
+    user.groups.add(group)
+    api_client = get_user_service_client(user, service)
+    response = api_client.get(reverse("document-statistics-list"))
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json()["count"] == 4
+
+
+def test_list_document_statistics_user(service, user):
+    api_client = get_user_service_client(user, service)
+    response = api_client.get(reverse("document-statistics-list"))
+    assert response.status_code == status.HTTP_403_FORBIDDEN
 
 
 @pytest.mark.parametrize(

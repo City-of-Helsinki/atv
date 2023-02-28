@@ -1,4 +1,4 @@
-from django_filters import CharFilter, Filter, rest_framework as filters
+from django_filters import BaseInFilter, CharFilter, Filter, rest_framework as filters
 from django_filters.constants import EMPTY_VALUES
 from rest_framework.exceptions import ValidationError
 
@@ -53,6 +53,33 @@ class MetadataJSONFilter(Filter):
                     }
                 )
         return qs
+
+
+class StringInFilter(CharFilter, BaseInFilter):
+
+    """Allows filtering with a list of strings separated by comma"""
+
+
+class DocumentStatisticsFilterSet(filters.FilterSet):
+    created_before = filters.DateFilter(
+        field_name="created_at", lookup_expr="lt", label="Created before"
+    )
+    created_after = filters.DateFilter(
+        field_name="created_at", lookup_expr="gt", label="Created after"
+    )
+    services = StringInFilter(
+        field_name="service__name",
+        label="Service names separated by comma",
+    )
+    types = StringInFilter(field_name="type", label="Document types separated by comma")
+    statuses = StringInFilter(
+        field_name="status",
+        label="Document statuses separated by comma",
+    )
+
+    class Meta:
+        model = Document
+        fields = ["transaction_id"]
 
 
 class DocumentMetadataFilterSet(filters.FilterSet):

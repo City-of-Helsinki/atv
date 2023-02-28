@@ -11,3 +11,6 @@ class User(AbstractUser):
         super().clean()
         # Prevent personal details from being saved to ATV user model, ATV doesn't need to know anything else than uuid
         self.first_name = self.last_name = self.email = ""
+
+    class Meta:
+        permissions = [("view_document_statistics", "Can view document statistics")]

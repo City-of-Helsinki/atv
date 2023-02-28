@@ -7,7 +7,6 @@ import documents.utils
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("documents", "0003_add_encrypted_document_content"),
     ]

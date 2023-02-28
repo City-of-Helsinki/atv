@@ -8,7 +8,7 @@ from ..models import Attachment
 from ..utils import virus_scan_attachment_file
 
 
-class GDPRAttachmentSerializer(serializers.ModelSerializer):
+class AttachmentNameSerializer(serializers.ModelSerializer):
     """Basic "read" serializer for the Attachment model"""
 
     class Meta:

@@ -16,7 +16,7 @@ snapshots["test_list_document_service_user 1"] = {
     "id": "485af718-d9d1-46b9-ad7b-33ea054126e3",
     "locked_after": None,
     "metadata": {},
-    "service": "service 187",
+    "service": "service 194",
     "status": {
         "timestamp": "2020-06-01T03:00:00+03:00",
         "value": "testing",
@@ -41,7 +41,7 @@ snapshots["test_list_document_superuser 1"] = {
     "id": "485af718-d9d1-46b9-ad7b-33ea054126e3",
     "locked_after": None,
     "metadata": {},
-    "service": "service 190",
+    "service": "service 197",
     "status": {
         "timestamp": "2020-06-01T03:00:00+03:00",
         "value": "testing",
@@ -66,7 +66,7 @@ snapshots["test_retrieve_document_owner 1"] = {
     "id": "485af718-d9d1-46b9-ad7b-33ea054126e3",
     "locked_after": None,
     "metadata": {},
-    "service": "service 189",
+    "service": "service 196",
     "status": {
         "timestamp": "2020-06-01T03:00:00+03:00",
         "value": "testing",
