@@ -682,6 +682,21 @@ document_statistics_viewset_docs = {
         examples=[example_statistics_data, example_error],
         parameters=[
             OpenApiParameter(
+                "statuses",
+                OpenApiTypes.STR,
+                description="Search for documents with the given statuses separated by comma.",
+            ),
+            OpenApiParameter(
+                "types",
+                OpenApiTypes.STR,
+                description="Search for documents with the given types separated by comma",
+            ),
+            OpenApiParameter(
+                "services",
+                OpenApiTypes.STR,
+                description="Search for documents with the given services separated by comma",
+            ),
+            OpenApiParameter(
                 "transaction_id",
                 OpenApiTypes.STR,
                 description="Search for documents with the given transaction id",
