@@ -174,7 +174,11 @@ class DocumentSerializer(serializers.ModelSerializer):
         # If the document has been locked, no further updates are allowed
         if document.locked_after and document.locked_after <= now():
             raise DocumentLockedException()
-
+        # Deletable field can be changed from True to False but not the other way
+        if validated_data.get("deletable") is True and not document.deletable:
+            raise PermissionDenied(
+                detail="Field 'deletable' can't be changed if set to False"
+            )
         user_id = self.initial_data.get("user_id", None)
         if user_id:
             if document.user_id and not isinstance(

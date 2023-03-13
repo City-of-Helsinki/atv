@@ -13,4 +13,10 @@ class User(AbstractUser):
         self.first_name = self.last_name = self.email = ""
 
     class Meta:
-        permissions = [("view_document_statistics", "Can view document statistics")]
+        permissions = [
+            ("view_document_statistics", "Can view document statistics"),
+            (
+                "delete_document_undeletable",
+                "Can delete any document from their service",
+            ),
+        ]

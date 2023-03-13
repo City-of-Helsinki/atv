@@ -399,6 +399,35 @@ def test_update_document_owner_user_id(user):
 
 
 @freeze_time("2021-06-30T12:00:00")
+def test_update_deletable_field(user, service):
+    api_client = get_user_service_client(user, service)
+    group = GroupFactory()
+    assign_perm(ServicePermissions.VIEW_DOCUMENTS.value, group, service)
+    assign_perm(ServicePermissions.CHANGE_DOCUMENTS.value, group, service)
+    user.groups.add(group)
+
+    document = DocumentFactory(
+        id="2d2b7a36-a306-4e35-990f-13aea04263ff", service=service, deletable=True
+    )
+    assert Document.objects.count() == 1
+
+    # Allow changing deletable field from True to False
+    response = api_client.patch(
+        reverse("documents-detail", args=[document.id]),
+        {"deletable": False},
+    )
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json()["deletable"] is False
+
+    # Changing deletable to True from False isn't allowed
+    response = api_client.patch(
+        reverse("documents-detail", args=[document.id]),
+        {"deletable": True},
+    )
+    assert response.status_code == status.HTTP_403_FORBIDDEN
+
+
+@freeze_time("2021-06-30T12:00:00")
 def test_create_status_history(service_api_client):
     data = {
         **VALID_DOCUMENT_DATA,
