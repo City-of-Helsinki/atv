@@ -19,6 +19,7 @@ from documents.tests.test_api_create_document import VALID_DOCUMENT_DATA
 from services.enums import ServicePermissions
 from services.tests.factories import ServiceFactory
 from services.tests.utils import get_user_service_client
+from users.tests.factories import UserFactory
 from utils.exceptions import get_error_response
 
 # OWNER-RELATED ACTIONS
@@ -178,6 +179,15 @@ def test_destroy_document_deletable_false_staff(user, service):
         "PERMISSION_DENIED", "Document can't be deleted due to contractual obligation."
     )
     assert Document.objects.count() == 1
+
+    user_with_delete_perm = UserFactory()
+    user_with_delete_perm.groups.add(group)
+    # Add permission to delete any document from their service
+    assign_perm("users.delete_document_undeletable", user_with_delete_perm)
+    api_client = get_user_service_client(user_with_delete_perm, service)
+    response = api_client.delete(reverse("documents-detail", args=[document.id]))
+    assert response.status_code == status.HTTP_204_NO_CONTENT
+    assert Document.objects.count() == 0
 
 
 @freeze_time("2021-06-30T12:00:00")

@@ -488,7 +488,9 @@ class DocumentViewSet(AuditLoggingModelViewSet):
                 else None
             )
 
-        if not document.deletable:
+        if not (document.deletable or document.draft) and not request.user.has_perm(
+            "users.delete_document_undeletable"
+        ):
             raise PermissionDenied(
                 detail="Document can't be deleted due to contractual obligation."
             )
