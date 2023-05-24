@@ -25,6 +25,9 @@ VALID_DOCUMENT_DATA = {
     "tos_function_id": "f917d43aab76420bb2ec53f6684da7f7",
     "tos_record_id": "89837a682b5d410e861f8f3688154163",
     "metadata": json.dumps({"created_by": "alex", "testing": True}),
+    "deletable": False,
+    "document_language": "en",
+    "content_schema_url": "https://schema.fi",
     "content": json.dumps(
         {
             "formData": {

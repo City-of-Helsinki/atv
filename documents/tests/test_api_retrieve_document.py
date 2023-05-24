@@ -9,6 +9,7 @@ from atv.tests.factories import GroupFactory
 from audit_log.models import AuditLogEntry
 from documents.models import Document
 from documents.tests.factories import DocumentFactory
+from documents.tests.test_api_create_document import VALID_DOCUMENT_DATA
 from services.enums import ServicePermissions
 from services.tests.factories import ServiceFactory
 from services.tests.utils import get_user_service_client
@@ -200,6 +201,61 @@ def test_get_user_document_metadatas_anonymous_user(api_client):
     )
 
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+
+def test_get_document_status_history_user(service, user):
+    api_client = get_user_service_client(user, service)
+    document = DocumentFactory(
+        user=user,
+        service=service,
+        tos_function_id="81eee139736f4e52b046a1b27211c202",
+        tos_record_id="0f499febb6414e1dafc93febca5ef312",
+        transaction_id="bd3fd958-cfeb-4ab1-bea4-5c058e8fee5c",
+        status="created",
+    )
+    response = api_client.get(
+        reverse("document-status-history-list", args=[document.id])
+    )
+    assert response.status_code == status.HTTP_200_OK
+
+
+def test_get_document_status_history_other_user(service, user):
+    api_client = get_user_service_client(user, service)
+    other_user = UserFactory()
+    document = DocumentFactory(
+        user=other_user,
+        tos_function_id="81eee139736f4e52b046a1b27211c202",
+        tos_record_id="0f499febb6414e1dafc93febca5ef312",
+        transaction_id="bd3fd958-cfeb-4ab1-bea4-5c058e8fee5c",
+        status="created",
+    )
+    response = api_client.get(
+        reverse("document-status-history-list", args=[document.id])
+    )
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+
+
+@freeze_time("2020-06-01T00:00:00Z")
+def test_get_document_status_history_service_user(service_api_client, user):
+    response = service_api_client.post(
+        reverse("documents-list"),
+        {**VALID_DOCUMENT_DATA, "user_id": user.uuid},
+        format="multipart",
+    )
+    assert response.status_code == status.HTTP_201_CREATED
+    document = response.json().get("id")
+    response = service_api_client.get(
+        reverse("document-status-history-list", args=[document])
+    )
+    assert response.status_code == status.HTTP_200_OK
+    document = DocumentFactory(
+        user=UserFactory(),
+        service=ServiceFactory(),
+    )
+    response = service_api_client.get(
+        reverse("document-status-history-list", args=[document.id])
+    )
+    assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
 def test_user_document_metadatas_filtering_user(user, service):

@@ -13,7 +13,7 @@ from rest_framework.reverse import reverse
 
 from atv.tests.factories import GroupFactory
 from audit_log.models import AuditLogEntry
-from documents.models import Document, StatusHistory
+from documents.models import Activity, Document, StatusHistory
 from documents.tests.factories import DocumentFactory
 from documents.tests.test_api_create_document import VALID_DOCUMENT_DATA
 from services.enums import ServicePermissions
@@ -437,6 +437,7 @@ def test_create_status_history(service_api_client):
         reverse("documents-list"), data, format="multipart"
     )
     assert response.status_code == status.HTTP_201_CREATED
+    assert StatusHistory.objects.count() == 1
     document_id = response.json().get("id")
 
     # Patch shouldn't create status history object
@@ -444,7 +445,6 @@ def test_create_status_history(service_api_client):
         reverse("documents-detail", args=[document_id]), {"type": "new type"}
     )
     assert response.status_code == status.HTTP_200_OK
-    assert StatusHistory.objects.count() == 0
 
     # Creates status history object when status field changes
     response = service_api_client.patch(
@@ -452,6 +452,119 @@ def test_create_status_history(service_api_client):
         {"status": "created status history object"},
     )
 
+    assert response.status_code == status.HTTP_200_OK
+    assert StatusHistory.objects.count() == 2
+
+
+def test_user_create_status_and_activity(service, user):
+    api_client = get_user_service_client(user, service)
+
+    response = api_client.post(
+        reverse("documents-list"), VALID_DOCUMENT_DATA, format="multipart"
+    )
+    assert response.status_code == status.HTTP_201_CREATED
+    assert StatusHistory.objects.count() == 1
+    document_id = response.json().get("id")
+
+    status_activity_data = {
+        "value": "newstatus",
+        "status_display_values": {"fi": "Uusi status"},
+        "activity": {
+            "title": {
+                "fi": "submitted viimeisin aktiviteetti",
+                "en": "asdf",
+                "sv": "asdf",
+            },
+            "message": {
+                "fi": "submitted viimeisin message",
+                "en": "asdf",
+                "sv": "asdf",
+            },
+            "activity_links": {
+                "fi": {"url": "asdf.fi", "display_text": "tästä palveluun asdf"},
+                "en": {"url": "asdf.uk", "display_text": "continue in service asdf"},
+                "sv": {"url": "asdf.sv", "display_text": "samma på svenska"},
+            },
+            "show_to_user": True,
+        },
+    }
+    response = api_client.post(
+        reverse("document-status-history-list", args=[document_id]),
+        status_activity_data,
+        format="json",
+    )
+    assert response.status_code == status.HTTP_201_CREATED
+    assert StatusHistory.objects.count() == 2
+    assert Activity.objects.count() == 1
+
+
+def test_user_create_status(service, user):
+    api_client = get_user_service_client(user, service)
+
+    response = api_client.post(
+        reverse("documents-list"), VALID_DOCUMENT_DATA, format="multipart"
+    )
+    assert response.status_code == status.HTTP_201_CREATED
+    assert StatusHistory.objects.count() == 1
+    document_id = response.json().get("id")
+
+    response = api_client.post(
+        reverse("document-status-history-list", args=[document_id]),
+        data={"value": "New Status", "status_display_values": {"fi": "Uusi status"}},
+        format="json",
+    )
+    assert response.status_code == status.HTTP_201_CREATED
+    assert StatusHistory.objects.count() == 2
+    assert Activity.objects.count() == 0
+
+
+def test_create_status_document_not_found(service, user):
+    api_client = get_user_service_client(user, service)
+    response = api_client.post(
+        reverse("document-status-history-list", args=[uuid4()]), {"any": "data"}
+    )
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+
+
+def test_create_activity_invalid_field(service_api_client):
+    response = service_api_client.post(
+        reverse("documents-list"), VALID_DOCUMENT_DATA, format="multipart"
+    )
+    assert response.status_code == status.HTTP_201_CREATED
+    assert StatusHistory.objects.count() == 1
+    document_id = response.json().get("id")
+
+    activity_data = {"activity": {"title": {"fi": "adsf"}, "msg": {"fi": "testing"}}}
+    response = service_api_client.post(
+        reverse("document-status-history-list", args=[document_id]),
+        activity_data,
+        format="json",
+    )
+    assert Activity.objects.count() == 0
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+
+@freeze_time("2020-06-01T00:00:00Z")
+def test_create_status_same_value(service_api_client):
+    response = service_api_client.post(
+        reverse("documents-list"), VALID_DOCUMENT_DATA, format="multipart"
+    )
+    assert response.status_code == status.HTTP_201_CREATED
+    assert StatusHistory.objects.count() == 1
+    document_id = response.json().get("id")
+    response = service_api_client.patch(
+        reverse("documents-detail", args=[document_id]),
+        {"status": "handled"},
+        format="multipart",
+    )
+    assert response.status_code == status.HTTP_200_OK
+    assert StatusHistory.objects.count() == 1
+
+    response = service_api_client.post(
+        reverse("document-status-history-list", args=[document_id]),
+        data={"value": "handled"},
+        format="json",
+    )
     assert response.status_code == status.HTTP_200_OK
     assert StatusHistory.objects.count() == 1
 
