@@ -14,6 +14,38 @@ from services.models import Service
 from utils.models import TimestampedModel, UUIDModel
 
 
+class Activity(models.Model):
+    status = models.ForeignKey(
+        "StatusHistory", on_delete=models.CASCADE, related_name="activities"
+    )
+    title = models.JSONField(
+        default=dict,
+        verbose_name=_("title"),
+        help_text=_("Title for activity/activity message"),
+    )
+    message = models.JSONField(
+        default=dict,
+        blank=True,
+        help_text=_(
+            "Message/description of activity for internal use, or for showing to user"
+        ),
+    )
+    activity_links = models.JSONField(
+        default=dict,
+        blank=True,
+        help_text=_(
+            "Structure with links related to activity with display text in multiple languages"
+        ),
+    )
+    show_to_user = models.BooleanField(
+        help_text=_("Set whether the activity is shown to end user"), default=False
+    )
+    activity_timestamp = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-activity_timestamp"]
+
+
 class StatusHistory(models.Model):
     document = models.ForeignKey(
         "Document", on_delete=models.CASCADE, related_name="status_histories"
@@ -28,7 +60,7 @@ class StatusHistory(models.Model):
             " It's recommended to use ISO 639-1 language codes as key values."
         ),
     )
-    timestamp = models.DateTimeField()
+    timestamp = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering = ["-timestamp"]
@@ -219,6 +251,15 @@ class Document(UUIDModel, TimestampedModel):
         null=False,
         verbose_name=_("deletable"),
         help_text=_("Is document deletable by user."),
+    )
+    document_language = models.CharField(
+        null=True,
+        blank=True,
+        help_text=_("ISO 639-1 Language code of document content if known"),
+        max_length=5,
+    )
+    content_schema_url = models.URLField(
+        null=True, blank=True, help_text=_("Link to content schema if available")
     )
 
     class Meta:

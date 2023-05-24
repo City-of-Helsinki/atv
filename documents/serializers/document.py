@@ -13,6 +13,7 @@ from atv.exceptions import (
     MaximumFileCountExceededException,
 )
 from services.models import ServiceAPIKey
+from services.serializers.service import ServiceSerializer
 from users.models import User
 
 from ..models import Document
@@ -27,11 +28,17 @@ from .status_history import StatusHistorySerializer
 def status_to_representation(representation):
     status_timestamp = representation.pop("status_timestamp")
     status_display_values = representation.pop("status_display_values")
-    representation["status"] = {
-        "value": representation["status"],
-        "status_display_values": status_display_values,
-        "timestamp": status_timestamp,
-    }
+    # Pick first status history object to current status
+    status_histories = representation["status_histories"]
+    representation["status"] = (
+        status_histories[0]
+        if len(status_histories) != 0
+        else {
+            "value": representation["status"],
+            "status_display_values": status_display_values,
+            "timestamp": status_timestamp,
+        }
+    )
     return representation
 
 
@@ -88,16 +95,12 @@ class GDPRSerializer(serializers.Serializer):  # noqa
 
     def get_data(self, documents_qs):
         documents_qs = documents_qs.annotate(attachment_count=Count("attachments"))
-        total_deletable = 0
-        total_undeletable = 0
         total = documents_qs.count()
         deletable = documents_qs.filter(deletable=True).count()
-        total_deletable += deletable
-        total_undeletable += total - deletable
 
         stats = {
-            "total_deletable": total_deletable,
-            "total_undeletable": total_undeletable,
+            "total_deletable": deletable,
+            "total_undeletable": total - deletable,
             "documents": GDPRDocumentSerializer(documents_qs, many=True).data,
         }
         return stats
@@ -105,9 +108,7 @@ class GDPRSerializer(serializers.Serializer):  # noqa
 
 class DocumentMetadataSerializer(serializers.ModelSerializer):
     status_histories = StatusHistorySerializer(many=True, read_only=True)
-    service = serializers.CharField(
-        source="service.name", required=False, read_only=True
-    )
+    service = ServiceSerializer(read_only=True)
 
     class Meta:
         model = Document
@@ -122,6 +123,8 @@ class DocumentMetadataSerializer(serializers.ModelSerializer):
             "status_display_values",
             "status_timestamp",
             "status_histories",
+            "document_language",
+            "content_schema_url",
         )
 
     def to_representation(self, instance):
@@ -167,6 +170,8 @@ class DocumentSerializer(serializers.ModelSerializer):
             "draft",
             "locked_after",
             "deletable",
+            "document_language",
+            "content_schema_url",
             "attachments",
         )
 
@@ -231,8 +236,10 @@ class CreateAnonymousDocumentSerializer(serializers.ModelSerializer):
             "content",
             "draft",
             "locked_after",
-            "attachments",
             "deletable",
+            "document_language",
+            "content_schema_url",
+            "attachments",
         )
 
     def validate(self, attrs):

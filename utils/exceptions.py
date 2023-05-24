@@ -40,8 +40,11 @@ def custom_exception_handler(exc, _context=None) -> Response:
         response = Response(
             status=status.HTTP_400_BAD_REQUEST,
             data=_get_error_wrapper(
-                list(
-                    _get_error_detail("INVALID_FIELD", f"{k}: {v[0]}")
+                list(  # TODO: Refactor this to produce cleaner error message for nested errors
+                    _get_error_detail(
+                        "INVALID_FIELD",
+                        f"{k}: {v[0] if isinstance(v, list) else f'Required fields: {[key for key in v.keys()]}'}",
+                    )
                     for k, v in exc.detail.items()
                 )
             ),

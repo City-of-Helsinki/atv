@@ -15,6 +15,7 @@ from rest_framework.exceptions import (
 )
 from rest_framework.parsers import FileUploadParser, MultiPartParser
 from rest_framework.response import Response
+from rest_framework.utils import json
 from rest_framework_extensions.mixins import NestedViewSetMixin
 
 from atv.decorators import not_allowed, service_required
@@ -31,7 +32,7 @@ from utils.api import PageNumberPagination
 from utils.uuid import is_valid_uuid
 
 from ..consts import VALID_OWNER_PATCH_FIELDS
-from ..models import Attachment, Document
+from ..models import Attachment, Document, StatusHistory
 from ..serializers import (
     AttachmentSerializer,
     CreateAnonymousDocumentSerializer,
@@ -43,13 +44,17 @@ from ..serializers.document import (
     DocumentStatisticsSerializer,
     GDPRSerializer,
 )
-from ..serializers.status_history import StatusHistorySerializer
+from ..serializers.status_history import (
+    CreateStatusHistorySerializer,
+    StatusHistorySerializer,
+)
 from ..utils import get_decrypted_file
 from .docs import (
     attachment_viewset_docs,
     document_gdpr_viewset,
     document_metadata_viewset_docs,
     document_statistics_viewset_docs,
+    document_status_history_viewset_docs,
     document_viewset_docs,
 )
 from .filtersets import (
@@ -64,6 +69,97 @@ from .querysets import (
     get_document_queryset,
     get_document_statistics_queryset,
 )
+
+
+@extend_schema_view(**document_status_history_viewset_docs)
+class DocumentStatusActivityViewSet(AuditLoggingModelViewSet):
+    queryset = StatusHistory.objects.none()
+    serializer_class = StatusHistorySerializer
+
+    def get_queryset(self):
+        request = self.request
+        user = request.user
+        service = get_service_from_request(request)
+        api_key = get_service_api_key_from_request(request)
+        qs = (
+            StatusHistory.objects.filter()
+            .select_related("document")
+            .prefetch_related("activities")
+        )
+        if user.is_superuser:
+            return qs
+
+        if api_key:
+            qs = qs.filter(document__service=service)
+        else:
+            qs = qs.filter(document__user=user)
+        return qs
+
+    def list(self, request, *args, **kwargs):
+        document_id = kwargs.get("document_id")
+        # Return 404 if user has no access to document or if it doesn't exist
+        get_object_or_404(
+            get_document_queryset(
+                request.user,
+                get_service_from_request(self.request),
+                get_service_api_key_from_request(self.request),
+            ),
+            id=document_id,
+        )
+        queryset = self.filter_queryset(self.get_queryset()).filter(**kwargs)
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+    def create(self, request, *args, **kwargs):
+        document_id = kwargs.get("document_id")
+
+        if document_id is None or not is_valid_uuid(document_id):
+            raise MissingParameterException(parameter="document_id")
+
+        # Filter only for the user's documents
+        document = get_object_or_404(
+            get_document_queryset(
+                request.user,
+                get_service_from_request(self.request),
+                get_service_api_key_from_request(self.request),
+            ),
+            id=document_id,
+        )
+
+        request.data.update({"document": document.id})
+
+        serializer = CreateStatusHistorySerializer(data=request.data)
+
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(
+            data=StatusHistorySerializer(serializer.instance[0]).data,
+            status=status.HTTP_201_CREATED
+            if serializer.instance[1]
+            else status.HTTP_200_OK,
+        )
+
+    @not_allowed()
+    def retrieve(self, request, *args, **kwargs):
+        """Method not allowed"""
+
+    @not_allowed()
+    def destroy(self, request, *args, **kwargs):
+        """Method not allowed"""
+
+    @not_allowed()
+    def partial_update(self, request, *args, **kwargs):
+        """Method not allowed"""
+
+    @not_allowed()
+    def update(self, request, *args, **kwargs):
+        """Method not allowed"""
 
 
 @extend_schema_view(**document_statistics_viewset_docs)
@@ -388,6 +484,19 @@ class DocumentViewSet(AuditLoggingModelViewSet):
         with self.record_action():
             serializer.save(user=user, service=service)
             self.created_instance = serializer.instance
+            request_data_status = request.data.get("status")
+            if request_data_status:
+                status_history_serializer = CreateStatusHistorySerializer(
+                    data={
+                        "document": self.created_instance.id,
+                        "value": request_data_status,
+                        "status_display_values": json.loads(
+                            request.data.get("status_display_values")
+                        ),
+                    }
+                )
+                status_history_serializer.is_valid(raise_exception=True)
+                status_history_serializer.save()
 
         return Response(
             data=DocumentSerializer(
@@ -437,13 +546,15 @@ class DocumentViewSet(AuditLoggingModelViewSet):
             attachment_serializer.is_valid(raise_exception=True)
             attachment_serializer.save()
         # Update history only if status changed.
-        if request.data.get("status"):
-            status_history_serializer = StatusHistorySerializer(
+        request_data_status = request.data.get("status")
+        if request_data_status and request_data_status != document.status:
+            status_history_serializer = CreateStatusHistorySerializer(
                 data={
                     "document": document.id,
-                    "value": document.status,
-                    "status_display_values": document.status_display_values,
-                    "timestamp": document.status_timestamp,
+                    "value": request_data_status,
+                    "status_display_values": json.loads(
+                        request.data.get("status_display_values", "{}")
+                    ),
                 }
             )
             status_history_serializer.is_valid(raise_exception=True)
