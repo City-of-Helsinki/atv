@@ -33,14 +33,13 @@ class CreateStatusHistorySerializer(serializers.ModelSerializer):
         document_changed = False
 
         current_status = StatusHistory.objects.filter(document=document).first()
+        status_display_values = validated_data.get("status_display_values", {})
         if current_status:
-            if current_status.value != status_value:
+            if current_status.value != status_value and status_value:
                 status = StatusHistory.objects.create(
                     document=document,
                     value=status_value,
-                    status_display_values=validated_data.get(
-                        "status_display_values", {}
-                    ),
+                    status_display_values=status_display_values,
                 )
                 document_changed = True
             else:
@@ -49,7 +48,7 @@ class CreateStatusHistorySerializer(serializers.ModelSerializer):
             status = StatusHistory.objects.create(
                 document=document,
                 value=status_value,
-                status_display_values=validated_data.get("status_display_values", {}),
+                status_display_values=status_display_values,
             )
             document_changed = True
 

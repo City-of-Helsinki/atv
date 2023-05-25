@@ -88,7 +88,7 @@ def get_document_metadata_queryset(
         .prefetch_related(
             Prefetch(
                 "status_histories",
-                queryset=StatusHistory.objects.filter().prefetch_related(
+                queryset=StatusHistory.objects.prefetch_related(
                     Prefetch(
                         "activities",
                         queryset=Activity.objects.filter(show_to_user=True),
@@ -123,15 +123,7 @@ def get_document_queryset(
         return (
             Document.objects.all()
             .select_related("user", "service")
-            .prefetch_related(
-                "attachments",
-                Prefetch(
-                    "status_histories",
-                    queryset=StatusHistory.objects.filter().prefetch_related(
-                        "activities"
-                    ),
-                ),
-            )
+            .prefetch_related("attachments", "status_histories__activities")
         )
 
     # If the user is anonymous, don't return anything,

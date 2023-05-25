@@ -98,7 +98,7 @@ class DocumentStatusActivityViewSet(AuditLoggingModelViewSet):
     def list(self, request, *args, **kwargs):
         document_id = kwargs.get("document_id")
         # Return 404 if user has no access to document or if it doesn't exist
-        get_object_or_404(
+        document = get_object_or_404(
             get_document_queryset(
                 request.user,
                 get_service_from_request(self.request),
@@ -106,21 +106,19 @@ class DocumentStatusActivityViewSet(AuditLoggingModelViewSet):
             ),
             id=document_id,
         )
-        queryset = self.filter_queryset(self.get_queryset()).filter(**kwargs)
+        with self.record_action(document):
+            queryset = self.filter_queryset(self.get_queryset()).filter(**kwargs)
 
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
+            page = self.paginate_queryset(queryset)
+            if page is not None:
+                serializer = self.get_serializer(page, many=True)
+                return self.get_paginated_response(serializer.data)
 
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
+            serializer = self.get_serializer(queryset, many=True)
+            return Response(serializer.data)
 
     def create(self, request, *args, **kwargs):
         document_id = kwargs.get("document_id")
-
-        if document_id is None or not is_valid_uuid(document_id):
-            raise MissingParameterException(parameter="document_id")
 
         # Filter only for the user's documents
         document = get_object_or_404(
@@ -131,19 +129,19 @@ class DocumentStatusActivityViewSet(AuditLoggingModelViewSet):
             ),
             id=document_id,
         )
+        with self.record_action(document):
+            request.data.update({"document": document.id})
 
-        request.data.update({"document": document.id})
+            serializer = CreateStatusHistorySerializer(data=request.data)
 
-        serializer = CreateStatusHistorySerializer(data=request.data)
-
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(
-            data=StatusHistorySerializer(serializer.instance[0]).data,
-            status=status.HTTP_201_CREATED
-            if serializer.instance[1]
-            else status.HTTP_200_OK,
-        )
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(
+                data=StatusHistorySerializer(serializer.instance[0]).data,
+                status=status.HTTP_201_CREATED
+                if serializer.instance[1]
+                else status.HTTP_200_OK,
+            )
 
     @not_allowed()
     def retrieve(self, request, *args, **kwargs):
@@ -491,7 +489,7 @@ class DocumentViewSet(AuditLoggingModelViewSet):
                         "document": self.created_instance.id,
                         "value": request_data_status,
                         "status_display_values": json.loads(
-                            request.data.get("status_display_values")
+                            request.data.get("status_display_values", "{}")
                         ),
                     }
                 )

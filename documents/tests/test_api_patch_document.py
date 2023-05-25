@@ -569,6 +569,26 @@ def test_create_status_same_value(service_api_client):
     assert StatusHistory.objects.count() == 1
 
 
+def test_create_new_activity(service_api_client):
+    response = service_api_client.post(
+        reverse("documents-list"), VALID_DOCUMENT_DATA, format="multipart"
+    )
+    assert response.status_code == status.HTTP_201_CREATED
+    assert StatusHistory.objects.count() == 1
+    document_id = response.json().get("id")
+
+    activity_data = {
+        "activity": {"title": {"fi": "adsf"}, "message": {"fi": "testing"}}
+    }
+    response = service_api_client.post(
+        reverse("document-status-history-list", args=[document_id]),
+        activity_data,
+        format="json",
+    )
+    assert Activity.objects.count() == 1
+    assert response.status_code == status.HTTP_201_CREATED
+
+
 # OTHER STUFF
 
 

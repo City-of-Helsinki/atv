@@ -73,8 +73,8 @@ example_document = OpenApiExample(
             "timestamp": "2022-06-21T13:13:54.247974+03:00",
             "activities": [
                 {
-                    "title": {"fi": "arvo"},
-                    "message": {"fi": "persikka"},
+                    "title": {"fi": "Otsikko"},
+                    "message": {"fi": "Viestin teksti"},
                     "activity_links": {
                         "en": {
                             "url": "asdf.uk",
@@ -98,8 +98,8 @@ example_document = OpenApiExample(
                 "timestamp": "2022-06-21T13:13:54.247974+03:00",
                 "activities": [
                     {
-                        "title": {"fi": "arvo"},
-                        "message": {"fi": "persikka"},
+                        "title": {"fi": "Otsikko"},
+                        "message": {"fi": "Viestin teksti"},
                         "activity_links": {
                             "en": {
                                 "url": "asdf.uk",
@@ -205,16 +205,16 @@ example_document_metadata = OpenApiExample(
                         "fi": "Testi Palvelu",
                         "sv": "Samma på svenska",
                     },
-                    "service_link": "https://yle.fi",
+                    "service_link": "https://example.hel.fi",
                 },
                 "status": {
-                    "value": "Kebab",
-                    "status_display_values": {"fi": "kebab"},
+                    "value": "RECEIVED",
+                    "status_display_values": {"fi": "Vastaanotettu"},
                     "timestamp": "2023-05-22T15:29:49.379761+03:00",
                     "activities": [
                         {
-                            "title": {"fi": "arvo"},
-                            "message": {"fi": "persikka"},
+                            "title": {"fi": "Otsikko"},
+                            "message": {"fi": "Viestin teksti"},
                             "activity_links": {
                                 "en": {
                                     "url": "asdf.uk",
@@ -236,13 +236,13 @@ example_document_metadata = OpenApiExample(
                 },
                 "status_histories": [
                     {
-                        "value": "Kebab",
-                        "status_display_values": {"fi": "kebab"},
+                        "value": "RECEIVED",
+                        "status_display_values": {"fi": "Vastaanotettu"},
                         "timestamp": "2023-05-22T15:29:49.379761+03:00",
                         "activities": [
                             {
-                                "title": {"fi": "arvo"},
-                                "message": {"fi": "persikka"},
+                                "title": {"fi": "Otsikko"},
+                                "message": {"fi": "Viestin teksti"},
                                 "activity_links": {
                                     "en": {
                                         "url": "asdf.uk",
@@ -264,7 +264,7 @@ example_document_metadata = OpenApiExample(
                     }
                 ],
                 "document_language": "fi",
-                "content_schema_url": "https://yle.fi",
+                "content_schema_url": "https://example.hel.fi",
             }
         ],
     },
@@ -324,13 +324,13 @@ example_create_status_activity_data = OpenApiExample(
     response_only=True,
     status_codes=[str(status.HTTP_201_CREATED)],
     value={
-        "value": "Kebab",
-        "status_display_values": {"fi": "kebab"},
+        "value": "RECEIVED",
+        "status_display_values": {"fi": "Vastaanotettu"},
         "timestamp": "2023-05-22T15:29:49.379761+03:00",
         "activities": [
             {
-                "title": {"fi": "arvo"},
-                "message": {"fi": "persikka"},
+                "title": {"fi": "Otsikko"},
+                "message": {"fi": "Viestin teksti"},
                 "activity_links": {
                     "en": {
                         "url": "asdf.uk",
@@ -351,13 +351,13 @@ example_get_status_activity_data = OpenApiExample(
     status_codes=[str(status.HTTP_200_OK)],
     response_only=True,
     value={
-        "value": "Kebab",
-        "status_display_values": {"fi": "kebab"},
+        "value": "RECEIVED",
+        "status_display_values": {"fi": "Vastaanotettu"},
         "timestamp": "2023-05-22T15:29:49.379761+03:00",
         "activities": [
             {
-                "title": {"fi": "arvo"},
-                "message": {"fi": "persikka"},
+                "title": {"fi": "Otsikko"},
+                "message": {"fi": "Viestin teksti"},
                 "activity_links": {
                     "en": {
                         "url": "asdf.uk",

@@ -31,6 +31,8 @@ class ActivitySerializer(serializers.ModelSerializer):
                 "activity_links": {"type": "object"},
                 "show_to_user": {"type": "boolean"},
             },
+            "required": ["title", "message"],
+            "additionalProperties": False,
         }
         try:
             jsonschema.validate(instance=attrs, schema=activity_schema)

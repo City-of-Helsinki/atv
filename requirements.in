@@ -14,3 +14,4 @@ psycopg2
 sentry_sdk
 elasticsearch==7.15.2
 pyclamd
+jsonschema
