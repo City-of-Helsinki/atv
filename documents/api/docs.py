@@ -10,6 +10,7 @@ from rest_framework import serializers, status
 
 from documents.serializers import AttachmentSerializer, DocumentSerializer
 from documents.serializers.document import DocumentMetadataSerializer, GDPRSerializer
+from documents.serializers.status_history import StatusHistorySerializer
 
 error_serializer = inline_serializer(
     "ErrorResponse",
@@ -70,17 +71,65 @@ example_document = OpenApiExample(
             "value": "PROCESSING",
             "status_display_values": {"fi": "Käsittelyssä"},
             "timestamp": "2022-06-21T13:13:54.247974+03:00",
+            "activities": [
+                {
+                    "title": {"fi": "Otsikko"},
+                    "message": {"fi": "Viestin teksti"},
+                    "activity_links": {
+                        "en": {
+                            "url": "asdf.uk",
+                            "display_text": "continue in service asdf",
+                        },
+                        "fi": {
+                            "url": "asdf.fi",
+                            "display_text": "tästä palveluun asdf",
+                        },
+                        "sv": {"url": "asdf.sv", "display_text": "samma på svenska"},
+                    },
+                    "activity_timestamp": "2023-05-22T15:29:49.384845+03:00",
+                    "show_to_user": True,
+                }
+            ],
         },
         "status_histories": [
+            {
+                "value": "PROCESSING",
+                "status_display_values": {"fi": "Käsittelyssä"},
+                "timestamp": "2022-06-21T13:13:54.247974+03:00",
+                "activities": [
+                    {
+                        "title": {"fi": "Otsikko"},
+                        "message": {"fi": "Viestin teksti"},
+                        "activity_links": {
+                            "en": {
+                                "url": "asdf.uk",
+                                "display_text": "continue in service asdf",
+                            },
+                            "fi": {
+                                "url": "asdf.fi",
+                                "display_text": "tästä palveluun asdf",
+                            },
+                            "sv": {
+                                "url": "asdf.sv",
+                                "display_text": "samma på svenska",
+                            },
+                        },
+                        "activity_timestamp": "2023-05-22T15:29:49.384845+03:00",
+                        "show_to_user": True,
+                    }
+                ],
+            },
             {
                 "value": "RECEIVED",
                 "status_display_values": {"fi": "Vastaanotettu"},
                 "timestamp": "2022-06-21T13:13:54.247974+03:00",
+                "activities": [],
             },
             {
                 "value": "SUBMITTED",
                 "status_display_values": {"fi": "Lähetetty"},
                 "timestamp": "2022-06-21T13:13:54.247974+03:00",
+                "activities": [],
             },
         ],
         "type": "APPLICATION_FOR_RESIDENTIAL_PARKING_PERMIT",
@@ -98,6 +147,9 @@ example_document = OpenApiExample(
         },
         "draft": True,
         "locked_after": "2021-08-01T00:00:00.0Z",
+        "deletable": False,
+        "document_language": "fi",
+        "content_schema_url": "https://exampleurl.fi",
         "content": {
             "formData": {
                 "firstName": "Dolph",
@@ -132,32 +184,88 @@ example_document = OpenApiExample(
 )
 
 example_document_metadata = OpenApiExample(
-    name="DocumentExample",
+    name="DocumentMetadataExample",
     response_only=True,
     status_codes=[str(status.HTTP_200_OK), str(status.HTTP_201_CREATED)],
     value={
-        "id": "f6fe8acc-3b91-41b3-a176-9d2feab2d2bb",
-        "type": "APPLICATION_FOR_RESIDENTIAL_PARKING_PERMIT",
-        "human_readable_type": {"en": "Form", "fi": "Lomake"},
-        "created_at": "2022-03-07T16:08:39.580394+02:00",
-        "updated_at": "2022-03-07T17:59:39.580394+02:00",
-        "service": "Parking Permits",
-        "status": {
-            "value": "PROCESSING",
-            "status_display_values": {"fi": "Käsittelyssä"},
-            "timestamp": "2022-06-21T13:13:54.247974+03:00",
-        },
-        "status_histories": [
+        "count": 1,
+        "next": None,
+        "previous": None,
+        "results": [
             {
-                "value": "RECEIVED",
-                "status_display_values": {"fi": "Vastaanotettu"},
-                "timestamp": "2022-06-21T13:13:54.247974+03:00",
-            },
-            {
-                "value": "SUBMITTED",
-                "status_display_values": {"fi": "Lähetetty"},
-                "timestamp": "2022-06-21T13:13:54.247974+03:00",
-            },
+                "id": "cf1bf707-5fef-4d21-841a-3408e5f1ea66",
+                "type": "mysterious form",
+                "human_readable_type": {},
+                "created_at": "2023-05-15T17:00:08.961578+03:00",
+                "updated_at": "2023-05-22T15:29:49.387682+03:00",
+                "service": {
+                    "name": "TestService",
+                    "display_names": {
+                        "en": "Test Service",
+                        "fi": "Testi Palvelu",
+                        "sv": "Samma på svenska",
+                    },
+                    "service_link": "https://example.hel.fi",
+                },
+                "status": {
+                    "value": "RECEIVED",
+                    "status_display_values": {"fi": "Vastaanotettu"},
+                    "timestamp": "2023-05-22T15:29:49.379761+03:00",
+                    "activities": [
+                        {
+                            "title": {"fi": "Otsikko"},
+                            "message": {"fi": "Viestin teksti"},
+                            "activity_links": {
+                                "en": {
+                                    "url": "asdf.uk",
+                                    "display_text": "continue in service asdf",
+                                },
+                                "fi": {
+                                    "url": "asdf.fi",
+                                    "display_text": "tästä palveluun asdf",
+                                },
+                                "sv": {
+                                    "url": "asdf.sv",
+                                    "display_text": "samma på svenska",
+                                },
+                            },
+                            "activity_timestamp": "2023-05-22T15:29:49.384845+03:00",
+                            "show_to_user": True,
+                        }
+                    ],
+                },
+                "status_histories": [
+                    {
+                        "value": "RECEIVED",
+                        "status_display_values": {"fi": "Vastaanotettu"},
+                        "timestamp": "2023-05-22T15:29:49.379761+03:00",
+                        "activities": [
+                            {
+                                "title": {"fi": "Otsikko"},
+                                "message": {"fi": "Viestin teksti"},
+                                "activity_links": {
+                                    "en": {
+                                        "url": "asdf.uk",
+                                        "display_text": "continue in service asdf",
+                                    },
+                                    "fi": {
+                                        "url": "asdf.fi",
+                                        "display_text": "tästä palveluun asdf",
+                                    },
+                                    "sv": {
+                                        "url": "asdf.sv",
+                                        "display_text": "samma på svenska",
+                                    },
+                                },
+                                "activity_timestamp": "2023-05-22T15:29:49.384845+03:00",
+                                "show_to_user": True,
+                            }
+                        ],
+                    }
+                ],
+                "document_language": "fi",
+                "content_schema_url": "https://example.hel.fi",
+            }
         ],
     },
 )
@@ -208,6 +316,60 @@ example_gdpr_api_repsonse = OpenApiExample(
                 },
             ],
         }
+    },
+)
+
+example_create_status_activity_data = OpenApiExample(
+    name="DocumentStatusExampleCreate",
+    response_only=True,
+    status_codes=[str(status.HTTP_201_CREATED)],
+    value={
+        "value": "RECEIVED",
+        "status_display_values": {"fi": "Vastaanotettu"},
+        "timestamp": "2023-05-22T15:29:49.379761+03:00",
+        "activities": [
+            {
+                "title": {"fi": "Otsikko"},
+                "message": {"fi": "Viestin teksti"},
+                "activity_links": {
+                    "en": {
+                        "url": "asdf.uk",
+                        "display_text": "continue in service asdf",
+                    },
+                    "fi": {"url": "asdf.fi", "display_text": "tästä palveluun asdf"},
+                    "sv": {"url": "asdf.sv", "display_text": "samma på svenska"},
+                },
+                "activity_timestamp": "2023-05-22T15:29:49.384845+03:00",
+                "show_to_user": True,
+            }
+        ],
+    },
+)
+
+example_get_status_activity_data = OpenApiExample(
+    name="DocumentStatusExampleGet",
+    status_codes=[str(status.HTTP_200_OK)],
+    response_only=True,
+    value={
+        "value": "RECEIVED",
+        "status_display_values": {"fi": "Vastaanotettu"},
+        "timestamp": "2023-05-22T15:29:49.379761+03:00",
+        "activities": [
+            {
+                "title": {"fi": "Otsikko"},
+                "message": {"fi": "Viestin teksti"},
+                "activity_links": {
+                    "en": {
+                        "url": "asdf.uk",
+                        "display_text": "continue in service asdf",
+                    },
+                    "fi": {"url": "asdf.fi", "display_text": "tästä palveluun asdf"},
+                    "sv": {"url": "asdf.sv", "display_text": "samma på svenska"},
+                },
+                "activity_timestamp": "2023-05-22T15:29:49.384845+03:00",
+                "show_to_user": True,
+            }
+        ],
     },
 )
 
@@ -709,4 +871,44 @@ document_statistics_viewset_docs = {
     "partial_update": extend_schema(exclude=True),
     "destroy": extend_schema(exclude=True),
     "create": extend_schema(exclude=True),
+}
+
+document_status_history_viewset_docs = {
+    "list": extend_schema(
+        summary="Lists document's status and activity history",
+        description="""Lists all document's statuses and activities related to the statuses""",
+        responses={
+            (status.HTTP_200_OK, "application/json"): OpenApiResponse(
+                response=StatusHistorySerializer,
+                description="Request was allowed and document statuses were listed",
+            ),
+            (status.HTTP_400_BAD_REQUEST, "application/json"): _base_400_response(),
+            status.HTTP_401_UNAUTHORIZED: "Request's credentials are missing or invalid.",
+            status.HTTP_500_INTERNAL_SERVER_ERROR: _base_500_response(),
+        },
+        examples=[example_get_status_activity_data, example_error],
+    ),
+    "create": extend_schema(
+        summary="Create new status and/or activity for document",
+        description="Allows creating either individual new status, activity or both status and activity. See example",
+        responses={
+            (status.HTTP_201_CREATED, "application/json"): OpenApiResponse(
+                response=StatusHistorySerializer,
+                description="New Status and/or Activity was created. All Activities related to the status is returned.",
+            ),
+            (status.HTTP_200_OK, "application/json"): OpenApiResponse(
+                response=StatusHistorySerializer,
+                description="""Return HTTP 200 OK, if nothing changed but request was correctly formated.
+                 For example if same status is posted twice. Returns latest StatusHistory object.""",
+            ),
+            (status.HTTP_400_BAD_REQUEST, "application/json"): _base_400_response(),
+            status.HTTP_401_UNAUTHORIZED: "Request's credentials are missing or invalid.",
+            status.HTTP_500_INTERNAL_SERVER_ERROR: _base_500_response(),
+        },
+        examples=[example_create_status_activity_data],
+    ),
+    "retrieve": extend_schema(exclude=True),
+    "update": extend_schema(exclude=True),
+    "partial_update": extend_schema(exclude=True),
+    "destroy": extend_schema(exclude=True),
 }

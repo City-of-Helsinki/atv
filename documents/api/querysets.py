@@ -5,7 +5,7 @@ from services.enums import ServicePermissions
 from services.models import Service, ServiceAPIKey
 from users.models import User
 
-from ..models import Attachment, Document
+from ..models import Activity, Attachment, Document, StatusHistory
 
 
 def get_document_statistics_queryset(user: User, service: Service) -> QuerySet:
@@ -76,14 +76,26 @@ def get_document_metadata_queryset(
             "status_display_values",
             "status_timestamp",
             "id",
-            "service__name",
+            "service",
             "type",
             "human_readable_type",
             "user__id",
             "transaction_id",
+            "document_language",
+            "content_schema_url",
         )
         .select_related("service", "user")
-        .prefetch_related("status_histories")
+        .prefetch_related(
+            Prefetch(
+                "status_histories",
+                queryset=StatusHistory.objects.prefetch_related(
+                    Prefetch(
+                        "activities",
+                        queryset=Activity.objects.filter(show_to_user=True),
+                    )
+                ),
+            )
+        )
         .order_by("-status_timestamp")
     )
 
@@ -111,7 +123,7 @@ def get_document_queryset(
         return (
             Document.objects.all()
             .select_related("user", "service")
-            .prefetch_related("attachments", "status_histories")
+            .prefetch_related("attachments", "status_histories__activities")
         )
 
     # If the user is anonymous, don't return anything,

@@ -12,7 +12,7 @@ cachetools==5.2.0
     # via django-helusers
 certifi==2022.12.7
     # via
-    #   elastic-transport
+    #   elasticsearch
     #   requests
     #   sentry-sdk
 charset-normalizer==2.1.1
@@ -67,7 +67,9 @@ idna==3.4
 inflection==0.5.1
     # via drf-spectacular
 jsonschema==4.17.3
-    # via drf-spectacular
+    # via
+    #   -r requirements.in
+    #   drf-spectacular
 packaging==22.0
     # via deprecation
 psycopg2==2.9.5
@@ -112,6 +114,6 @@ uritemplate==4.1.1
     # via drf-spectacular
 urllib3==1.26.13
     # via
-    #   elastic-transport
+    #   elasticsearch
     #   requests
     #   sentry-sdk

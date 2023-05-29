@@ -10,6 +10,15 @@ from utils.models import TimestampedModel
 class Service(TimestampedModel):
     name = models.CharField(verbose_name=_("name"), max_length=50)
     description = models.TextField(verbose_name=_("description"), blank=True)
+    display_names = models.JSONField(
+        blank=True,
+        null=False,
+        default=dict,
+        help_text=_("Json structure containing display names for service"),
+    )
+    service_link = models.URLField(
+        blank=True, null=False, help_text=_("Link to service's website")
+    )
 
     class Meta:
         verbose_name = _("service")
