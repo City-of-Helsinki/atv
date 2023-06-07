@@ -3,6 +3,7 @@ import subprocess
 
 import environ
 import sentry_sdk
+from corsheaders.defaults import default_headers
 from django.core.exceptions import ImproperlyConfigured
 from sentry_sdk.integrations.django import DjangoIntegration
 
@@ -37,6 +38,7 @@ env = environ.Env(
     SENTRY_ENVIRONMENT=(str, "development"),
     CORS_ORIGIN_WHITELIST=(list, []),
     CORS_ORIGIN_ALLOW_ALL=(bool, False),
+    CORS_ALLOW_HEADERS=(list, []),
     DEFAULT_FROM_EMAIL=(str, "no-reply@hel.fi"),
     VERSION=(str, None),
     DJANGO_LOG_LEVEL=(str, "INFO"),
@@ -172,6 +174,7 @@ TEMPLATES = [
 
 CORS_ORIGIN_WHITELIST = env.list("CORS_ORIGIN_WHITELIST")
 CORS_ORIGIN_ALLOW_ALL = env.bool("CORS_ORIGIN_ALLOW_ALL")
+CORS_ALLOW_HEADERS = list(default_headers) + env.list("CORS_ALLOW_HEADERS")
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
