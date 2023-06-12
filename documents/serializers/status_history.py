@@ -1,3 +1,4 @@
+from drf_spectacular.utils import extend_schema_serializer
 from rest_framework import serializers
 
 from atv.exceptions import InvalidFieldException
@@ -5,6 +6,7 @@ from documents.models import Activity, StatusHistory
 from documents.serializers.activity import ActivitySerializer
 
 
+@extend_schema_serializer(exclude_fields=["document"])
 class CreateStatusHistorySerializer(serializers.ModelSerializer):
     activity = ActivitySerializer(required=False)
 
