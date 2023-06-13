@@ -10,7 +10,10 @@ from rest_framework import serializers, status
 
 from documents.serializers import AttachmentSerializer, DocumentSerializer
 from documents.serializers.document import DocumentMetadataSerializer, GDPRSerializer
-from documents.serializers.status_history import StatusHistorySerializer
+from documents.serializers.status_history import (
+    CreateStatusHistorySerializer,
+    StatusHistorySerializer,
+)
 
 error_serializer = inline_serializer(
     "ErrorResponse",
@@ -891,6 +894,7 @@ document_status_history_viewset_docs = {
     "create": extend_schema(
         summary="Create new status and/or activity for document",
         description="Allows creating either individual new status, activity or both status and activity. See example",
+        request=CreateStatusHistorySerializer,
         responses={
             (status.HTTP_201_CREATED, "application/json"): OpenApiResponse(
                 response=StatusHistorySerializer,
