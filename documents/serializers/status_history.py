@@ -60,6 +60,9 @@ class CreateStatusHistorySerializer(serializers.ModelSerializer):
 
         # Save document so updated_at field represents latest change's timestamp
         if document_changed:
+            if status_value:
+                document.status = status_value
+                document.status_display_values = status_display_values
             document.save()
 
         return status, document_changed

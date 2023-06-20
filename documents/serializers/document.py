@@ -46,8 +46,9 @@ class DocumentStatisticsSerializer(serializers.ModelSerializer):
     service = serializers.CharField(
         source="service.name", required=False, read_only=True
     )
-    attachment_count = serializers.IntegerField()
     attachments = AttachmentNameSerializer(many=True)
+    # Attachment count included here just for clarity. Field is added to response body in to_representation
+    attachment_count = serializers.HiddenField(default=0)
     user_id = serializers.UUIDField(source="user.uuid", read_only=True)
 
     class Meta:
@@ -62,9 +63,15 @@ class DocumentStatisticsSerializer(serializers.ModelSerializer):
             "human_readable_type",
             "status",
             "deletable",
-            "attachment_count",
             "attachments",
+            "attachment_count",
         )
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        # Calculate attachment count here instead of aggregating it to queryset for performance reasons
+        representation["attachment_count"] = len(representation["attachments"])
+        return representation
 
 
 class GDPRDocumentSerializer(serializers.ModelSerializer):
