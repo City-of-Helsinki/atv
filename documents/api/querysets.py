@@ -1,4 +1,4 @@
-from django.db.models import Count, Prefetch, QuerySet
+from django.db.models import Prefetch, QuerySet
 from rest_framework.exceptions import PermissionDenied
 
 from services.enums import ServicePermissions
