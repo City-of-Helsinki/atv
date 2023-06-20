@@ -465,6 +465,9 @@ def test_user_create_status_and_activity(service, user):
     assert response.status_code == status.HTTP_201_CREATED
     assert StatusHistory.objects.count() == 1
     document_id = response.json().get("id")
+    assert Document.objects.get(id=document_id).status == VALID_DOCUMENT_DATA.get(
+        "status"
+    )
 
     status_activity_data = {
         "value": "newstatus",
@@ -496,6 +499,7 @@ def test_user_create_status_and_activity(service, user):
     assert response.status_code == status.HTTP_201_CREATED
     assert StatusHistory.objects.count() == 2
     assert Activity.objects.count() == 1
+    assert Document.objects.get(id=document_id).status == "newstatus"
 
 
 def test_user_create_status(service, user):
@@ -585,8 +589,8 @@ def test_create_new_activity(service_api_client):
         activity_data,
         format="json",
     )
-    assert Activity.objects.count() == 1
     assert response.status_code == status.HTTP_201_CREATED
+    assert Activity.objects.count() == 1
 
 
 # OTHER STUFF
