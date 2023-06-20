@@ -278,12 +278,16 @@ example_statistics_data = OpenApiExample(
     status_codes=[str(status.HTTP_200_OK), str(status.HTTP_201_CREATED)],
     value={
         "id": "f6fe8acc-3b91-41b3-a176-9d2feab2d2bb",
+        "created_at": "2022-03-07T16:08:39.580394+02:00",
+        "user_id": "g6fe8acc-3b91-41b3-a176-9d2feab2d2ba",
+        "service": "Parking Permits",
+        "transaction_id": "TRANSACTION123",
         "type": "APPLICATION_FOR_RESIDENTIAL_PARKING_PERMIT",
         "human_readable_type": {"en": "Form", "fi": "Lomake"},
-        "created_at": "2022-03-07T16:08:39.580394+02:00",
-        "updated_at": "2022-03-07T17:59:39.580394+02:00",
-        "service": "Parking Permits",
         "status": "PROCESSING",
+        "deletable": True,
+        "attachments": ["attachment1.pdf", "attachment2.docs"],
+        "attachment_count": 2,
     },
 )
 

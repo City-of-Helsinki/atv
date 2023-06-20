@@ -28,7 +28,6 @@ def get_document_statistics_queryset(user: User, service: Service) -> QuerySet:
                 queryset=Attachment.objects.only("document_id", "filename"),
             )
         )
-        .annotate(attachment_count=Count("attachments"))
     ).order_by("-created_at")
     if user.has_perm("users.view_document_statistics") or user.is_superuser:
         return qs
