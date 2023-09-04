@@ -1,3 +1,4 @@
+import datetime
 import json
 import uuid
 from unittest import mock
@@ -101,8 +102,11 @@ def test_create_authenticated_document(user, service, snapshot):
     """Normal user creates a document which is attached to his/her account."""
     api_client = get_user_service_client(user, service)
 
+    delete_after_date = "2022-12-12"
     response = api_client.post(
-        reverse("documents-list"), VALID_DOCUMENT_DATA, format="multipart"
+        reverse("documents-list"),
+        {**VALID_DOCUMENT_DATA, "delete_after": delete_after_date},
+        format="multipart",
     )
 
     assert response.status_code == status.HTTP_201_CREATED
@@ -111,6 +115,7 @@ def test_create_authenticated_document(user, service, snapshot):
     document = Document.objects.first()
     assert document.user == user
     assert document.service == service
+    assert document.delete_after == datetime.date(day=12, month=12, year=2022)
 
     body = response.json()
     assert uuid.UUID(body.pop("id")) == document.id

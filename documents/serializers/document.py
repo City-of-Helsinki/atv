@@ -92,6 +92,7 @@ class GDPRDocumentSerializer(serializers.ModelSerializer):
             "type",
             "human_readable_type",
             "deletable",
+            "delete_after",
             "attachment_count",
             "attachments",
         )
@@ -130,6 +131,7 @@ class DocumentMetadataSerializer(serializers.ModelSerializer):
             "status_display_values",
             "status_timestamp",
             "status_histories",
+            "delete_after",
             "document_language",
             "content_schema_url",
         )
@@ -177,6 +179,7 @@ class DocumentSerializer(serializers.ModelSerializer):
             "draft",
             "locked_after",
             "deletable",
+            "delete_after",
             "document_language",
             "content_schema_url",
             "attachments",
@@ -244,6 +247,7 @@ class CreateAnonymousDocumentSerializer(serializers.ModelSerializer):
             "draft",
             "locked_after",
             "deletable",
+            "delete_after",
             "document_language",
             "content_schema_url",
             "attachments",

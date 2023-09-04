@@ -261,6 +261,12 @@ class Document(UUIDModel, TimestampedModel):
     content_schema_url = models.URLField(
         null=True, blank=True, help_text=_("Link to content schema if available")
     )
+    delete_after = models.DateField(
+        null=True,
+        help_text=_(
+            "Date which after the document and related attachments are permanently deleted"
+        ),
+    )
 
     class Meta:
         verbose_name = _("document")
