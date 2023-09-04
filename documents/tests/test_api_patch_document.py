@@ -611,6 +611,22 @@ def test_update_document_not_found(superuser_api_client):
     )
 
 
+def test_update_delete_after_user(service, user):
+    api_client = get_user_service_client(user, service)
+
+    response = api_client.post(
+        reverse("documents-list"), VALID_DOCUMENT_DATA, format="multipart"
+    )
+    assert response.status_code == status.HTTP_201_CREATED
+    assert StatusHistory.objects.count() == 1
+    document_id = response.json().get("id")
+    response = api_client.patch(
+        reverse("documents-detail", args=[document_id]), {"delete_after": "2024-12-12"}
+    )
+
+    assert response.status_code == status.HTTP_403_FORBIDDEN
+
+
 @pytest.mark.parametrize("attachments", [0, 1, 2])
 @pytest.mark.parametrize(
     "ip_address", ["213.255.180.34", "2345:0425:2CA1::0567:5673:23b5"]
