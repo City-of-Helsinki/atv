@@ -43,6 +43,11 @@ urlpatterns = [
     path("v1/", include(router.urls)),
 ]
 
+if settings.SENTRY_DEBUG:
+    urlpatterns += [
+        path("sentry-debug/", lambda a: 1 / 0),
+    ]
+
 
 if settings.ENABLE_SWAGGER_UI:
     urlpatterns += [

@@ -151,6 +151,7 @@ example_document = OpenApiExample(
         "draft": True,
         "locked_after": "2021-08-01T00:00:00.0Z",
         "deletable": False,
+        "delete_after": "2030-12-12",
         "document_language": "fi",
         "content_schema_url": "https://exampleurl.fi",
         "content": {
@@ -307,6 +308,7 @@ example_gdpr_api_repsonse = OpenApiExample(
                     "type": "mysterious form",
                     "human_readable_type": {"en": "Mysterious Form"},
                     "deletable": True,
+                    "delete_after": "2030-12-12",
                     "attachment_count": 0,
                     "attachments": [],
                 },
@@ -318,6 +320,7 @@ example_gdpr_api_repsonse = OpenApiExample(
                     "type": "mysterious form",
                     "human_readable_type": {},
                     "deletable": False,
+                    "delete_after": "2030-12-12",
                     "attachment_count": 1,
                     "attachments": ["myfavoritesong.mp3"],
                 },
@@ -841,8 +844,10 @@ document_statistics_viewset_docs = {
                 description="Request was allowed and documents were listed",
             ),
             (status.HTTP_400_BAD_REQUEST, "application/json"): _base_400_response(),
-            status.HTTP_401_UNAUTHORIZED: "Request's credentials are missing or invalid. An API-key is required, or an "
-            "user token associated with statistics service.",
+            status.HTTP_401_UNAUTHORIZED: OpenApiResponse(
+                "Request's credentials are missing or invalid. An API-key is required, or an "
+                "user token associated with statistics service.",
+            ),
             status.HTTP_403_FORBIDDEN: OpenApiResponse(
                 description="Current authentication doesn't allow viewing document statistics"
             ),
