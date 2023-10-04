@@ -36,6 +36,7 @@ env = environ.Env(
     CACHE_URL=(str, "locmemcache://"),
     SENTRY_DSN=(str, ""),
     SENTRY_ENVIRONMENT=(str, "development"),
+    SENTRY_DEBUG=(bool, False),
     CORS_ORIGIN_WHITELIST=(list, []),
     CORS_ORIGIN_ALLOW_ALL=(bool, False),
     CORS_ALLOW_HEADERS=(list, []),
@@ -83,6 +84,7 @@ sentry_sdk.init(
     integrations=[DjangoIntegration()],
     before_send=sentry_before_send,
 )
+SENTRY_DEBUG = env("SENTRY_DEBUG")
 
 BASE_DIR = str(checkout_dir)
 

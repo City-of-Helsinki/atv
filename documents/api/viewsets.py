@@ -169,6 +169,8 @@ class DocumentStatisticsViewSet(AuditLoggingModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
+        if user.is_anonymous:
+            raise NotAuthenticated
         if not get_service_api_key_from_request(self.request) and not user.has_perm(
             "users.view_document_statistics"
         ):
