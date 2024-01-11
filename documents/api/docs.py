@@ -573,7 +573,7 @@ document_viewset_docs = {
                 OpenApiTypes.STR,
                 description="Search for documents with metadata matching key:value pairs separated by comma."
                 " ( key:value, key:value )."
-                " Lookup method for value is 'contains', key must be exact and is case sensitive.",
+                " Lookup method for value is 'iexact', key must be exact and is case sensitive.",
             ),
         ],
         responses={

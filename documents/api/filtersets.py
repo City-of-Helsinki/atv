@@ -41,7 +41,7 @@ class MetadataJSONFilter(Filter):
             try:
                 key, value = part.split(":", maxsplit=1)
                 qs = qs.filter(
-                    metadata__has_key=key, **{"metadata__" + key + "__icontains": value}
+                    metadata__has_key=key, **{"metadata__" + key + "__iexact": value}
                 )
             except ValueError:
                 raise ValidationError(
