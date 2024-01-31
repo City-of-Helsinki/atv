@@ -267,6 +267,7 @@ example_document_metadata = OpenApiExample(
                         ],
                     }
                 ],
+                "delete_after": "2026-12-12",
                 "document_language": "fi",
                 "content_schema_url": "https://example.hel.fi",
             }
@@ -551,7 +552,7 @@ document_viewset_docs = {
                 "business_id",
                 OpenApiTypes.STR,
                 description="Search for documents which are owned by the given business ID. "
-                "If this is given, the calling user must either be an admin"
+                "If this is given, the calling user must either be an admin",
                 # TODO: Uncomment when organization features are implemented
                 #   Replace the previous line with the following
                 # "If this is given, the calling user must either be an admin or have permission to act "

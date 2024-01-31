@@ -45,6 +45,7 @@ def get_document_gdpr_data_queryset(user: User, service: Service) -> QuerySet:
             "human_readable_type",
             "user__uuid",
             "deletable",
+            "delete_after",
         )
         .select_related("service", "user")
         .prefetch_related(
@@ -82,6 +83,7 @@ def get_document_metadata_queryset(
             "transaction_id",
             "document_language",
             "content_schema_url",
+            "delete_after",
         )
         .select_related("service", "user")
         .prefetch_related(

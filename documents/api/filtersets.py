@@ -56,7 +56,6 @@ class MetadataJSONFilter(Filter):
 
 
 class StringInFilter(CharFilter, BaseInFilter):
-
     """Allows filtering with a list of strings separated by comma"""
 
 

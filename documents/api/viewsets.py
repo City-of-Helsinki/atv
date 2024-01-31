@@ -138,9 +138,11 @@ class DocumentStatusActivityViewSet(AuditLoggingModelViewSet):
             serializer.save()
             return Response(
                 data=StatusHistorySerializer(serializer.instance[0]).data,
-                status=status.HTTP_201_CREATED
-                if serializer.instance[1]
-                else status.HTTP_200_OK,
+                status=(
+                    status.HTTP_201_CREATED
+                    if serializer.instance[1]
+                    else status.HTTP_200_OK
+                ),
             )
 
     @not_allowed()
@@ -351,9 +353,7 @@ class AttachmentViewSet(AuditLoggingModelViewSet, NestedViewSetMixin):
         if is_locked or not_draft:
             raise DocumentLockedException(
                 # Only pass the locked date if it's after the date
-                locked_after=attachment.document.locked_after
-                if is_locked
-                else None
+                locked_after=attachment.document.locked_after if is_locked else None
             )
         if not attachment.document.deletable:
             raise PermissionDenied(
@@ -594,9 +594,7 @@ class DocumentViewSet(AuditLoggingModelViewSet):
         if is_locked or not_draft:
             raise DocumentLockedException(
                 # Only pass the locked date if it's after the date
-                locked_after=document.locked_after
-                if is_locked
-                else None
+                locked_after=document.locked_after if is_locked else None
             )
 
         if not (document.deletable or document.draft) and not request.user.has_perm(

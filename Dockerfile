@@ -1,5 +1,5 @@
 # ==============================
-FROM registry.access.redhat.com/ubi8/python-39 as appbase
+FROM registry.access.redhat.com/ubi8/python-311 as appbase
 # ==============================
 
 EXPOSE 8000/tcp
