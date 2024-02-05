@@ -37,6 +37,7 @@ env = environ.Env(
     SENTRY_DSN=(str, ""),
     SENTRY_ENVIRONMENT=(str, "development"),
     SENTRY_DEBUG=(bool, False),
+    SENTRY_LOG_LEVEL=(str, "WARNING"),
     CORS_ORIGIN_WHITELIST=(list, []),
     CORS_ORIGIN_ALLOW_ALL=(bool, False),
     CORS_ALLOW_HEADERS=(list, []),
@@ -85,6 +86,7 @@ sentry_sdk.init(
     before_send=sentry_before_send,
 )
 SENTRY_DEBUG = env("SENTRY_DEBUG")
+SENTRY_LOG_LEVEL = env("SENTRY_LOG_LEVEL")
 
 BASE_DIR = str(checkout_dir)
 
