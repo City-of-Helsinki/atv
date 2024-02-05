@@ -1,4 +1,4 @@
-from ast import literal_eval
+import json
 from io import BytesIO
 
 from Cryptodome.Cipher import AES
@@ -11,14 +11,16 @@ from atv.settings import FIELD_ENCRYPTION_KEYS
 class EncryptedJSONField(EncryptedFieldMixin, models.JSONField):
     def decrypt(self, value):
         text = super().decrypt(value)
-        # Using literal_eval to get a dict from string, because json.loads() doesn't work here after django update
-        return literal_eval(text)
+        return json.loads(text)
 
-    def encrypt(self, data_to_encrypt):
-        # data_to_encrypt is Json string and .adapted is a dict like before update
-        data_to_encrypt = data_to_encrypt.adapted
-        # Dict is converted into a string which is then encrypted
-        return super().encrypt(data_to_encrypt)
+    def get_db_prep_save(self, value, connection):
+        if self.empty_strings_allowed and value == bytes():
+            value = ""
+        # Instead of using db_prep_value use json.dumps() to get a json formatted object
+        value = json.dumps(value)
+        if value is not None:
+            encrypted_value = self.encrypt(value)
+            return connection.Database.Binary(encrypted_value)
 
 
 class EncryptedFileField(models.FileField):
