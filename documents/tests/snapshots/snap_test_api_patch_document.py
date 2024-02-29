@@ -25,7 +25,7 @@ snapshots["test_update_document_owner 1"] = {
     "id": "2d2b7a36-a306-4e35-990f-13aea04263ff",
     "locked_after": None,
     "metadata": {"created_by": "alex", "testing": True},
-    "service": "service 155",
+    "service": "service 160",
     "status": {
         "timestamp": "2021-06-30T12:00:00+03:00",
         "value": "handled",
@@ -59,7 +59,7 @@ snapshots["test_update_document_staff 1"] = {
     "id": "2d2b7a36-a306-4e35-990f-13aea04263ff",
     "locked_after": None,
     "metadata": {"created_by": "alex", "testing": True},
-    "service": "service 161",
+    "service": "service 166",
     "status": {
         "timestamp": "2021-06-30T12:00:00+03:00",
         "value": "handled",
@@ -94,7 +94,7 @@ snapshots["test_update_document_staff_non_draft 1"] = {
     "id": "2d2b7a36-a306-4e35-990f-13aea04263ff",
     "locked_after": None,
     "metadata": {"created_by": "alex", "testing": True},
-    "service": "service 163",
+    "service": "service 168",
     "status": {
         "timestamp": "2021-06-30T12:00:00+03:00",
         "value": "handled",

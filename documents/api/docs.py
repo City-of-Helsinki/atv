@@ -630,6 +630,37 @@ document_viewset_docs = {
         },
         examples=[example_document, example_error],
     ),
+    "batch_list": extend_schema(
+        summary="Fetch multiple documents by IDs",
+        description="This endpoint allows a service to fetch multiple documents by their IDs",
+        # TODO: Uncomment when organization features are implemented
+        #   Replace the previous line with the following
+        # "* Authenticated users are allowed access to the document if they are the owner of the document "
+        # "or the document is owned by an organization and the user has permission to act on behalf "
+        # "of that organization.",
+        request=serializers.JSONField(),
+        responses={
+            (status.HTTP_200_OK, "application/json"): OpenApiResponse(
+                response=DocumentSerializer,
+                description="The document/s was found and contents are returned as JSON.",
+            ),
+            (status.HTTP_400_BAD_REQUEST, "application/json"): _base_400_response(),
+            status.HTTP_401_UNAUTHORIZED: _base_401_response(),
+            status.HTTP_403_FORBIDDEN: OpenApiResponse(
+                description="The authenticated user lacks the proper permissions to access the document. "
+                "Depending on the requested document, "
+                "either the user does not belong to the admin group of the service which owns the document, "
+                "the user does not own the document."
+                # TODO: Uncomment when organization features are implemented
+                # " or the user does not have permission to act on behalf "
+                # "of the organization which owns the document."
+            ),
+            status.HTTP_404_NOT_FOUND: OpenApiResponse(
+                description="No document was found with `documentId`.",
+            ),
+            status.HTTP_500_INTERNAL_SERVER_ERROR: _base_500_response(),
+        },
+    ),
     "create": extend_schema(
         summary="Store a new document and its attachments",
         description="Store a new document and its attachments.\n\n"

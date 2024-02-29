@@ -7,13 +7,14 @@ from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from helusers.utils import uuid_to_username
 from rest_framework import filters, status
+from rest_framework.decorators import action
 from rest_framework.exceptions import (
     MethodNotAllowed,
     NotAuthenticated,
     NotFound,
     PermissionDenied,
 )
-from rest_framework.parsers import FileUploadParser, MultiPartParser
+from rest_framework.parsers import FileUploadParser, JSONParser, MultiPartParser
 from rest_framework.response import Response
 from rest_framework.utils import json
 from rest_framework_extensions.mixins import NestedViewSetMixin
@@ -426,7 +427,7 @@ class AttachmentViewSet(AuditLoggingModelViewSet, NestedViewSetMixin):
 
 @extend_schema_view(**document_viewset_docs)
 class DocumentViewSet(AuditLoggingModelViewSet):
-    parser_classes = [MultiPartParser]
+    parser_classes = [MultiPartParser, JSONParser]
     serializer_class = DocumentSerializer
     # Filtering/sorting
     filter_backends = [
@@ -445,6 +446,23 @@ class DocumentViewSet(AuditLoggingModelViewSet):
         service = get_service_from_request(self.request)
         service_api_key = get_service_api_key_from_request(self.request)
         return get_document_queryset(user, service, service_api_key)
+
+    @action(detail=False, methods=["POST"], url_path="batch-list")
+    def batch_list(self, request, *args, **kwargs):
+        data = request.data
+        if not isinstance(data, dict):
+            raise InvalidFieldException(detail="Data is not a json object.")
+        document_ids = data.get("document_ids")
+        if not document_ids:
+            raise InvalidFieldException(detail="Field 'document_ids' is required")
+        if not isinstance(document_ids, list):
+            raise InvalidFieldException(
+                detail="Field 'document_ids' should be a list of UUIDs"
+            )
+        queryset = self.get_queryset().filter(id__in=document_ids)
+        with self.record_action():
+            serializer = self.get_serializer(queryset, many=True)
+            return Response(serializer.data)
 
     def retrieve(self, request, *args, **kwargs):
         return super().retrieve(request, *args, **kwargs)
