@@ -178,6 +178,52 @@ def test_gdpr_api_list_user(user, service):
     assert response.status_code == status.HTTP_403_FORBIDDEN
 
 
+def test_document_batch_list_service_api_key(service_api_client, user):
+    data = {**VALID_DOCUMENT_DATA, "user_id": user.uuid}
+    other_service = ServiceFactory()
+    document_ids = []
+    for _i in range(0, 2):
+        response = service_api_client.post(
+            reverse("documents-list"), data, format="multipart"
+        )
+        assert response.status_code == status.HTTP_201_CREATED
+        document_ids.append(response.json()["id"])
+
+    other_document_id = DocumentFactory(service=other_service, user=user).id
+
+    assert Document.objects.count() == 3
+    response = service_api_client.post(
+        reverse("documents-batch-list"),
+        data={"document_ids": document_ids},
+        format="json",
+    )
+    assert response.status_code == status.HTTP_200_OK
+    response_ids = [x["id"] for x in response.json()]
+    assert len(response_ids) == 2
+    assert str(other_document_id) not in response_ids
+
+
+def test_document_batch_list_user(user, service):
+    api_client = get_user_service_client(user, service)
+    other_service = ServiceFactory()
+    other_user = UserFactory()
+    d1 = DocumentFactory(service=service, user=user, deletable=True)
+    d2 = DocumentFactory(service=other_service, user=user, deletable=False)
+    d3 = DocumentFactory(service=other_service, user=other_user, deletable=False)
+
+    assert Document.objects.count() == 3
+
+    response = api_client.post(
+        reverse("documents-batch-list"),
+        data={"document_ids": [d1.id, d2.id, d3.id]},
+        format="json",
+    )
+    assert response.status_code == status.HTTP_200_OK
+    response_ids = [x["id"] for x in response.json()]
+    assert len(response_ids) == 1
+    assert [str(d1.id)] == response_ids
+
+
 @pytest.mark.parametrize(
     "param,value",
     [
