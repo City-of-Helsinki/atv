@@ -15,6 +15,7 @@ from documents.models import Attachment
 from documents.tests.factories import AttachmentFactory
 from services.enums import ServicePermissions
 from services.tests.utils import get_user_service_client
+from users.tests.factories import UserFactory
 from utils.exceptions import get_error_response
 
 # OWNER-RELATED ACTIONS
@@ -214,6 +215,20 @@ def test_destroy_attachment_doc_deletable_false_staff(user, service):
         "PERMISSION_DENIED", "File can't be deleted due to contractual obligation."
     )
     assert Attachment.objects.count() == 1
+
+    user_with_delete_perm = UserFactory()
+    user_with_delete_perm.groups.add(group)
+    # Add permission to delete any document from their service
+    assign_perm("users.delete_document_undeletable", user_with_delete_perm)
+    api_client = get_user_service_client(user_with_delete_perm, service)
+    response = api_client.delete(
+        reverse(
+            "documents-attachments-detail",
+            args=[attachment.document.id, attachment.id],
+        )
+    )
+    assert response.status_code == status.HTTP_204_NO_CONTENT
+    assert Attachment.objects.count() == 0
 
 
 @pytest.mark.parametrize(
