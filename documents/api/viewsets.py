@@ -356,7 +356,9 @@ class AttachmentViewSet(AuditLoggingModelViewSet, NestedViewSetMixin):
                 # Only pass the locked date if it's after the date
                 locked_after=attachment.document.locked_after if is_locked else None
             )
-        if not attachment.document.deletable:
+        if not (
+            attachment.document.deletable or attachment.document.draft
+        ) and not request.user.has_perm("users.delete_document_undeletable"):
             raise PermissionDenied(
                 "File can't be deleted due to contractual obligation."
             )
