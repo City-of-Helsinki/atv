@@ -1,4 +1,4 @@
-name: Python coding style
+name: Coding style
 
 on:
   push:
@@ -52,3 +52,13 @@ jobs:
         with:
           linters: isort
           run: isort -c .
+
+  commitlint:
+    name: Commit lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check commitlint
+        uses: wagoid/commitlint-github-action@0d749a1a91d4770e983a7b8f83d4a3f0e7e0874e
