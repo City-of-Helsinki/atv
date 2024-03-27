@@ -10,7 +10,7 @@ attrs==23.2.0
     # via
     #   -c requirements.txt
     #   flake8-bugbear
-black==24.1.1
+black==24.3.0
     # via -r requirements-dev.in
 cfgv==3.4.0
     # via pre-commit
