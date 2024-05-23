@@ -18,14 +18,14 @@ from documents.api.viewsets import (
 )
 
 router = ExtendedSimpleRouter()
-
-router.register(r"documents", DocumentViewSet, basename="documents").register(
+document_router = router.register(r"documents", DocumentViewSet, basename="documents")
+document_router.register(
     r"attachments",
     AttachmentViewSet,
     basename="documents-attachments",
     parents_query_lookups=["document_id"],
 )
-router.register(r"documents", DocumentViewSet, basename="documents").register(
+document_router.register(
     r"status",
     DocumentStatusActivityViewSet,
     basename="document-status-history",

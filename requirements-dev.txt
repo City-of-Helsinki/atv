@@ -10,16 +10,14 @@ attrs==23.2.0
     # via
     #   -c requirements.txt
     #   flake8-bugbear
-black==24.3.0
+black==24.4.2
     # via -r requirements-dev.in
 cfgv==3.4.0
     # via pre-commit
 click==8.1.7
     # via black
-coverage[toml]==7.4.1
-    # via
-    #   coverage
-    #   pytest-cov
+coverage[toml]==7.5.1
+    # via pytest-cov
 decorator==5.1.1
     # via ipython
 distlib==0.3.8
@@ -30,22 +28,22 @@ factory-boy==3.3.0
     # via
     #   -r requirements-dev.in
     #   pytest-factoryboy
-faker==22.6.0
+faker==25.2.0
     # via factory-boy
 fastdiff==0.3.0
     # via snapshottest
-filelock==3.13.1
+filelock==3.14.0
     # via virtualenv
 flake8==7.0.0
     # via
     #   -r requirements-dev.in
     #   flake8-bugbear
     #   pep8-naming
-flake8-bugbear==24.1.17
+flake8-bugbear==24.4.26
     # via -r requirements-dev.in
-freezegun==1.4.0
+freezegun==1.5.1
     # via -r requirements-dev.in
-identify==2.5.33
+identify==2.5.36
     # via pre-commit
 inflection==0.5.1
     # via
@@ -53,13 +51,13 @@ inflection==0.5.1
     #   pytest-factoryboy
 iniconfig==2.0.0
     # via pytest
-ipython==8.21.0
+ipython==8.24.0
     # via -r requirements-dev.in
 isort==5.13.2
     # via -r requirements-dev.in
 jedi==0.19.1
     # via ipython
-matplotlib-inline==0.1.6
+matplotlib-inline==0.1.7
     # via ipython
 mccabe==0.7.0
     # via flake8
@@ -67,26 +65,27 @@ mypy-extensions==1.0.0
     # via black
 nodeenv==1.8.0
     # via pre-commit
-packaging==23.2
+packaging==24.0
     # via
     #   -c requirements.txt
     #   black
     #   pytest
-parso==0.8.3
+    #   pytest-factoryboy
+parso==0.8.4
     # via jedi
 pathspec==0.12.1
     # via black
-pep8-naming==0.13.3
+pep8-naming==0.14.1
     # via -r requirements-dev.in
 pexpect==4.9.0
     # via ipython
-platformdirs==4.2.0
+platformdirs==4.2.2
     # via
     #   black
     #   virtualenv
-pluggy==1.4.0
+pluggy==1.5.0
     # via pytest
-pre-commit==3.6.0
+pre-commit==3.7.1
     # via -r requirements-dev.in
 prompt-toolkit==3.0.43
     # via ipython
@@ -98,21 +97,21 @@ pycodestyle==2.11.1
     # via flake8
 pyflakes==3.2.0
     # via flake8
-pygments==2.17.2
+pygments==2.18.0
     # via ipython
-pytest==8.0.0
+pytest==8.2.1
     # via
     #   -r requirements-dev.in
     #   pytest-cov
     #   pytest-django
     #   pytest-factoryboy
-pytest-cov==4.1.0
+pytest-cov==5.0.0
     # via -r requirements-dev.in
 pytest-django==4.8.0
     # via -r requirements-dev.in
-pytest-factoryboy==2.6.0
+pytest-factoryboy==2.7.0
     # via -r requirements-dev.in
-python-dateutil==2.8.2
+python-dateutil==2.9.0.post0
     # via
     #   faker
     #   freezegun
@@ -132,13 +131,15 @@ stack-data==0.6.3
     # via ipython
 termcolor==2.4.0
     # via snapshottest
-traitlets==5.14.1
+traitlets==5.14.3
     # via
     #   ipython
     #   matplotlib-inline
-typing-extensions==4.9.0
-    # via pytest-factoryboy
-virtualenv==20.25.0
+typing-extensions==4.11.0
+    # via
+    #   ipython
+    #   pytest-factoryboy
+virtualenv==20.26.2
     # via pre-commit
 wasmer==1.1.0
     # via fastdiff
