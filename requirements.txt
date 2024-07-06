@@ -14,7 +14,7 @@ attrs==23.2.0
     #   referencing
 cachetools==5.3.3
     # via django-helusers
-certifi==2024.2.2
+certifi==2024.7.4
     # via
     #   elasticsearch
     #   requests
