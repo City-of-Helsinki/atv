@@ -1,0 +1,14 @@
+# Log files
+*.log
+
+# Dependency directories
+node_modules
+lib
+
+# IDE configurations
+.idea/
+.vscode/
+
+# Build and report directories
+report/
+test-results/

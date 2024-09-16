@@ -1,0 +1,14 @@
+{
+  "name": "e2e",
+  "private": true,
+  "description": "e2e tests using Playwright",
+  "version": "3.9.0",
+  "scripts": {
+    "test:e2e:install": "yarn playwright install",
+    "test:e2e:ci": "npx playwright test",
+    "test:e2e:start": "npx playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.40.1"
+  }
+}
