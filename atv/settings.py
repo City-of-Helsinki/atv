@@ -33,6 +33,7 @@ env = environ.Env(
         str,
         "postgres://atv:atv@localhost/atv",
     ),
+    DATABASE_PASSWORD=(str, ""),
     CACHE_URL=(str, "locmemcache://"),
     SENTRY_DSN=(str, ""),
     SENTRY_ENVIRONMENT=(str, "development"),
@@ -102,6 +103,10 @@ if env("CSRF_TRUSTED_ORIGINS"):
     CSRF_TRUSTED_ORIGINS = env("CSRF_TRUSTED_ORIGINS")
 
 DATABASES = {"default": env.db()}
+
+if env("DATABASE_PASSWORD"):
+    DATABASES["default"]["PASSWORD"] = env("DATABASE_PASSWORD")
+
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 CACHES = {"default": env.cache()}
 
