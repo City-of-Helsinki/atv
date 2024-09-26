@@ -11,7 +11,7 @@ drf-extensions
 drf-oidc-auth==0.10.0
 drf-spectacular
 psycopg2
-sentry_sdk==1.24.0
+sentry_sdk
 elasticsearch==7.15.2
 pyclamd
 jsonschema
