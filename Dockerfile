@@ -60,5 +60,8 @@ RUN SECRET_KEY="only-used-for-collectstatic" python manage.py collectstatic --no
 FROM appbase as production
 # ==============================
 
+# fatal: detected dubious ownership in repository at '/app'
+RUN git config --global --add safe.directory /app
+
 COPY --from=staticbuilder --chown=1000:0 /var/static /var/static
 COPY --chown=1000:0 . /app/
