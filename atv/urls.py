@@ -88,7 +88,7 @@ def check_db_connection():
             health_status["db"] = {"message": "OK"}
         except Exception as ex:
             health_status["db"] = {"error": str(ex)}
-        time.sleep(30)  # Sleep for 0.5 minutes
+        time.sleep(300)  # Sleep for 5 minutes
 
 def check_clamav_connection():
     global health_status
@@ -99,7 +99,7 @@ def check_clamav_connection():
             health_status["clamav"] = {"message": "OK"}
         except Exception as ex:
             health_status["clamav"] = {"error": str(ex)}
-        time.sleep(30)  # Sleep for 0.5 minutes
+        time.sleep(300)  # Sleep for 5 minutes
 
 # Start the health check threads
 threading.Thread(target=check_db_connection, daemon=True).start()
