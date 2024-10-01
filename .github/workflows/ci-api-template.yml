@@ -6,10 +6,12 @@ on:
         description: 'Python version to use'
         required: true
         default: '3.11'
+        type: string
       app-name:
         description: 'Application name'
         required: true
         default: 'atv'
+        type: string
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 env:
