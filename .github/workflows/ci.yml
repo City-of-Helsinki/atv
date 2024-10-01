@@ -1,0 +1,8 @@
+name: CI
+on:
+  push:
+    branches: [main, release]
+  pull_request:
+jobs:
+  common-ci:
+    uses: ./.github/workflows/ci-api-template.yml
