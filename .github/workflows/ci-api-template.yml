@@ -19,6 +19,7 @@ env:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   pytest:
+    name: Coding test - pytest
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -86,6 +87,7 @@ jobs:
         run: |
           pwd
           ls -al
+          cat .coverage
 
       # Without this workaround Sonar reports a warning about an incorrect source path
       - name: Override coverage report source path for Sonar
