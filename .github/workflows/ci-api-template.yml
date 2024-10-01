@@ -82,6 +82,11 @@ jobs:
           linters: pytest
           run: pytest -ra -vvv --cov=.
 
+      - name: debug
+        run: |
+          pwd
+          ls -al
+
       # Without this workaround Sonar reports a warning about an incorrect source path
       - name: Override coverage report source path for Sonar
         run: sed -i 's@'$GITHUB_WORKSPACE'@/github/workspace/@g' coverage.xml
