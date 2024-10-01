@@ -81,13 +81,12 @@ jobs:
         uses: liskin/gh-problem-matcher-wrap@v2
         with:
           linters: pytest
-          run: pytest -ra -vvv --cov=.
+          run: pytest -ra -vvv --cov=. --cov-report=xml
 
       - name: debug
         run: |
           pwd
           ls -al
-          cat .coverage
 
       # Without this workaround Sonar reports a warning about an incorrect source path
       - name: Override coverage report source path for Sonar
