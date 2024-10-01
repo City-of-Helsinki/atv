@@ -6,5 +6,6 @@ on:
 jobs:
   common-ci:
     uses: City-of-Helsinki/atv/.github/workflows/ci-api-template.yml@ci_workflow_OH-136
+    secrets: inherit
     # with:
     #   python-version: 3.11
