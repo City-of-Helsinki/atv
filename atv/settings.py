@@ -1,5 +1,6 @@
 import os
 import subprocess
+from datetime import datetime
 
 import environ
 import sentry_sdk
@@ -65,10 +66,10 @@ env = environ.Env(
     TOKEN_AUTH_REQUIRE_SCOPE=(bool, False),
     TOKEN_AUTH_AUTHSERVER_URL=(str, ""),
     CLAMAV_HOST=(str, "atv-clamav"),
+    OPENSHIFT_BUILD_COMMIT=(str, ""),
 )
 if os.path.exists(env_file):
     env.read_env(env_file)
-
 
 VERSION = env("VERSION")
 if VERSION is None:
@@ -282,3 +283,10 @@ LOGGING = {
 
 # Malware Protection
 CLAMAV_HOST = env("CLAMAV_HOST")
+
+
+# get build time from a file in docker image
+APP_BUILDTIME = datetime.fromtimestamp(os.path.getmtime(__file__))
+
+# get build commit from Openshift variable
+BUILD_COMMIT = env("OPENSHIFT_BUILD_COMMIT")
