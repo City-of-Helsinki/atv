@@ -7,19 +7,14 @@ on:
         required: true
         default: '3.11'
         type: string
-      app-name:
-        description: 'Application name'
-        required: true
-        default: 'atv'
-        type: string
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 env:
   SECRET_KEY: topsecret123
-  POSTGRES_DB: test_${{ inputs.app-name }}
+  POSTGRES_DB: test
   POSTGRES_USER: postgres
   POSTGRES_PASSWORD: postgres
-  DATABASE_URL: "postgres://postgres:postgres@localhost/test_${{ inputs.app-name }}"
+  DATABASE_URL: "postgres://postgres:postgres@localhost/test"
   FIELD_ENCRYPTION_KEYS: abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -32,7 +27,7 @@ jobs:
           # Note: not redundant, parent env is not applied to service
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: test_${{ inputs.app-name }}
+          POSTGRES_DB: test
           FIELD_ENCRYPTION_KEYS: abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789
         ports:
           - 5432:5432

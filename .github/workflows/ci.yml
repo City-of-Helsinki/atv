@@ -6,6 +6,5 @@ on:
 jobs:
   common-ci:
     uses: City-of-Helsinki/atv/.github/workflows/ci-api-template.yml@ci_workflow_OH-136
-    with:
-      python-version: 3.11
-      app-name: atv
+    # with:
+    #   python-version: 3.11
