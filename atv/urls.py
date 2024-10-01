@@ -1,7 +1,7 @@
-import pyclamd
 import threading
 import time
-from atv import __version__
+
+import pyclamd
 from django.conf import settings
 from django.contrib import admin
 from django.db import connection
@@ -14,6 +14,7 @@ from drf_spectacular.views import (
 )
 from rest_framework_extensions.routers import ExtendedSimpleRouter
 
+from atv import __version__
 from documents.api import AttachmentViewSet, DocumentViewSet
 from documents.api.viewsets import (
     DocumentMetadataViewSet,
@@ -76,8 +77,9 @@ if settings.ENABLE_SWAGGER_UI:
 # Global variable to store the health check results
 health_status = {
     "db": {"message": "Initializing"},
-    "clamav": {"message": "Initializing"}
+    "clamav": {"message": "Initializing"},
 }
+
 
 def check_db_connection():
     global health_status
@@ -90,6 +92,7 @@ def check_db_connection():
             health_status["db"] = {"error": str(ex)}
         time.sleep(300)  # Sleep for 5 minutes
 
+
 def check_clamav_connection():
     global health_status
     while True:
@@ -101,19 +104,18 @@ def check_clamav_connection():
             health_status["clamav"] = {"error": str(ex)}
         time.sleep(300)  # Sleep for 5 minutes
 
+
 # Start the health check threads
 threading.Thread(target=check_db_connection, daemon=True).start()
 threading.Thread(target=check_clamav_connection, daemon=True).start()
+
 
 def healthz(*args, **kwargs):
     response_data = {
         "packageVersion": __version__,
         "commitHash": settings.BUILD_COMMIT,
         "buildTime": settings.APP_BUILDTIME,
-        "status": {
-            "message": {},
-            "error": {}
-        }
+        "status": {"message": {}, "error": {}},
     }
 
     for key, status in health_status.items():
@@ -122,8 +124,16 @@ def healthz(*args, **kwargs):
         else:
             response_data["status"]["error"][key] = status.get("error", "Unknown error")
 
-    status_code = 200 if all("message" in status and status["message"] == "OK" for status in health_status.values()) else 250
+    status_code = (
+        200
+        if all(
+            "message" in status and status["message"] == "OK"
+            for status in health_status.values()
+        )
+        else 200
+    )
     return JsonResponse(response_data, status=status_code)
+
 
 def readiness(*args, **kwargs):
     return HttpResponse(status=200)

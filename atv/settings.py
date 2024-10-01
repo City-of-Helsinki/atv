@@ -1,10 +1,10 @@
 import os
 import subprocess
+from datetime import datetime
 
 import environ
 import sentry_sdk
 from corsheaders.defaults import default_headers
-from datetime import datetime
 from django.core.exceptions import ImproperlyConfigured
 from sentry_sdk.integrations.django import DjangoIntegration
 
