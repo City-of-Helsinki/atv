@@ -5,7 +5,7 @@ on:
   pull_request:
 jobs:
   common-ci:
-    uses: ./.github/workflows/ci-api-template.yml
+    uses: City-of-Helsinki/atv/.github/workflows/ci-api-template.yml@ci_workflow_OH-136
     with:
       python-version: 3.11
-      app-name: atv  
+      app-name: atv
