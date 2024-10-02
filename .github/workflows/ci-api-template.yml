@@ -7,6 +7,11 @@ on:
         required: false
         default: '3.11'
         type: string
+      pytest-parameters:
+        description: 'Pytest parameters'
+        required: false
+        default: '--doctest-modules'
+        type: string
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 env:
@@ -16,10 +21,11 @@ env:
   POSTGRES_PASSWORD: postgres
   DATABASE_URL: "postgres://postgres:postgres@localhost/test"
   FIELD_ENCRYPTION_KEYS: abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789
+
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   pytest:
-    name: Coding test - pytest
+    name: Testing - pytest, migrations, OpenAPI schema
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -46,11 +52,22 @@ jobs:
         run: sudo apt-get install libpq-dev
       - name: System requirements for Django
         run: sudo apt-get install gettext postgresql-client
-      - name: Setup Python ${{ matrix.python }}
+      - name: Setup Python ${{ inputs.python-version }}
         uses: actions/setup-python@v4
         with:
-          python-version: ${{ matrix.python }}
+          python-version: ${{ inputs.python-version }}
           cache: pip
+      - name: Cache pip packages
+        uses: actions/cache@v4
+        env:
+          cache-name: cache-pip-modules
+        with:
+          path: ~/.pip-cache
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/requirements.txt') }}-${{ hashFiles('**/requirements-dev.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
@@ -76,19 +93,14 @@ jobs:
           python manage.py spectacular --lang en --validate --fail-on-warn --api-version v1
         continue-on-error: true
       # With pytest-cov use: --cov=.
-      # Some errors, skipping --doctest-modules for now
       - name: Run tests
         uses: liskin/gh-problem-matcher-wrap@v2
         with:
           linters: pytest
-          run: pytest -ra -vvv --cov=. --cov-report=xml
-
-      - name: debug
-        run: |
-          pwd
-          ls -al
+          run: pytest -ra -vvv ${{ inputs.pytest-parameters }} --cov=. --cov-report=xml
 
       # Without this workaround Sonar reports a warning about an incorrect source path
+      # sonarcloud-projeect.properties: sonar.python.coverage.reportPaths=coverage.xml
       - name: Override coverage report source path for Sonar
         run: sed -i 's@'$GITHUB_WORKSPACE'@/github/workspace/@g' coverage.xml
 
@@ -97,7 +109,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
 
   black:
     name: Coding style - black
