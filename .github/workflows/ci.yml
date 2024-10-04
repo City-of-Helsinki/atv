@@ -5,7 +5,8 @@ on:
   pull_request:
 jobs:
   common-ci:
-    uses: City-of-Helsinki/.github/.github/workflows/ci-django-api.yml@ci-django-api.yml
+    # reusable workflow from .github -repository
+    uses: City-of-Helsinki/.github/.github/workflows/ci-django-api.yml@reusable_workflow
     secrets: inherit
     # with:
     #   python-version: 3.11
