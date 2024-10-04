@@ -6,7 +6,9 @@ on:
 jobs:
   common-ci:
     # reusable workflow from .github -repository
+    # database-type: postgres / postgis
     uses: City-of-Helsinki/.github/.github/workflows/ci-django-api.yml@reusable_workflow
     secrets: inherit
-    # with:
-    #   python-version: 3.11
+    with:
+      python-version: 3.11
+      database-type: postgres
