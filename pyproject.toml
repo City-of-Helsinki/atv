@@ -1,0 +1,20 @@
+[tool.pytest.ini_options]
+django_settings_module = "atv.settings"
+norecursedirs = [".git", "venv*", "var"]
+doctest_optionflags = ["NORMALIZE_WHITESPACE", "IGNORE_EXCEPTION_DETAIL", "ALLOW_UNICODE"]
+
+[tool.ruff]
+target-version = "py311"
+
+[tool.ruff.lint]
+select = [
+    # Pyflakes
+    "F",
+    # Pycodestyle
+    "E",
+    "W",
+    # isort
+    "I001"
+]
+extend-per-file-ignores = { "*migrations*" = ["E501"] }
+pycodestyle.max-line-length = 120
