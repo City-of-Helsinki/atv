@@ -14,7 +14,7 @@ class AuditLogEntry(models.Model):
         verbose_name_plural = "audit log entries"
 
     def __str__(self):
-        return " ".join(
+        return ' '.join(
             [
                 _safe_get(self.message, "audit_event", "date_time"),
                 _safe_get(self.message, "audit_event", "actor", "role"),
