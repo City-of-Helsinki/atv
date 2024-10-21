@@ -2,7 +2,7 @@
 
 ## Issues :bug:
 ### Closes :no_good_woman:
-**[ATV-XXX](https://helsinkisolutionoffice.atlassian.net/browse/ATV-XXX):** 
+**[ATV-XXX](https://helsinkisolutionoffice.atlassian.net/browse/ATV-XXX):**
 
 ### Related :handshake:
 
