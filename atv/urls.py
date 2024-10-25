@@ -1,6 +1,11 @@
+import threading
+import time
+
+import pyclamd
 from django.conf import settings
 from django.contrib import admin
-from django.http import HttpResponse
+from django.db import connection
+from django.http import HttpResponse, JsonResponse
 from django.urls import include, path
 from drf_spectacular.views import (
     SpectacularAPIView,
@@ -9,6 +14,7 @@ from drf_spectacular.views import (
 )
 from rest_framework_extensions.routers import ExtendedSimpleRouter
 
+from atv import __version__
 from documents.api import AttachmentViewSet, DocumentViewSet
 from documents.api.viewsets import (
     DocumentMetadataViewSet,
@@ -68,9 +74,65 @@ if settings.ENABLE_SWAGGER_UI:
 # Kubernetes liveness & readiness probes
 #
 
+# Global variable to store the health check results
+health_status = {
+    "db": {"message": "Initializing"},
+    "clamav": {"message": "Initializing"},
+}
+
+
+def check_db_connection():
+    global health_status
+    while True:
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT 1")
+            health_status["db"] = {"message": "OK"}
+        except Exception as ex:
+            health_status["db"] = {"error": str(ex)}
+        time.sleep(300)  # Sleep for 5 minutes
+
+
+def check_clamav_connection():
+    global health_status
+    while True:
+        try:
+            cd = pyclamd.ClamdNetworkSocket(host=settings.CLAMAV_HOST)
+            cd.ping()
+            health_status["clamav"] = {"message": "OK"}
+        except Exception as ex:
+            health_status["clamav"] = {"error": str(ex)}
+        time.sleep(300)  # Sleep for 5 minutes
+
+
+# Start the health check threads
+threading.Thread(target=check_db_connection, daemon=True).start()
+threading.Thread(target=check_clamav_connection, daemon=True).start()
+
 
 def healthz(*args, **kwargs):
-    return HttpResponse(status=200)
+    response_data = {
+        "packageVersion": __version__,
+        "commitHash": settings.BUILD_COMMIT,
+        "buildTime": settings.APP_BUILDTIME,
+        "status": {"message": {}, "error": {}},
+    }
+
+    for key, status in health_status.items():
+        if "message" in status and status["message"] == "OK":
+            response_data["status"]["message"][key] = status["message"]
+        else:
+            response_data["status"]["error"][key] = status.get("error", "Unknown error")
+
+    status_code = (
+        200
+        if all(
+            "message" in status and status["message"] == "OK"
+            for status in health_status.values()
+        )
+        else 200
+    )
+    return JsonResponse(response_data, status=status_code)
 
 
 def readiness(*args, **kwargs):
