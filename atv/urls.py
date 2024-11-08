@@ -41,6 +41,7 @@ router.register(
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("v1/", include(router.urls)),
+    path("helauth/", include("helusers.urls")),
 ]
 
 if settings.SENTRY_DEBUG:
