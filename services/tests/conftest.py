@@ -18,6 +18,7 @@ def service_api_client(api_client):
 
     credentials = {settings.API_KEY_CUSTOM_HEADER: key}
     api_client.credentials(**credentials)
+    api_client.service = service
     return api_client
 
 

@@ -6,6 +6,7 @@ import pytest
 from dateutil.relativedelta import relativedelta
 from dateutil.utils import today
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.utils import timezone
 from freezegun import freeze_time
 from guardian.shortcuts import assign_perm
 from rest_framework import status
@@ -663,3 +664,48 @@ def test_audit_log_is_created_when_patching(user, attachments, ip_address):
         ).count()
         == 1
     )
+
+
+@pytest.mark.parametrize("format", ["multipart", "json"])
+def test_patch_status_json_failure_test_create_status_history(
+    service_api_client, format
+):
+    """Updating status (and status_timestamp) should work with multipart and json
+    formatting.
+    """
+    document = DocumentFactory(
+        service=service_api_client.service,
+        status="testing",
+    )
+
+    response = service_api_client.patch(
+        reverse("documents-detail", args=[document.id]),
+        {"status": "changed status"},
+        format=format,
+    )
+
+    assert response.status_code == status.HTTP_200_OK
+    document.refresh_from_db()
+    assert document.status == "changed status"
+
+
+@freeze_time("2021-06-30T12:00:00")
+def test_patch_status_timestamp_is_updated(service_api_client):
+    """When updating the status of a document, the status_timestamp should also get
+    updated automatically.
+    """
+    document = DocumentFactory(
+        service=service_api_client.service,
+        status="testing",
+    )
+
+    with freeze_time("2024-12-20T12:00:00"):
+        dt = timezone.now()
+        response = service_api_client.patch(
+            reverse("documents-detail", args=[document.id]),
+            {"status": "changed status"},
+        )
+
+    assert response.status_code == status.HTTP_200_OK
+    document.refresh_from_db()
+    assert document.status_timestamp == dt
