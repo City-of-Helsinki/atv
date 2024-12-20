@@ -1,5 +1,5 @@
 # ==============================
-FROM registry.access.redhat.com/ubi8/python-311 as appbase
+FROM registry.access.redhat.com/ubi8/python-311 AS appbase
 # ==============================
 
 EXPOSE 8000/tcp
@@ -38,7 +38,7 @@ COPY --chown=1000:0 docker-entrypoint.sh /entrypoint/docker-entrypoint.sh
 ENTRYPOINT ["/entrypoint/docker-entrypoint.sh"]
 
 # ==============================
-FROM appbase as development
+FROM appbase AS development
 # ==============================
 
 COPY --chown=1000:0 requirements-dev.txt ./requirements-dev.txt
@@ -49,7 +49,7 @@ ENV DEV_SERVER=1
 COPY --chown=1000:0 . /app/
 
 # ==============================
-FROM appbase as staticbuilder
+FROM appbase AS staticbuilder
 # ==============================
 
 ENV STATIC_ROOT /var/static
@@ -57,7 +57,7 @@ COPY --chown=1000:0 . /app/
 RUN SECRET_KEY="only-used-for-collectstatic" python manage.py collectstatic --noinput
 
 # ==============================
-FROM appbase as production
+FROM appbase AS production
 # ==============================
 
 # fatal: detected dubious ownership in repository at '/app'
