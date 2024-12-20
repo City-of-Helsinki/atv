@@ -443,6 +443,10 @@ class DocumentViewSet(AuditLoggingModelViewSet):
     filterset_class = DocumentFilterSet
     queryset = Document.objects.none()
 
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.request_data_extra_fields = {}
+
     def get_queryset(self):
         user = self.request.user
         service = get_service_from_request(self.request)
@@ -580,12 +584,19 @@ class DocumentViewSet(AuditLoggingModelViewSet):
             status_history_serializer.is_valid(raise_exception=True)
             status_history_serializer.save()
 
-            # Make sure the request data query dict is mutable, assign status_timestamp field to be updated.
-            request.data._mutable = True
-            request.data["status_timestamp"] = timezone.now()
-            request.data._mutable = False
+            # Update status_timestamp field also if the status has changed
+            self.request_data_extra_fields["status_timestamp"] = timezone.now()
 
         return super().partial_update(request, pk, *args, **kwargs)
+
+    def get_serializer(self, *args, **kwargs):
+        if self.request_data_extra_fields:
+            # Request data itself is immutable so we modify the copy of the
+            # data before it's given to the serializer.
+            data = kwargs["data"].copy()
+            data.update(self.request_data_extra_fields)
+            kwargs["data"] = data
+        return super().get_serializer(*args, **kwargs)
 
     def update(self, request, *args, **kwargs):
         # Only allow for PATCH updates as described by the documentation

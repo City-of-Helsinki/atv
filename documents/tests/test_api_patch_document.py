@@ -663,3 +663,24 @@ def test_audit_log_is_created_when_patching(user, attachments, ip_address):
         ).count()
         == 1
     )
+
+
+@pytest.mark.parametrize("format", ["multipart", "json"])
+def test_patch_status_update_in_multiple_formats(service_api_client, format):
+    """Updating status (and status_timestamp) should work with multipart and json
+    formatting.
+    """
+    document = DocumentFactory(
+        service=service_api_client.service,
+        status="testing",
+    )
+
+    response = service_api_client.patch(
+        reverse("documents-detail", args=[document.id]),
+        {"status": "changed status"},
+        format=format,
+    )
+
+    assert response.status_code == status.HTTP_200_OK
+    document.refresh_from_db()
+    assert document.status == "changed status"
