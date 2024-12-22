@@ -7,7 +7,7 @@ EXPOSE 8000/tcp
 USER root
 
 RUN yum --disableplugin subscription-manager -y --allowerasing update \
-    && yum --disableplugin subscription-manager -y install pcre-devel \
+    && yum --disableplugin subscription-manager -y install pcre-devel nmap-ncat \
     && yum --disableplugin subscription-manager -y clean all
 
 COPY scripts /scripts
