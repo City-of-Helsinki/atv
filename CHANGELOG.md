@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/City-of-Helsinki/atv/compare/atv-v1.1.0...atv-v1.1.1) (2024-12-23)
+
+
+### Bug Fixes
+
+* Document status change causing error with json payload ([813201c](https://github.com/City-of-Helsinki/atv/commit/813201c5758f49e764fdd0be9a8f69ed1b14d4f5))
+
 ## [1.1.0](https://github.com/City-of-Helsinki/atv/compare/atv-v1.0.1...atv-v1.1.0) (2024-12-16)
 
 
