@@ -1,15 +1,11 @@
 -c requirements.txt
-black
 factory_boy
-flake8
-flake8-bugbear
 freezegun
 ipython
-isort
-pep8-naming
 pre-commit
 pytest
 pytest-cov
 pytest-django
 pytest-factoryboy
+ruff
 snapshottest
