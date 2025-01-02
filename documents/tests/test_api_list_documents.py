@@ -182,7 +182,7 @@ def test_document_batch_list_service_api_key(service_api_client, user):
     data = {**VALID_DOCUMENT_DATA, "user_id": user.uuid}
     other_service = ServiceFactory()
     document_ids = []
-    for _i in range(0, 2):
+    for _i in range(2):
         response = service_api_client.post(
             reverse("documents-list"), data, format="multipart"
         )
