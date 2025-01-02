@@ -273,7 +273,8 @@ class DocumentMetadataViewSet(AuditLoggingModelViewSet):
         service_api_key = get_service_api_key_from_request(self.request)
         return get_document_metadata_queryset(user, service_api_key)
 
-    # Use retrieve to allow using user__uuid as a lookup_field to list documents of single user
+    # Use retrieve to allow using user__uuid as a lookup_field to list documents of
+    # single user
     def retrieve(self, request, *args, **kwargs):
         with self.record_action():
             service_api_key = get_service_api_key_from_request(request)
@@ -502,7 +503,8 @@ class DocumentViewSet(AuditLoggingModelViewSet):
 
         serializer = CreateAnonymousDocumentSerializer(data=data)
 
-        # If the data is not valid, it will raise a ValidationError and return Bad Request
+        # If the data is not valid, it will raise a ValidationError and return Bad
+        # Request
         serializer.is_valid(raise_exception=True)
 
         with self.record_action():

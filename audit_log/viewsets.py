@@ -135,7 +135,8 @@ class AuditLoggingModelViewSet(ModelViewSet):
             ]
             for ip in forwarded_for:
                 try:
-                    # This regexp matches IPv4 addresses without including the port number
+                    # This regexp matches IPv4 addresses without including the port
+                    # number
                     regexp_for_ipv4 = re.match(
                         r"(^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4})", ip
                     )

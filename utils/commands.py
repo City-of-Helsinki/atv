@@ -16,7 +16,8 @@ class BaseCommand(DjangoBaseCommand):
     def setup_logging(self, verbosity):
         """
         The values passed by the command are:
-        Verbosity level; 0=minimal output, 1=normal output, 2=verbose output, 3=very verbose output
+        Verbosity level; 0=minimal output, 1=normal output, 2=verbose output,
+        3=very verbose output
 
         So output of 2 or 3 (i.e. > 1) will be verbose
         Defaults to 1

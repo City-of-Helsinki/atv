@@ -47,7 +47,8 @@ class DocumentStatisticsSerializer(serializers.ModelSerializer):
         source="service.name", required=False, read_only=True
     )
     attachments = AttachmentNameSerializer(many=True)
-    # Attachment count included here just for clarity. Field is added to response body in to_representation
+    # Attachment count included here just for clarity. Field is added to
+    # response body in to_representation
     attachment_count = serializers.HiddenField(default=0)
     user_id = serializers.UUIDField(source="user.uuid", read_only=True)
 
@@ -69,7 +70,8 @@ class DocumentStatisticsSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
-        # Calculate attachment count here instead of aggregating it to queryset for performance reasons
+        # Calculate attachment count here instead of aggregating it to queryset
+        # for performance reasons
         representation["attachment_count"] = len(representation["attachments"])
         return representation
 
@@ -142,7 +144,7 @@ class DocumentMetadataSerializer(serializers.ModelSerializer):
 
 
 class DocumentSerializer(serializers.ModelSerializer):
-    """Basic "read" serializer for the Document model"""
+    """Basic "read" serializer for the Document model."""
 
     user_id = serializers.UUIDField(
         source="user.uuid", required=False, default=None, read_only=True
@@ -189,7 +191,8 @@ class DocumentSerializer(serializers.ModelSerializer):
         # If the document has been locked, no further updates are allowed
         if document.locked_after and document.locked_after <= now():
             raise DocumentLockedException()
-        # Deletable field can be changed from True to False but not the other way
+        # Deletable field can be changed from True to False but not the other
+        # way
         if validated_data.get("deletable") is True and not document.deletable:
             raise PermissionDenied(
                 detail="Field 'deletable' can't be changed if set to False"
@@ -218,10 +221,11 @@ class DocumentSerializer(serializers.ModelSerializer):
 
 
 class CreateAnonymousDocumentSerializer(serializers.ModelSerializer):
-    """Create a Document with Attachment for an anonymous user submitting the document
-    through a Service authorized with an API key.
+    """Create a Document with Attachment for an anonymous user submitting the
+    document through a Service authorized with an API key.
 
-    Also handles the creation of the associated Attachments through `CreateAttachmentSerializer`.
+    Also handles the creation of the associated Attachments through
+    `CreateAttachmentSerializer`.
     """
 
     user_id = serializers.UUIDField(source="user.uuid", required=False, default=None)
@@ -254,7 +258,8 @@ class CreateAnonymousDocumentSerializer(serializers.ModelSerializer):
         )
 
     def validate(self, attrs):
-        # Validate that no additional fields are being passed (to sanitize the input)
+        # Validate that no additional fields are being passed (to sanitize the
+        # input)
         if hasattr(self, "initial_data"):
             invalid_keys = set(self.initial_data.keys()) - set(self.fields.keys())
             if invalid_keys:
