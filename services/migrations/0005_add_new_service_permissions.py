@@ -5,8 +5,8 @@ from django.db import migrations
 
 def remove_manage_permissions(apps, schema_editor):
     """Remove old permissions."""
-    ContentType = apps.get_model("contenttypes.ContentType")
-    Permission = apps.get_model("auth.Permission")
+    ContentType = apps.get_model("contenttypes.ContentType")  # noqa: N806
+    Permission = apps.get_model("auth.Permission")  # noqa: N806
     content_type = ContentType.objects.filter(
         model="service",
         app_label="services",
@@ -22,8 +22,8 @@ def remove_manage_permissions(apps, schema_editor):
 
 def remove_fine_grained_permissions(apps, schema_editor):
     """Reverse new permissions."""
-    ContentType = apps.get_model("contenttypes.ContentType")
-    Permission = apps.get_model("auth.Permission")
+    ContentType = apps.get_model("contenttypes.ContentType")  # noqa: N806
+    Permission = apps.get_model("auth.Permission")  # noqa: N806
     content_type = ContentType.objects.get(
         model="service",
         app_label="services",
