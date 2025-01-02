@@ -37,13 +37,21 @@ def custom_exception_handler(exc, _context=None) -> Response:
     # Validation errors require a special processing to use the same format
     # as with the spec
     if isinstance(exc, ValidationError):
+
+        def exception_value_to_str(value):
+            if isinstance(value, list):
+                return value[0]
+            return f"Required fields: {[key for key in value.keys()]}"
+
         response = Response(
             status=status.HTTP_400_BAD_REQUEST,
             data=_get_error_wrapper(
-                list(  # TODO: Refactor this to produce cleaner error message for nested errors
+                list(
+                    # TODO: Refactor this to produce cleaner error message for nested
+                    #  errors
                     _get_error_detail(
                         "INVALID_FIELD",
-                        f"{k}: {v[0] if isinstance(v, list) else f'Required fields: {[key for key in v.keys()]}'}",
+                        f"{k}: {exception_value_to_str(v)}",
                     )
                     for k, v in exc.detail.items()
                 )

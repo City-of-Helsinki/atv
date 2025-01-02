@@ -34,7 +34,8 @@ class Activity(models.Model):
         default=dict,
         blank=True,
         help_text=_(
-            "Structure with links related to activity with display text in multiple languages"
+            "Structure with links related to activity with display text in multiple"
+            " languages"
         ),
     )
     show_to_user = models.BooleanField(
@@ -155,8 +156,9 @@ class Document(UUIDModel, TimestampedModel):
         verbose_name=_("TOS function ID"),
         help_text=_(
             "UUID without dashes. Should correspond with a Function instance "
-            "(e.g. the id from https://api.hel.fi/helerm/v1/function/eb30af1d9d654ebc98287ca25f231bf6/) "
-            "which is applied to the stored document when considering storage time."
+            "(e.g. the id from"
+            " https://api.hel.fi/helerm/v1/function/eb30af1d9d654ebc98287ca25f231bf6/"
+            ") which is applied to the stored document when considering storage time."
         ),
     )
     tos_record_id = models.CharField(
@@ -164,8 +166,9 @@ class Document(UUIDModel, TimestampedModel):
         verbose_name=_("TOS record ID"),
         help_text=_(
             "UUID without dashes. Should correspond to a record ID "
-            "(e.g. records[].id from https://api.hel.fi/helerm/v1/function/eb30af1d9d654ebc98287ca25f231bf6/) "
-            "within a Function instance which is applied to the stored document when "
+            "(e.g. records[].id from"
+            " https://api.hel.fi/helerm/v1/function/eb30af1d9d654ebc98287ca25f231bf6/"
+            ") within a Function instance which is applied to the stored document when "
             "considering storage time."
         ),
     )
@@ -224,7 +227,8 @@ class Document(UUIDModel, TimestampedModel):
         default=timezone.now,
         verbose_name=_("status_timestamp"),
         help_text=_(
-            "Date and time when document status was last changed. Field is automatically set."
+            "Date and time when document status was last changed. Field is"
+            " automatically set."
         ),
     )
     type = models.CharField(
@@ -264,7 +268,8 @@ class Document(UUIDModel, TimestampedModel):
     delete_after = models.DateField(
         null=True,
         help_text=_(
-            "Date which after the document and related attachments are permanently deleted"
+            "Date which after the document and related attachments are permanently"
+            " deleted"
         ),
     )
 

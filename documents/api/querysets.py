@@ -65,7 +65,8 @@ def get_document_metadata_queryset(
     user: User, api_key: ServiceAPIKey = None
 ) -> QuerySet:
     """
-    Superusers and staff(API key) are allowed to see document metadata of all services for all users.
+    Superusers and staff(API key) are allowed to see document metadata of all services
+    for all users.
     Token users can only see their own documents metadata from across all services.
     """
     queryset = (

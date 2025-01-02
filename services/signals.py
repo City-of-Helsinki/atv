@@ -39,7 +39,8 @@ def create_service_api_key_user(
         instance.user = user
         instance.save()
         logger.debug(
-            f"Created user {user} for ServiceAPIKey {instance} permission group for service: {instance.name}"
+            f"Created user {user} for ServiceAPIKey {instance} permission group for "
+            f"service: {instance.name}"
         )
         for perm in Service._meta.permissions:
             assign_perm(f"{perm[0]}", user, instance.service)

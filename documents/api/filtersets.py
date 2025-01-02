@@ -48,8 +48,8 @@ class MetadataJSONFilter(Filter):
                 raise ValidationError(
                     detail={
                         "Invalid Query": [
-                            "Enter query in format 'key:value' without quotes."
-                            " You can have multiple key and value pairs, separated by comma"
+                            "Enter query in format 'key:value' without quotes. You can"
+                            " have multiple key and value pairs, separated by comma"
                         ]
                     }
                 )

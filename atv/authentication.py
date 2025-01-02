@@ -30,9 +30,11 @@ class ServiceApiKeyAuthentication(BaseAuthentication):
         if not service_key.user:
             raise exceptions.AuthenticationFailed("Permissions missing from API key.")
 
-        # Verified key is cached for 5 minutes. This improves subsequent requests' response times significantly.
-        # Default cache uses local memory caching. Keys aren't accessible from console or to other threads or pods
-        # TODO: if caching is refactored to use Redis or Memcached this needs to be reconsidered
+        # Verified key is cached for 5 minutes. This improves subsequent requests'
+        # response times significantly. Default cache uses local memory caching. Keys
+        # aren't accessible from console or to other threads or pods
+        # TODO: if caching is refactored to use Redis or Memcached this needs to be
+        #  reconsidered
         cache.set(key, service_key, timeout=60 * 5)
 
         return service_key.user, service_key

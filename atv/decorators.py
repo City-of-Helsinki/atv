@@ -46,8 +46,9 @@ def _require_service_permission(permission_name):
 
 def staff_required(required_permission=ServicePermissions.VIEW_DOCUMENTS):
     """
-    Returns a decorator that checks if the user has staff permission on resources for the service
-    specified in the request. Required permission can be defined as an argument, defaults to 'view'.
+    Returns a decorator that checks if the user has staff permission on resources for
+    the service specified in the request. Required permission can be defined as an
+    argument, defaults to 'view'.
     """
 
     if not isinstance(required_permission, ServicePermissions):

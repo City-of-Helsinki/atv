@@ -18,7 +18,8 @@ class Command(BaseCommand):
     files_deleted = 0
 
     def remove_document_outdated_files(self, document: Document, path, dry_run):
-        """For a given document, remove the files that don't have an associated Attachment"""
+        """For a given document, remove the files that don't have an associated
+        Attachment"""
         document_path = get_document_attachment_directory_path(document)
 
         for filename in os.listdir(path):

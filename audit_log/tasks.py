@@ -21,7 +21,8 @@ def send_audit_log_entries():
 
     if not (settings.ELASTIC_HOST and settings.ELASTIC_AUDIT_LOG_INDEX):
         logger.warning(
-            "Trying to send audit logs to Elasticsearch without proper configuration, process skipped"
+            "Trying to send audit logs to Elasticsearch without proper configuration,"
+            " process skipped"
         )
         return
 
@@ -63,5 +64,6 @@ def clear_audit_log_entries(days_to_keep=30):
     if count := sent_entries.count():
         sent_entries.delete()
         logger.info(
-            f"Cleared {count} sent audit logs, which were older than {days_to_keep} days."
+            f"Cleared {count} sent audit logs, which were older than {days_to_keep}"
+            " days."
         )

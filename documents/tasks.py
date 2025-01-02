@@ -14,7 +14,8 @@ def delete_expired_documents():
     total, by_type_dict = documents_to_delete_qs.delete()
     if total != 0:
         logger.info(
-            f"Deleted {total} objects: {', '.join([f'{i[1]} {i[0]}' for i in by_type_dict.items()])}."
+            f"Deleted {total} objects:"
+            f" {', '.join([f'{i[1]} {i[0]}' for i in by_type_dict.items()])}."
         )
     else:
         logger.info("Nothing to delete.")
