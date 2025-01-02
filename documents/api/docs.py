@@ -1,10 +1,10 @@
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import (
-    extend_schema,
-    inline_serializer,
     OpenApiExample,
     OpenApiParameter,
     OpenApiResponse,
+    extend_schema,
+    inline_serializer,
 )
 from rest_framework import serializers, status
 
@@ -737,7 +737,8 @@ document_viewset_docs = {
         # TODO: Uncomment when organization features are implemented
         # "or the document is owned by an organization and the user has permission to act "
         # "on behalf of that organization.\n\n"
-        "The following rules apply:\n" "* Drafts may be removed by the owning user.",
+        "The following rules apply:\n"
+        "* Drafts may be removed by the owning user.",
         # TODO: Uncomment when organization features are implemented
         # "or an organization's representative, "
         # "if the document is owned by an organization. This is possible even if the `lockedAfter` date has passed, "

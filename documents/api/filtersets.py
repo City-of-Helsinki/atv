@@ -1,4 +1,5 @@
-from django_filters import BaseInFilter, CharFilter, Filter, rest_framework as filters
+from django_filters import BaseInFilter, CharFilter, Filter
+from django_filters import rest_framework as filters
 from django_filters.constants import EMPTY_VALUES
 from rest_framework.exceptions import ValidationError
 
