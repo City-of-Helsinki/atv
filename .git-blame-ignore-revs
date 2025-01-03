@@ -1,0 +1,8 @@
+# style: apply ruff
+c5542c3351ec8df7c1bafd966550b6e0f4d28304
+
+# style: add noqa N806
+ab62c2381d46946dafc0804e2730492737f6cd16
+
+# style: manual reformatting to comply with ruff
+7c60de8818107865983b453798e71a2e0df535d2
