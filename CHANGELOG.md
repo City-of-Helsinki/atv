@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.2](https://github.com/City-of-Helsinki/atv/compare/atv-v1.1.1...atv-v1.1.2) (2025-01-04)
+
+
+### Dependencies
+
+* Add ruff and migrate to pyproject.toml ([3f5dc2e](https://github.com/City-of-Helsinki/atv/commit/3f5dc2e31dad710abae8d362faa98566d414f872))
+
 ## [1.1.1](https://github.com/City-of-Helsinki/atv/compare/atv-v1.1.0...atv-v1.1.1) (2024-12-23)
 
 
