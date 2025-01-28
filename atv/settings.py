@@ -60,10 +60,10 @@ env = environ.Env(
     ENABLE_SEND_AUDIT_LOG=(bool, False),
     CLEAR_AUDIT_LOG_ENTRIES=(bool, False),
     USE_X_FORWARDED_FOR=(bool, True),
-    TOKEN_AUTH_ACCEPTED_AUDIENCE=(str, ""),
-    TOKEN_AUTH_ACCEPTED_SCOPE_PREFIX=(str, ""),
+    TOKEN_AUTH_ACCEPTED_AUDIENCE=(list, []),
+    TOKEN_AUTH_ACCEPTED_SCOPE_PREFIX=(list, []),
     TOKEN_AUTH_REQUIRE_SCOPE=(bool, False),
-    TOKEN_AUTH_AUTHSERVER_URL=(str, ""),
+    TOKEN_AUTH_AUTHSERVER_URL=(list, []),
     CLAMAV_HOST=(str, "atv-clamav"),
 )
 if os.path.exists(env_file):
