@@ -234,7 +234,7 @@ class GDPRDataViewSet(AuditLoggingModelViewSet):
                     deletable=True, **kwargs
                 )
                 Attachment.objects.filter(document__in=qs).delete()
-                qs.update(user=None, content={}, business_id="")
+                qs.update(user=None, content={}, business_id="", metadata={})
             # Return details on documents that weren't deleted
             queryset = self.filter_queryset(self.get_queryset()).filter(**kwargs)
             serializer = self.get_serializer(queryset)
