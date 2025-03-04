@@ -192,7 +192,6 @@ class Document(UUIDModel, TimestampedModel):
     metadata = models.JSONField(
         default=dict,
         blank=True,
-        # null=True,  # TODO should we allow null?
         encoder=DjangoJSONEncoder,
         verbose_name=_("metadata"),
         help_text=_(
