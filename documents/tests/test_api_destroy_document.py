@@ -308,11 +308,12 @@ def test_gdpr_delete_user_data_service_user(user, service_api_client):
     # Documents are anonymized
     assert Document.objects.count() == 3
     for document in Document.objects.filter(deletable=True).values(
-        "content", "business_id", "user_id"
+        "content", "business_id", "user_id", "metadata"
     ):
         assert document["content"] == {}
         assert document["business_id"] == ""
         assert document["user_id"] is None
+        assert document["metadata"] == {}
 
     assert Attachment.objects.count() == 1
 
