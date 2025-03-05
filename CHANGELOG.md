@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/City-of-Helsinki/atv/compare/atv-v1.1.2...atv-v1.2.0) (2025-03-05)
+
+
+### Features
+
+* Delete document metadata on gdpr delete ([fc6be14](https://github.com/City-of-Helsinki/atv/commit/fc6be140d65875b66b444c12fc89f78f996bdc81))
+
 ## [1.1.2](https://github.com/City-of-Helsinki/atv/compare/atv-v1.1.1...atv-v1.1.2) (2025-02-05)
 
 
