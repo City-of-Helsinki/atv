@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.2.0](https://github.com/City-of-Helsinki/atv/compare/atv-v1.1.2...atv-v1.2.0) (2025-03-07)
+
+
+### Features
+
+* Delete document metadata on gdpr delete ([fc6be14](https://github.com/City-of-Helsinki/atv/commit/fc6be140d65875b66b444c12fc89f78f996bdc81))
+
+
+### Dependencies
+
+* Bump django from 4.2.17 to 4.2.20 ([bf90124](https://github.com/City-of-Helsinki/atv/commit/bf90124346148bb5f6745e1163867e2fa31f177b))
+* Bump python-jose from 3.3.0 to 3.4.0 ([2ef9937](https://github.com/City-of-Helsinki/atv/commit/2ef993742386c49d05832464622e36bc0b24e04a))
+* Bump virtualenv from 20.26.5 to 20.26.6 ([f1a4980](https://github.com/City-of-Helsinki/atv/commit/f1a4980dda70603abce08b73de908694b0cd829e))
+
 ## [1.1.2](https://github.com/City-of-Helsinki/atv/compare/atv-v1.1.1...atv-v1.1.2) (2025-02-05)
 
 
