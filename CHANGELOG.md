@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.2](https://github.com/City-of-Helsinki/atv/compare/atv-v1.2.1...atv-v1.2.2) (2025-06-10)
+
+
+### Dependencies
+
+* Bump django from 4.2.21 to 4.2.22 ([0bd4481](https://github.com/City-of-Helsinki/atv/commit/0bd4481e87cce88f9c6ab80ba6ed54da6c8df103))
+
 ## [1.2.1](https://github.com/City-of-Helsinki/atv/compare/atv-v1.2.0...atv-v1.2.1) (2025-05-14)
 
 
