@@ -39,8 +39,8 @@ env = environ.Env(
     SENTRY_ENVIRONMENT=(str, "development"),
     SENTRY_DEBUG=(bool, False),
     SENTRY_LOG_LEVEL=(str, "WARNING"),
-    CORS_ORIGIN_WHITELIST=(list, []),
-    CORS_ORIGIN_ALLOW_ALL=(bool, False),
+    CORS_ALLOWED_ORIGINS=(list, []),
+    CORS_ALLOW_ALL_ORIGINS=(bool, False),
     CORS_ALLOW_HEADERS=(list, []),
     DEFAULT_FROM_EMAIL=(str, "no-reply@hel.fi"),
     VERSION=(str, None),
@@ -181,8 +181,8 @@ TEMPLATES = [
     },
 ]
 
-CORS_ORIGIN_WHITELIST = env.list("CORS_ORIGIN_WHITELIST")
-CORS_ORIGIN_ALLOW_ALL = env.bool("CORS_ORIGIN_ALLOW_ALL")
+CORS_ALLOWED_ORIGINS = env.list("CORS_ALLOWED_ORIGINS")
+CORS_ALLOW_ALL_ORIGINS = env.bool("CORS_ALLOW_ALL_ORIGINS")
 CORS_ALLOW_HEADERS = list(default_headers) + env.list("CORS_ALLOW_HEADERS")
 
 REST_FRAMEWORK = {
