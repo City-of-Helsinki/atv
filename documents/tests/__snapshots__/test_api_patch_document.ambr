@@ -24,7 +24,7 @@
       'created_by': 'alex',
       'testing': True,
     }),
-    'service': 'service 162',
+    'service': 'service 166',
     'status': dict({
       'status_display_values': dict({
       }),
@@ -66,7 +66,7 @@
       'created_by': 'alex',
       'testing': True,
     }),
-    'service': 'service 168',
+    'service': 'service 172',
     'status': dict({
       'status_display_values': dict({
         'fi': 'Käsitelty',
@@ -111,7 +111,7 @@
       'created_by': 'alex',
       'testing': True,
     }),
-    'service': 'service 170',
+    'service': 'service 174',
     'status': dict({
       'status_display_values': dict({
         'fi': 'Käsitelty',
