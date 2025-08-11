@@ -1,3 +1,4 @@
+import sentry_sdk
 from django.db import transaction
 from django.http import FileResponse
 from django.shortcuts import get_object_or_404
@@ -24,6 +25,7 @@ from atv.exceptions import (
     DocumentLockedException,
     InvalidFieldException,
     MissingParameterException,
+    UserWithServiceApiKeyDeleteError,
 )
 from audit_log.viewsets import AuditLoggingModelViewSet
 from services.enums import ServicePermissions
@@ -230,14 +232,36 @@ class GDPRDataViewSet(AuditLoggingModelViewSet):
         with self.record_action():
             # Anonymize data
             with transaction.atomic():
-                qs = self.filter_queryset(self.get_queryset()).filter(
-                    deletable=True, **kwargs
+                # User documents for the service.
+                user_documents_qs = self.filter_queryset(self.get_queryset()).filter(
+                    **kwargs
                 )
-                Attachment.objects.filter(document__in=qs).delete()
-                qs.update(user=None, content={}, business_id="", metadata={})
+                # User updatable documents for the service.
+                update_user_documents_qs = user_documents_qs.filter(deletable=True)
+
+                Attachment.objects.filter(
+                    document__in=update_user_documents_qs
+                ).delete()
+                update_user_documents_qs.update(
+                    user=None, content={}, business_id="", metadata={}
+                )
+
+                user_uuid = self.kwargs.get("user__uuid")
+                if user_uuid:
+                    user = User.objects.filter(uuid=user_uuid).first()
+
+                    if user and not user.documents.exists() and not user.is_anonymous:
+                        if getattr(user, "service_api_key", None):
+                            sentry_sdk.capture_exception(
+                                UserWithServiceApiKeyDeleteError(
+                                    "Cannot delete user with ServiceApiKey."
+                                )
+                            )
+                        else:
+                            user.delete()
+
             # Return details on documents that weren't deleted
-            queryset = self.filter_queryset(self.get_queryset()).filter(**kwargs)
-            serializer = self.get_serializer(queryset)
+            serializer = self.get_serializer(user_documents_qs)
             return Response(serializer.data)
 
     @not_allowed()
