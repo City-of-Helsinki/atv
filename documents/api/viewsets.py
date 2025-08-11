@@ -1,3 +1,4 @@
+import sentry_sdk
 from django.db import transaction
 from django.http import FileResponse
 from django.shortcuts import get_object_or_404
@@ -24,6 +25,7 @@ from atv.exceptions import (
     DocumentLockedException,
     InvalidFieldException,
     MissingParameterException,
+    UserWithServiceApiKeyDeleteError,
 )
 from audit_log.viewsets import AuditLoggingModelViewSet
 from services.enums import ServicePermissions
@@ -230,14 +232,28 @@ class GDPRDataViewSet(AuditLoggingModelViewSet):
         with self.record_action():
             # Anonymize data
             with transaction.atomic():
-                qs = self.filter_queryset(self.get_queryset()).filter(
-                    deletable=True, **kwargs
+                document_qs = self.filter_queryset(self.get_queryset()).filter(**kwargs)
+                update_documents_qs = document_qs.filter(deletable=True)
+
+                Attachment.objects.filter(document__in=update_documents_qs).delete()
+                update_documents_qs.update(
+                    user=None, content={}, business_id="", metadata={}
                 )
-                Attachment.objects.filter(document__in=qs).delete()
-                qs.update(user=None, content={}, business_id="", metadata={})
+
+            if not document_qs.exists():
+                user_uuid = self.kwargs.get("user__uuid", None)
+                user = User.objects.filter(uuid=user_uuid).first()
+                if user and getattr(user, "service_api_key", None):
+                    sentry_sdk.capture_exception(
+                        UserWithServiceApiKeyDeleteError(
+                            "Cannot delete user with ServiceApiKey."
+                        )
+                    )
+                elif user and not user.is_anonymous:
+                    user.delete()
+
             # Return details on documents that weren't deleted
-            queryset = self.filter_queryset(self.get_queryset()).filter(**kwargs)
-            serializer = self.get_serializer(queryset)
+            serializer = self.get_serializer(document_qs)
             return Response(serializer.data)
 
     @not_allowed()
