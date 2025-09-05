@@ -33,7 +33,7 @@ def test_content_is_encrypted(service, user):
     with connection.cursor() as cur:
         cur.execute("SELECT content FROM %s" % Document._meta.db_table)
         row = cur.fetchone()
-        assert "test_content" not in row[0]
+        assert b"test_content" not in row[0]
 
     data = field.decrypt(row[0])
     assert data == content
