@@ -1,0 +1,577 @@
+# serializer version: 1
+# name: test_log_actor_uuid
+  dict({
+    'audit_event': dict({
+      'actor': dict({
+        'ip_address': '192.168.1.1',
+        'provider': '',
+        'role': 'USER',
+        'user_id': '7e564b45-527f-4ea6-92c7-3d39ba05733c',
+      }),
+      'additional_information': '',
+      'date_time': '2020-06-01T00:00:00.000Z',
+      'date_time_epoch': 1590969600000,
+      'operation': 'READ',
+      'origin': 'atv',
+      'status': 'SUCCESS',
+      'target': dict({
+        'endpoint': '',
+        'id': 'be584b90-b256-46f5-83e1-4e6a0f8b4cc3',
+        'lookup_field': '',
+        'type': 'User',
+      }),
+    }),
+  })
+# ---
+# name: test_log_admin_operation[CREATE]
+  dict({
+    'audit_event': dict({
+      'actor': dict({
+        'ip_address': '192.168.1.1',
+        'provider': '',
+        'role': 'ADMIN',
+        'user_id': '7e564b45-527f-4ea6-92c7-3d39ba05733c',
+      }),
+      'additional_information': '',
+      'date_time': '2020-06-01T00:00:00.000Z',
+      'date_time_epoch': 1590969600000,
+      'operation': 'CREATE',
+      'origin': 'atv',
+      'status': 'SUCCESS',
+      'target': dict({
+        'endpoint': '',
+        'id': 'be584b90-b256-46f5-83e1-4e6a0f8b4cc3',
+        'lookup_field': '',
+        'type': 'User',
+      }),
+    }),
+  })
+# ---
+# name: test_log_admin_operation[DELETE]
+  dict({
+    'audit_event': dict({
+      'actor': dict({
+        'ip_address': '192.168.1.1',
+        'provider': '',
+        'role': 'ADMIN',
+        'user_id': '7e564b45-527f-4ea6-92c7-3d39ba05733c',
+      }),
+      'additional_information': '',
+      'date_time': '2020-06-01T00:00:00.000Z',
+      'date_time_epoch': 1590969600000,
+      'operation': 'DELETE',
+      'origin': 'atv',
+      'status': 'SUCCESS',
+      'target': dict({
+        'endpoint': '',
+        'id': 'be584b90-b256-46f5-83e1-4e6a0f8b4cc3',
+        'lookup_field': '',
+        'type': 'User',
+      }),
+    }),
+  })
+# ---
+# name: test_log_admin_operation[READ]
+  dict({
+    'audit_event': dict({
+      'actor': dict({
+        'ip_address': '192.168.1.1',
+        'provider': '',
+        'role': 'ADMIN',
+        'user_id': '7e564b45-527f-4ea6-92c7-3d39ba05733c',
+      }),
+      'additional_information': '',
+      'date_time': '2020-06-01T00:00:00.000Z',
+      'date_time_epoch': 1590969600000,
+      'operation': 'READ',
+      'origin': 'atv',
+      'status': 'SUCCESS',
+      'target': dict({
+        'endpoint': '',
+        'id': 'be584b90-b256-46f5-83e1-4e6a0f8b4cc3',
+        'lookup_field': '',
+        'type': 'User',
+      }),
+    }),
+  })
+# ---
+# name: test_log_admin_operation[UPDATE]
+  dict({
+    'audit_event': dict({
+      'actor': dict({
+        'ip_address': '192.168.1.1',
+        'provider': '',
+        'role': 'ADMIN',
+        'user_id': '7e564b45-527f-4ea6-92c7-3d39ba05733c',
+      }),
+      'additional_information': '',
+      'date_time': '2020-06-01T00:00:00.000Z',
+      'date_time_epoch': 1590969600000,
+      'operation': 'UPDATE',
+      'origin': 'atv',
+      'status': 'SUCCESS',
+      'target': dict({
+        'endpoint': '',
+        'id': 'be584b90-b256-46f5-83e1-4e6a0f8b4cc3',
+        'lookup_field': '',
+        'type': 'User',
+      }),
+    }),
+  })
+# ---
+# name: test_log_anonymous_role[CREATE]
+  dict({
+    'audit_event': dict({
+      'actor': dict({
+        'ip_address': '192.168.1.1',
+        'provider': '',
+        'role': 'ANONYMOUS',
+        'user_id': '',
+      }),
+      'additional_information': '',
+      'date_time': '2020-06-01T00:00:00.000Z',
+      'date_time_epoch': 1590969600000,
+      'operation': 'CREATE',
+      'origin': 'atv',
+      'status': 'SUCCESS',
+      'target': dict({
+        'endpoint': '',
+        'id': '7e564b45-527f-4ea6-92c7-3d39ba05733c',
+        'lookup_field': '',
+        'type': 'User',
+      }),
+    }),
+  })
+# ---
+# name: test_log_anonymous_role[DELETE]
+  dict({
+    'audit_event': dict({
+      'actor': dict({
+        'ip_address': '192.168.1.1',
+        'provider': '',
+        'role': 'ANONYMOUS',
+        'user_id': '',
+      }),
+      'additional_information': '',
+      'date_time': '2020-06-01T00:00:00.000Z',
+      'date_time_epoch': 1590969600000,
+      'operation': 'DELETE',
+      'origin': 'atv',
+      'status': 'SUCCESS',
+      'target': dict({
+        'endpoint': '',
+        'id': '7e564b45-527f-4ea6-92c7-3d39ba05733c',
+        'lookup_field': '',
+        'type': 'User',
+      }),
+    }),
+  })
+# ---
+# name: test_log_anonymous_role[READ]
+  dict({
+    'audit_event': dict({
+      'actor': dict({
+        'ip_address': '192.168.1.1',
+        'provider': '',
+        'role': 'ANONYMOUS',
+        'user_id': '',
+      }),
+      'additional_information': '',
+      'date_time': '2020-06-01T00:00:00.000Z',
+      'date_time_epoch': 1590969600000,
+      'operation': 'READ',
+      'origin': 'atv',
+      'status': 'SUCCESS',
+      'target': dict({
+        'endpoint': '',
+        'id': '7e564b45-527f-4ea6-92c7-3d39ba05733c',
+        'lookup_field': '',
+        'type': 'User',
+      }),
+    }),
+  })
+# ---
+# name: test_log_anonymous_role[UPDATE]
+  dict({
+    'audit_event': dict({
+      'actor': dict({
+        'ip_address': '192.168.1.1',
+        'provider': '',
+        'role': 'ANONYMOUS',
+        'user_id': '',
+      }),
+      'additional_information': '',
+      'date_time': '2020-06-01T00:00:00.000Z',
+      'date_time_epoch': 1590969600000,
+      'operation': 'UPDATE',
+      'origin': 'atv',
+      'status': 'SUCCESS',
+      'target': dict({
+        'endpoint': '',
+        'id': '7e564b45-527f-4ea6-92c7-3d39ba05733c',
+        'lookup_field': '',
+        'type': 'User',
+      }),
+    }),
+  })
+# ---
+# name: test_log_owner_operation[CREATE]
+  dict({
+    'audit_event': dict({
+      'actor': dict({
+        'ip_address': '192.168.1.1',
+        'provider': '',
+        'role': 'OWNER',
+        'user_id': '7e564b45-527f-4ea6-92c7-3d39ba05733c',
+      }),
+      'additional_information': '',
+      'date_time': '2020-06-01T00:00:00.000Z',
+      'date_time_epoch': 1590969600000,
+      'operation': 'CREATE',
+      'origin': 'atv',
+      'status': 'SUCCESS',
+      'target': dict({
+        'endpoint': '',
+        'id': '7e564b45-527f-4ea6-92c7-3d39ba05733c',
+        'lookup_field': '',
+        'type': 'User',
+      }),
+    }),
+  })
+# ---
+# name: test_log_owner_operation[DELETE]
+  dict({
+    'audit_event': dict({
+      'actor': dict({
+        'ip_address': '192.168.1.1',
+        'provider': '',
+        'role': 'OWNER',
+        'user_id': '7e564b45-527f-4ea6-92c7-3d39ba05733c',
+      }),
+      'additional_information': '',
+      'date_time': '2020-06-01T00:00:00.000Z',
+      'date_time_epoch': 1590969600000,
+      'operation': 'DELETE',
+      'origin': 'atv',
+      'status': 'SUCCESS',
+      'target': dict({
+        'endpoint': '',
+        'id': '7e564b45-527f-4ea6-92c7-3d39ba05733c',
+        'lookup_field': '',
+        'type': 'User',
+      }),
+    }),
+  })
+# ---
+# name: test_log_owner_operation[READ]
+  dict({
+    'audit_event': dict({
+      'actor': dict({
+        'ip_address': '192.168.1.1',
+        'provider': '',
+        'role': 'OWNER',
+        'user_id': '7e564b45-527f-4ea6-92c7-3d39ba05733c',
+      }),
+      'additional_information': '',
+      'date_time': '2020-06-01T00:00:00.000Z',
+      'date_time_epoch': 1590969600000,
+      'operation': 'READ',
+      'origin': 'atv',
+      'status': 'SUCCESS',
+      'target': dict({
+        'endpoint': '',
+        'id': '7e564b45-527f-4ea6-92c7-3d39ba05733c',
+        'lookup_field': '',
+        'type': 'User',
+      }),
+    }),
+  })
+# ---
+# name: test_log_owner_operation[UPDATE]
+  dict({
+    'audit_event': dict({
+      'actor': dict({
+        'ip_address': '192.168.1.1',
+        'provider': '',
+        'role': 'OWNER',
+        'user_id': '7e564b45-527f-4ea6-92c7-3d39ba05733c',
+      }),
+      'additional_information': '',
+      'date_time': '2020-06-01T00:00:00.000Z',
+      'date_time_epoch': 1590969600000,
+      'operation': 'UPDATE',
+      'origin': 'atv',
+      'status': 'SUCCESS',
+      'target': dict({
+        'endpoint': '',
+        'id': '7e564b45-527f-4ea6-92c7-3d39ba05733c',
+        'lookup_field': '',
+        'type': 'User',
+      }),
+    }),
+  })
+# ---
+# name: test_log_status[FORBIDDEN]
+  dict({
+    'audit_event': dict({
+      'actor': dict({
+        'ip_address': '192.168.1.1',
+        'provider': '',
+        'role': 'OWNER',
+        'user_id': '7e564b45-527f-4ea6-92c7-3d39ba05733c',
+      }),
+      'additional_information': '',
+      'date_time': '2020-06-01T00:00:00.000Z',
+      'date_time_epoch': 1590969600000,
+      'operation': 'READ',
+      'origin': 'atv',
+      'status': 'FORBIDDEN',
+      'target': dict({
+        'endpoint': '',
+        'id': '7e564b45-527f-4ea6-92c7-3d39ba05733c',
+        'lookup_field': '',
+        'type': 'User',
+      }),
+    }),
+  })
+# ---
+# name: test_log_status[SUCCESS]
+  dict({
+    'audit_event': dict({
+      'actor': dict({
+        'ip_address': '192.168.1.1',
+        'provider': '',
+        'role': 'OWNER',
+        'user_id': '7e564b45-527f-4ea6-92c7-3d39ba05733c',
+      }),
+      'additional_information': '',
+      'date_time': '2020-06-01T00:00:00.000Z',
+      'date_time_epoch': 1590969600000,
+      'operation': 'READ',
+      'origin': 'atv',
+      'status': 'SUCCESS',
+      'target': dict({
+        'endpoint': '',
+        'id': '7e564b45-527f-4ea6-92c7-3d39ba05733c',
+        'lookup_field': '',
+        'type': 'User',
+      }),
+    }),
+  })
+# ---
+# name: test_log_system_operation[CREATE]
+  dict({
+    'audit_event': dict({
+      'actor': dict({
+        'ip_address': '192.168.1.1',
+        'provider': '',
+        'role': 'SYSTEM',
+        'user_id': '',
+      }),
+      'additional_information': '',
+      'date_time': '2020-06-01T00:00:00.000Z',
+      'date_time_epoch': 1590969600000,
+      'operation': 'CREATE',
+      'origin': 'atv',
+      'status': 'SUCCESS',
+      'target': dict({
+        'endpoint': '',
+        'id': '7e564b45-527f-4ea6-92c7-3d39ba05733c',
+        'lookup_field': '',
+        'type': 'User',
+      }),
+    }),
+  })
+# ---
+# name: test_log_system_operation[DELETE]
+  dict({
+    'audit_event': dict({
+      'actor': dict({
+        'ip_address': '192.168.1.1',
+        'provider': '',
+        'role': 'SYSTEM',
+        'user_id': '',
+      }),
+      'additional_information': '',
+      'date_time': '2020-06-01T00:00:00.000Z',
+      'date_time_epoch': 1590969600000,
+      'operation': 'DELETE',
+      'origin': 'atv',
+      'status': 'SUCCESS',
+      'target': dict({
+        'endpoint': '',
+        'id': '7e564b45-527f-4ea6-92c7-3d39ba05733c',
+        'lookup_field': '',
+        'type': 'User',
+      }),
+    }),
+  })
+# ---
+# name: test_log_system_operation[READ]
+  dict({
+    'audit_event': dict({
+      'actor': dict({
+        'ip_address': '192.168.1.1',
+        'provider': '',
+        'role': 'SYSTEM',
+        'user_id': '',
+      }),
+      'additional_information': '',
+      'date_time': '2020-06-01T00:00:00.000Z',
+      'date_time_epoch': 1590969600000,
+      'operation': 'READ',
+      'origin': 'atv',
+      'status': 'SUCCESS',
+      'target': dict({
+        'endpoint': '',
+        'id': '7e564b45-527f-4ea6-92c7-3d39ba05733c',
+        'lookup_field': '',
+        'type': 'User',
+      }),
+    }),
+  })
+# ---
+# name: test_log_system_operation[UPDATE]
+  dict({
+    'audit_event': dict({
+      'actor': dict({
+        'ip_address': '192.168.1.1',
+        'provider': '',
+        'role': 'SYSTEM',
+        'user_id': '',
+      }),
+      'additional_information': '',
+      'date_time': '2020-06-01T00:00:00.000Z',
+      'date_time_epoch': 1590969600000,
+      'operation': 'UPDATE',
+      'origin': 'atv',
+      'status': 'SUCCESS',
+      'target': dict({
+        'endpoint': '',
+        'id': '7e564b45-527f-4ea6-92c7-3d39ba05733c',
+        'lookup_field': '',
+        'type': 'User',
+      }),
+    }),
+  })
+# ---
+# name: test_log_user_operation[CREATE]
+  dict({
+    'audit_event': dict({
+      'actor': dict({
+        'ip_address': '192.168.1.1',
+        'provider': '',
+        'role': 'USER',
+        'user_id': '7e564b45-527f-4ea6-92c7-3d39ba05733c',
+      }),
+      'additional_information': '',
+      'date_time': '2020-06-01T00:00:00.000Z',
+      'date_time_epoch': 1590969600000,
+      'operation': 'CREATE',
+      'origin': 'atv',
+      'status': 'SUCCESS',
+      'target': dict({
+        'endpoint': '',
+        'id': 'be584b90-b256-46f5-83e1-4e6a0f8b4cc3',
+        'lookup_field': '',
+        'type': 'User',
+      }),
+    }),
+  })
+# ---
+# name: test_log_user_operation[DELETE]
+  dict({
+    'audit_event': dict({
+      'actor': dict({
+        'ip_address': '192.168.1.1',
+        'provider': '',
+        'role': 'USER',
+        'user_id': '7e564b45-527f-4ea6-92c7-3d39ba05733c',
+      }),
+      'additional_information': '',
+      'date_time': '2020-06-01T00:00:00.000Z',
+      'date_time_epoch': 1590969600000,
+      'operation': 'DELETE',
+      'origin': 'atv',
+      'status': 'SUCCESS',
+      'target': dict({
+        'endpoint': '',
+        'id': 'be584b90-b256-46f5-83e1-4e6a0f8b4cc3',
+        'lookup_field': '',
+        'type': 'User',
+      }),
+    }),
+  })
+# ---
+# name: test_log_user_operation[READ]
+  dict({
+    'audit_event': dict({
+      'actor': dict({
+        'ip_address': '192.168.1.1',
+        'provider': '',
+        'role': 'USER',
+        'user_id': '7e564b45-527f-4ea6-92c7-3d39ba05733c',
+      }),
+      'additional_information': '',
+      'date_time': '2020-06-01T00:00:00.000Z',
+      'date_time_epoch': 1590969600000,
+      'operation': 'READ',
+      'origin': 'atv',
+      'status': 'SUCCESS',
+      'target': dict({
+        'endpoint': '',
+        'id': 'be584b90-b256-46f5-83e1-4e6a0f8b4cc3',
+        'lookup_field': '',
+        'type': 'User',
+      }),
+    }),
+  })
+# ---
+# name: test_log_user_operation[UPDATE]
+  dict({
+    'audit_event': dict({
+      'actor': dict({
+        'ip_address': '192.168.1.1',
+        'provider': '',
+        'role': 'USER',
+        'user_id': '7e564b45-527f-4ea6-92c7-3d39ba05733c',
+      }),
+      'additional_information': '',
+      'date_time': '2020-06-01T00:00:00.000Z',
+      'date_time_epoch': 1590969600000,
+      'operation': 'UPDATE',
+      'origin': 'atv',
+      'status': 'SUCCESS',
+      'target': dict({
+        'endpoint': '',
+        'id': 'be584b90-b256-46f5-83e1-4e6a0f8b4cc3',
+        'lookup_field': '',
+        'type': 'User',
+      }),
+    }),
+  })
+# ---
+# name: test_log_user_with_backend
+  dict({
+    'audit_event': dict({
+      'actor': dict({
+        'ip_address': '192.168.1.1',
+        'provider': 'some.auth.Backend',
+        'role': 'OWNER',
+        'user_id': '7e564b45-527f-4ea6-92c7-3d39ba05733c',
+      }),
+      'additional_information': '',
+      'date_time': '2020-06-01T00:00:00.000Z',
+      'date_time_epoch': 1590969600000,
+      'operation': 'READ',
+      'origin': 'atv',
+      'status': 'SUCCESS',
+      'target': dict({
+        'endpoint': '',
+        'id': '7e564b45-527f-4ea6-92c7-3d39ba05733c',
+        'lookup_field': '',
+        'type': 'User',
+      }),
+    }),
+  })
+# ---
