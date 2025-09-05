@@ -1,5 +1,5 @@
 # ==============================
-FROM registry.access.redhat.com/ubi8/python-311 AS appbase
+FROM registry.access.redhat.com/ubi9/python-312 AS appbase
 # ==============================
 
 EXPOSE 8000/tcp
@@ -28,7 +28,7 @@ COPY --chown=1000:0 requirements-prod.txt /app/requirements-prod.txt
 COPY --chown=1000:0 .prod/escape_json.c /app/.prod/escape_json.c
 USER 1000
 
-RUN pip install -U pip \
+RUN pip install -U pip setuptools wheel \
     && pip install --no-cache-dir -r /app/requirements.txt \
     && pip install --no-cache-dir -r /app/requirements-prod.txt \
     && uwsgi --build-plugin /app/.prod/escape_json.c \

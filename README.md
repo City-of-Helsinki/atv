@@ -39,8 +39,8 @@ Prerequisites:
 ## Development without Docker
 
 Prerequisites:
-* PostgreSQL 14
-* Python 3.11
+* PostgreSQL 17
+* Python 3.12
 
 
 ### Installing Python requirements
