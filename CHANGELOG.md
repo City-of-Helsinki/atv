@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.4](https://github.com/City-of-Helsinki/atv/compare/atv-v1.2.3...atv-v1.2.4) (2025-09-06)
+
+
+### Dependencies
+
+* Upgrade to python 3.12 ([a632fee](https://github.com/City-of-Helsinki/atv/commit/a632fee962c0a9271b03158f196910a4be84c8ba))
+
 ## [1.2.3](https://github.com/City-of-Helsinki/atv/compare/atv-v1.2.2...atv-v1.2.3) (2025-06-11)
 
 
