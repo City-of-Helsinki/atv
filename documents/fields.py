@@ -1,7 +1,7 @@
 import json
 from io import BytesIO
 
-from Cryptodome.Cipher import AES
+from Crypto.Cipher import AES
 from django.db import models
 from encrypted_fields.fields import EncryptedFieldMixin
 
