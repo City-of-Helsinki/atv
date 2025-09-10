@@ -1,6 +1,6 @@
 from io import BytesIO
 
-from Cryptodome.Cipher import AES
+from Crypto.Cipher import AES
 from django.conf import settings
 from django.core.files import File
 from pyclamd import pyclamd
