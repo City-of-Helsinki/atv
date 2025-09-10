@@ -8,7 +8,6 @@ django-searchable-encrypted-fields
 djangorestframework
 djangorestframework-api-key
 drf-extensions
-drf-oidc-auth==0.10.0
 drf-spectacular
 psycopg[c]
 sentry_sdk
