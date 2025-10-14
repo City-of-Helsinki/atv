@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.2.5](https://github.com/City-of-Helsinki/atv/compare/atv-v1.2.4...atv-v1.2.5) (2025-10-14)
+
+
+### Dependencies
+
+* Add hashes to requirements ([865d49d](https://github.com/City-of-Helsinki/atv/commit/865d49d24ce49f6285968e702e1a5581413ecc2f))
+* Remove drf-oidc-auth ([7752bf7](https://github.com/City-of-Helsinki/atv/commit/7752bf77c92fb772bba319c05216a33908cf4263))
+* Upgrade to django 5.2 ([a83da18](https://github.com/City-of-Helsinki/atv/commit/a83da18730b308770ae2a6d2d1c5954325b68c4d))
+
 ## [1.2.4](https://github.com/City-of-Helsinki/atv/compare/atv-v1.2.3...atv-v1.2.4) (2025-09-10)
 
 
