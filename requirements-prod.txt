@@ -4,6 +4,6 @@
 #
 #    pip-compile --generate-hashes --strip-extras requirements-prod.in
 #
-uwsgi==2.0.30 \
-    --hash=sha256:c12aa652124f062ac216077da59f6d247bd7ef938234445881552e58afb1eb5f
+uwsgi==2.0.31 \
+    --hash=sha256:e8f8b350ccc106ff93a65247b9136f529c14bf96b936ac5b264c6ff9d0c76257
     # via -r requirements-prod.in
