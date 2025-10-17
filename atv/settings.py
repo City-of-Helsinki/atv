@@ -1,11 +1,11 @@
 import os
-import subprocess
 
 import environ
 import sentry_sdk
 from corsheaders.defaults import default_headers
 from django.core.exceptions import ImproperlyConfigured
 from sentry_sdk.integrations.django import DjangoIntegration
+from sentry_sdk.types import SamplingContext
 
 from utils.exceptions import sentry_before_send
 
@@ -36,14 +36,14 @@ env = environ.Env(
     DATABASE_PASSWORD=(str, ""),
     CACHE_URL=(str, "locmemcache://"),
     SENTRY_DSN=(str, ""),
-    SENTRY_ENVIRONMENT=(str, "development"),
-    SENTRY_DEBUG=(bool, False),
-    SENTRY_LOG_LEVEL=(str, "WARNING"),
+    SENTRY_ENVIRONMENT=(str, "local"),
+    SENTRY_PROFILE_SESSION_SAMPLE_RATE=(float, None),
+    SENTRY_RELEASE=(str, None),
+    SENTRY_TRACES_SAMPLE_RATE=(float, None),
     CORS_ALLOWED_ORIGINS=(list, []),
     CORS_ALLOW_ALL_ORIGINS=(bool, False),
     CORS_ALLOW_HEADERS=(list, []),
     DEFAULT_FROM_EMAIL=(str, "no-reply@hel.fi"),
-    VERSION=(str, None),
     DJANGO_LOG_LEVEL=(str, "INFO"),
     CSRF_TRUSTED_ORIGINS=(list, []),
     API_KEY_CUSTOM_HEADER=(str, "HTTP_X_API_KEY"),
@@ -69,25 +69,34 @@ env = environ.Env(
 if os.path.exists(env_file):
     env.read_env(env_file)
 
+SENTRY_TRACES_SAMPLE_RATE = env("SENTRY_TRACES_SAMPLE_RATE")
 
-VERSION = env("VERSION")
-if VERSION is None:
-    try:
-        VERSION = subprocess.check_output(
-            ["git", "describe", "--always"], text=True
-        ).strip()
-    except (FileNotFoundError, subprocess.CalledProcessError):
-        VERSION = None
 
-sentry_sdk.init(
-    dsn=env("SENTRY_DSN"),
-    release=VERSION,
-    environment=env("SENTRY_ENVIRONMENT"),
-    integrations=[DjangoIntegration()],
-    before_send=sentry_before_send,
-)
-SENTRY_DEBUG = env("SENTRY_DEBUG")
-SENTRY_LOG_LEVEL = env("SENTRY_LOG_LEVEL")
+def sentry_traces_sampler(sampling_context: SamplingContext) -> float:
+    # Respect parent sampling decision if one exists. Recommended by Sentry.
+    if (parent_sampled := sampling_context.get("parent_sampled")) is not None:
+        return float(parent_sampled)
+
+    # Exclude health check endpoints from tracing
+    path = sampling_context.get("wsgi_environ", {}).get("PATH_INFO", "")
+    if path.rstrip("/") in ["/healthz", "/readiness"]:
+        return 0
+
+    # Use configured sample rate for all other requests
+    return SENTRY_TRACES_SAMPLE_RATE or 0
+
+
+if env("SENTRY_DSN"):
+    sentry_sdk.init(
+        dsn=env("SENTRY_DSN"),
+        environment=env("SENTRY_ENVIRONMENT"),
+        release=env("SENTRY_RELEASE"),
+        integrations=[DjangoIntegration()],
+        traces_sampler=sentry_traces_sampler,
+        profile_session_sample_rate=env("SENTRY_PROFILE_SESSION_SAMPLE_RATE"),
+        profile_lifecycle="trace",
+        before_send=sentry_before_send,
+    )
 
 BASE_DIR = str(checkout_dir)
 
@@ -183,7 +192,9 @@ TEMPLATES = [
 
 CORS_ALLOWED_ORIGINS = env.list("CORS_ALLOWED_ORIGINS")
 CORS_ALLOW_ALL_ORIGINS = env.bool("CORS_ALLOW_ALL_ORIGINS")
-CORS_ALLOW_HEADERS = list(default_headers) + env.list("CORS_ALLOW_HEADERS")
+CORS_ALLOW_HEADERS = tuple(
+    list(default_headers) + ["baggage", "sentry-trace"] + env.list("CORS_ALLOW_HEADERS")
+)
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
