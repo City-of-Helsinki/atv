@@ -2,10 +2,8 @@
 factory_boy
 freezegun
 ipython
-pre-commit
 pytest
 pytest-cov
 pytest-django
 pytest-factoryboy
-ruff
 syrupy
