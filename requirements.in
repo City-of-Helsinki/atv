@@ -10,7 +10,7 @@ djangorestframework-api-key
 drf-extensions
 drf-spectacular
 psycopg[c]
-sentry_sdk
+sentry-sdk[django]
 elasticsearch==7.15.2
 pyclamd
 jsonschema
