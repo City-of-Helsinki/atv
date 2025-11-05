@@ -6,9 +6,9 @@ EXPOSE 8000/tcp
 
 USER root
 
-RUN yum --disableplugin subscription-manager -y --allowerasing update \
-    && yum --disableplugin subscription-manager -y install pcre-devel nmap-ncat \
-    && yum --disableplugin subscription-manager -y clean all
+RUN dnf --disableplugin subscription-manager -y --allowerasing update \
+    && dnf --disableplugin subscription-manager -y install pcre-devel nmap-ncat \
+    && dnf --disableplugin subscription-manager -y clean all
 
 COPY scripts /scripts
 ENV PATH="/scripts:${PATH}"
