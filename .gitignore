@@ -129,4 +129,4 @@ dmypy.json
 .pyre/
 
 .idea
-docker-compose.env.yaml
+docker-compose.env

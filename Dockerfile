@@ -20,6 +20,8 @@ RUN mkdir /app && chown -R 1000:0 /app
 ## https://github.com/docker/compose/issues/3270#issuecomment-363478501
 RUN mkdir -p /var/media && chown -R 1000:0 /var/media && chmod g=u -R /var/media
 RUN mkdir -p /var/static && chown -R 1000:0 /var/static && chmod g=u -R /var/static
+RUN mkdir -p /usr/local/lib/uwsgi/plugins && chown -R 1000:0 /usr/local/lib/uwsgi/plugins \
+    && chmod g=u -R /usr/local/lib/uwsgi/plugins
 
 WORKDIR /app
 
@@ -32,7 +34,9 @@ RUN pip install -U pip setuptools wheel \
     && pip install --no-cache-dir -r /app/requirements.txt \
     && pip install --no-cache-dir -r /app/requirements-prod.txt \
     && uwsgi --build-plugin /app/.prod/escape_json.c \
-    && mv /app/escape_json_plugin.so /app/.prod/escape_json_plugin.so
+    && mv escape_json_plugin.so /usr/local/lib/uwsgi/plugins/ \
+    && uwsgi --build-plugin https://github.com/City-of-Helsinki/uwsgi-sentry \
+    && mv sentry_plugin.so /usr/local/lib/uwsgi/plugins/
 
 COPY --chown=1000:0 docker-entrypoint.sh /entrypoint/docker-entrypoint.sh
 ENTRYPOINT ["/entrypoint/docker-entrypoint.sh"]
