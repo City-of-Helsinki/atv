@@ -2,7 +2,8 @@
 FROM registry.access.redhat.com/ubi9/python-312 AS appbase
 # ==============================
 
-EXPOSE 8000/tcp
+# branch or tag used to pull python-uwsgi-common.
+ARG UWSGI_COMMON_REF=main
 
 USER root
 
@@ -27,19 +28,29 @@ WORKDIR /app
 
 COPY --chown=1000:0 requirements.txt /app/requirements.txt
 COPY --chown=1000:0 requirements-prod.txt /app/requirements-prod.txt
-COPY --chown=1000:0 .prod/escape_json.c /app/.prod/escape_json.c
-USER 1000
 
 RUN pip install -U pip setuptools wheel \
     && pip install --no-cache-dir -r /app/requirements.txt \
-    && pip install --no-cache-dir -r /app/requirements-prod.txt \
-    && uwsgi --build-plugin /app/.prod/escape_json.c \
-    && mv escape_json_plugin.so /usr/local/lib/uwsgi/plugins/ \
-    && uwsgi --build-plugin https://github.com/City-of-Helsinki/uwsgi-sentry \
-    && mv sentry_plugin.so /usr/local/lib/uwsgi/plugins/
+    && pip install --no-cache-dir -r /app/requirements-prod.txt
+
+    # Build and copy specific python-uwsgi-common files.
+ADD https://github.com/City-of-Helsinki/python-uwsgi-common/archive/${UWSGI_COMMON_REF}.tar.gz /usr/src/
+RUN mkdir -p /usr/src/python-uwsgi-common && \
+    tar --strip-components=1 -xzf /usr/src/${UWSGI_COMMON_REF}.tar.gz -C /usr/src/python-uwsgi-common && \
+    cp /usr/src/python-uwsgi-common/uwsgi-base.ini /app && \
+    uwsgi --build-plugin /usr/src/python-uwsgi-common && \
+    rm -rf /usr/src/${UWSGI_COMMON_REF}.tar.gz && \
+    rm -rf /usr/src/python-uwsgi-common && \
+    uwsgi --build-plugin https://github.com/City-of-Helsinki/uwsgi-sentry &&  \
+    mv sentry_plugin.so /usr/local/lib/uwsgi/plugins/
+
+
+USER 1000
 
 COPY --chown=1000:0 docker-entrypoint.sh /entrypoint/docker-entrypoint.sh
 ENTRYPOINT ["/entrypoint/docker-entrypoint.sh"]
+
+EXPOSE 8000/tcp
 
 # ==============================
 FROM appbase AS development
@@ -56,7 +67,7 @@ COPY --chown=1000:0 . /app/
 FROM appbase AS staticbuilder
 # ==============================
 
-ENV STATIC_ROOT /var/static
+ENV STATIC_ROOT=/var/static
 COPY --chown=1000:0 . /app/
 RUN SECRET_KEY="only-used-for-collectstatic" python manage.py collectstatic --noinput
 
