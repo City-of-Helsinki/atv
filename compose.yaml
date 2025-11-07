@@ -46,7 +46,7 @@ services:
             context: .
             target: development
         env_file:
-            - docker-compose.env
+            - compose.env
         environment:
             DATABASE_URL: postgres://atv:atv@atv-db/atv
             DATABASE_HOST: atv-db

@@ -12,8 +12,8 @@ Prerequisites:
 * Docker
 * Docker Compose
 
-1. Create a `docker-compose.env` file in the project folder:
-   * Use `docker-compose.env.example` as a base, it does not need any changes for getting the project running.
+1. Create a `compose.env` file in the project folder:
+   * Use `compose.env.example` as a base, it does not need any changes for getting the project running.
    * Set entrypoint/startup variables according to taste.
      * `DEBUG`, controls debug mode on/off
      * `APPLY_MIGRATIONS`, applies migrations on startup
