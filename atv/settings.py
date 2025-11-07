@@ -162,12 +162,14 @@ INSTALLED_APPS = [
     "services",
     "documents",
     "audit_log",
+    "logger_extra",
 ]
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "corsheaders.middleware.CorsMiddleware",
+    "logger_extra.middleware.XRequestIdMiddleware",
     "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -282,13 +284,18 @@ USE_X_FORWARDED_FOR = env("USE_X_FORWARDED_FOR")
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
+    "filters": {
+        "context": {"()": "logger_extra.filter.LoggerContextFilter"},
+    },
     "formatters": {
-        "timestamped_named": {
-            "format": "%(asctime)s %(name)s %(levelname)s: %(message)s"
-        }
+        "json": {"()": "logger_extra.formatter.JSONFormatter"},
     },
     "handlers": {
-        "console": {"class": "logging.StreamHandler", "formatter": "timestamped_named"}
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "json",
+            "filters": ["context"],
+        }
     },
     "loggers": {"": {"handlers": ["console"], "level": env("DJANGO_LOG_LEVEL")}},
 }
