@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.3.0](https://github.com/City-of-Helsinki/atv/compare/atv-v1.2.5...atv-v1.3.0) (2025-11-11)
+
+
+### Features
+
+* Allow dynamic sentry trace ignore paths ([7901e10](https://github.com/City-of-Helsinki/atv/commit/7901e103fb6fd8f3db866e1641b2daeb94c4cb39))
+* Enable sentry logging for uWSGI ([78cc96d](https://github.com/City-of-Helsinki/atv/commit/78cc96d4e6051dea2eb44256475513743e77784c))
+* **sentry:** Update sentry configuration ([ff58c2f](https://github.com/City-of-Helsinki/atv/commit/ff58c2f000f8ae7f64faf0d5e3ff3c991d787124))
+
+
+### Dependencies
+
+* Bump django from 5.2.7 to 5.2.8 ([97164b8](https://github.com/City-of-Helsinki/atv/commit/97164b89b285da2035ec3685a346f788f1fe4589))
+* Bump sentry-sdk from 2.39.0 to 2.42.0 ([ff1f93f](https://github.com/City-of-Helsinki/atv/commit/ff1f93fe022918a4bb98dccb03933bb29921fb9f))
+* Remove ruff and pre-commit from dev-deps ([06004d7](https://github.com/City-of-Helsinki/atv/commit/06004d7245724064f3c7cf77b2704bb4dd98475d))
+* Update prod-deps ([781d098](https://github.com/City-of-Helsinki/atv/commit/781d0989fc310a0a16762c47838f7d2804f3d614))
+
 ## [1.2.5](https://github.com/City-of-Helsinki/atv/compare/atv-v1.2.4...atv-v1.2.5) (2025-10-14)
 
 
