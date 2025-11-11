@@ -24,7 +24,7 @@ certifi==2025.10.5 \
     --hash=sha256:0f212c2744a9bb6de0c56639a6f68afe01ecd92d91f14ae897c4fe7bbeeef0de \
     --hash=sha256:47c09d31ccf2acf0be3f701ea53595ee7e0b8fa08801c6624be771df09ae7b43
     # via
-    #   elasticsearch
+    #   elastic-transport
     #   requests
     #   sentry-sdk
 charset-normalizer==3.4.4 \
@@ -156,6 +156,7 @@ django==5.2.8 \
     #   django-guardian
     #   django-helusers
     #   django-logger-extra
+    #   django-resilient-logger
     #   django-searchable-encrypted-fields
     #   djangorestframework
     #   drf-extensions
@@ -181,8 +182,13 @@ django-helusers==0.14.0 \
     --hash=sha256:424f97e7aa6792ae255de56344f765795444849ea82e9d4e01666494c28e960c \
     --hash=sha256:79b922d51278a9e9793a00279782e5455b72e9e9d0f261dd17be2f0dbcbaa1f9
     # via -r requirements.in
-django-logger-extra @ https://github.com/City-of-Helsinki/django-logger-extra/archive/refs/tags/v0.1.0.zip \
-    --hash=sha256:90dc28c88cb26e9684873cf1951568abfa2cda454837fe342b2bf482847bf380
+django-logger-extra==1.0.0 \
+    --hash=sha256:4ab52de7fa4863c60f42e7c809911c342650b0556eb48989d0b98b23efc4bfc1 \
+    --hash=sha256:665396ed30959e258c93bfb3aad84b4f3a6072cd9fad703d76f2960d63b25201
+    # via -r requirements.in
+django-resilient-logger==1.0.0 \
+    --hash=sha256:037880295d1cefd6b7705697f2dd06a1127865ecc76869600d7d8325f3b3ce75 \
+    --hash=sha256:a15f923477555a89d384b45667ccc589ab0bfbab9791ebeff7a2c3b1bc15771c
     # via -r requirements.in
 django-searchable-encrypted-fields==0.2.1 \
     --hash=sha256:c7ece2001644649b3dc40121d934560410a04b4c2c33b5c147ce63d7817228e7
@@ -210,10 +216,16 @@ ecdsa==0.19.1 \
     --hash=sha256:30638e27cf77b7e15c4c4cc1973720149e1033827cfd00661ca5c8cc0cdb24c3 \
     --hash=sha256:478cba7b62555866fcb3bb3fe985e06decbdb68ef55713c4e5ab98c57d508e61
     # via python-jose
-elasticsearch==7.15.2 \
-    --hash=sha256:436f871848a5020bf9b47495812b229b59bd0c5d7e40adbd5e3c89896b311704 \
-    --hash=sha256:83c299a08fc8737c72454e6d3b2a01ba1b194e4f4d9e4f8bae7058cec326f39f
-    # via -r requirements.in
+elastic-transport==8.17.1 \
+    --hash=sha256:192718f498f1d10c5e9aa8b9cf32aed405e469a7f0e9d6a8923431dbb2c59fb8 \
+    --hash=sha256:5edef32ac864dca8e2f0a613ef63491ee8d6b8cfb52881fa7313ba9290cac6d2
+    # via elasticsearch
+elasticsearch==8.19.2 \
+    --hash=sha256:622efa6a3e662db45285f16ab57bf198ea73ac9e137e7ed8b1d1d1e47638959d \
+    --hash=sha256:c16ba20c4c76cf6952e836dae7f4e724e00ba7bf31b94b79472b873683accdd4
+    # via
+    #   -r requirements.in
+    #   django-resilient-logger
 idna==3.11 \
     --hash=sha256:771a87f49d9defaf64091e6e6fe9c18d4833f140bd19464795bc32d966ca37ea \
     --hash=sha256:795dafcc9c04ed0c1fb032c2aa73654d8e8c5023a7df64a53f39190ada629902
@@ -298,6 +310,10 @@ pycryptodome==3.23.0 \
     --hash=sha256:e3f2d0aaf8080bda0587d58fc9fe4766e012441e2eed4269a77de6aea981c8be \
     --hash=sha256:eb8f24adb74984aa0e5d07a2368ad95276cf38051fe2dc6605cbcf482e04f2a7
     # via django-searchable-encrypted-fields
+python-dateutil==2.9.0.post0 \
+    --hash=sha256:37dd54208da7e1cd875388217d5e00ebd4179249f90fb72437e91a35459a0ad3 \
+    --hash=sha256:a8b2bc7bffae282281c8140a97d3aa9c14da0b136dfe83f850eea9a5f7470427
+    # via elasticsearch
 python-jose==3.5.0 \
     --hash=sha256:abd1202f23d34dfad2c3d28cb8617b90acf34132c7afd60abd0b0b7d3cb55771 \
     --hash=sha256:fb4eaa44dbeb1c26dcc69e4bd7ec54a1cb8dd64d3b4d81ef08d90ff453f2b01b
@@ -557,7 +573,9 @@ sentry-sdk==2.42.0 \
 six==1.17.0 \
     --hash=sha256:4721f391ed90541fddacab5acf947aa0d3dc7d27b2e1e8eda2be8970586c3274 \
     --hash=sha256:ff70335d468e7eb6ec65b95b99d3a2836546063f63acc5171de367e834932a81
-    # via ecdsa
+    # via
+    #   ecdsa
+    #   python-dateutil
 sqlparse==0.5.3 \
     --hash=sha256:09f67787f56a0b16ecdbde1bfc7f5d9c3371ca683cfeaa8e6ff60b4807ec9272 \
     --hash=sha256:cf2196ed3418f3ba5de6af7e82c694a9fbdbfecccdfc72e281548517081f16ca
@@ -567,6 +585,7 @@ typing-extensions==4.15.0 \
     --hash=sha256:f0fa19c6845758ab08074a0cfa8b7aecb71c999ca73d62883bc25cc018c4e548
     # via
     #   django-guardian
+    #   elasticsearch
     #   psycopg
     #   referencing
 uritemplate==4.2.0 \
@@ -577,6 +596,6 @@ urllib3==1.26.20 \
     --hash=sha256:0ed14ccfbf1c30a9072c7ca157e4319b70d65f623e91e7b32fadb2853431016e \
     --hash=sha256:40c2dc0c681e47eb8f90e7e27bf6ff7df2e677421fd46756da1161c39ca70d32
     # via
-    #   elasticsearch
+    #   elastic-transport
     #   requests
     #   sentry-sdk
