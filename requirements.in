@@ -4,7 +4,8 @@ django-environ
 django-filter
 django-guardian
 django-helusers
-django-logger-extra@https://github.com/City-of-Helsinki/django-logger-extra/archive/refs/tags/v0.1.0.zip
+django-logger-extra
+django-resilient-logger
 django-searchable-encrypted-fields
 djangorestframework
 djangorestframework-api-key
@@ -12,6 +13,6 @@ drf-extensions
 drf-spectacular
 psycopg[c]
 sentry-sdk[django]
-elasticsearch==7.15.2
+elasticsearch
 pyclamd
 jsonschema
