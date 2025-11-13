@@ -117,6 +117,12 @@ run all the formatting tools as git hooks automatically before a
 commit.
 
 
+## Audit logging
+
+Audit logging is implemented using the [resilient-logger](https://github.com/City-of-Helsinki/resilient-logger) library.
+See audit_log package.
+
+
 ## Running tests
 
 * Set the `DEBUG` environment variable to `1`.

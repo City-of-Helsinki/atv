@@ -21,6 +21,12 @@ else:
     default_var_root = environ.Path(checkout_dir("var"))
 
 env = environ.Env(
+    # Resilient logger config
+    AUDIT_LOG_ENVIRONMENT=(str, ""),
+    AUDIT_LOG_ES_URL=(str, ""),
+    AUDIT_LOG_ES_INDEX=(str, ""),
+    AUDIT_LOG_ES_USERNAME=(str, ""),
+    AUDIT_LOG_ES_PASSWORD=(str, ""),
     DEBUG=(bool, False),
     SECRET_KEY=(str, ""),
     MEDIA_ROOT=(environ.Path(), default_var_root("media")),
@@ -51,6 +57,7 @@ env = environ.Env(
     FIELD_ENCRYPTION_KEYS=(list, []),
     ENABLE_AUTOMATIC_ATTACHMENT_FILE_DELETION=(bool, True),
     ENABLE_SWAGGER_UI=(bool, True),
+    # Old audit log settings, TODO: remove later in ATV-252.
     ELASTIC_AUDIT_LOG_INDEX=(str, "logs-atv-audit"),
     ELASTIC_CREATE_DATA_STREAM=(bool, False),
     ELASTIC_HOST=(str, ""),
@@ -163,6 +170,7 @@ INSTALLED_APPS = [
     "documents",
     "audit_log",
     "logger_extra",
+    "resilient_logger",
 ]
 
 MIDDLEWARE = [
@@ -267,7 +275,7 @@ SPECTACULAR_SETTINGS = {
 }
 
 # Audit logging
-
+# Old audit log settings TODO: remove later in ATV-252.
 AUDIT_LOG_ORIGIN = "atv"
 ELASTIC_AUDIT_LOG_INDEX = env("ELASTIC_AUDIT_LOG_INDEX")
 ELASTIC_HOST = env("ELASTIC_HOST")
@@ -278,6 +286,32 @@ ELASTIC_PASSWORD = env("ELASTIC_PASSWORD")
 ELASTIC_CREATE_DATA_STREAM = env("ELASTIC_CREATE_DATA_STREAM")
 ENABLE_SEND_AUDIT_LOG = env("ENABLE_SEND_AUDIT_LOG")
 CLEAR_AUDIT_LOG_ENTRIES = env("CLEAR_AUDIT_LOG_ENTRIES")
+
+# Resilient logger settings
+RESILIENT_LOGGER = {
+    "origin": "atv",
+    "environment": env("AUDIT_LOG_ENVIRONMENT"),
+    "sources": [
+        {
+            "class": "resilient_logger.sources.ResilientLogSource",
+        }
+    ],
+    "targets": [
+        {
+            "class": "resilient_logger.targets.ElasticsearchLogTarget",
+            "es_url": env("AUDIT_LOG_ES_URL"),
+            "es_username": env("AUDIT_LOG_ES_USERNAME"),
+            "es_password": env("AUDIT_LOG_ES_PASSWORD"),
+            "es_index": env("AUDIT_LOG_ES_INDEX"),
+            "required": True,
+        }
+    ],
+    "batch_limit": 5000,
+    "chunk_size": 500,
+    "submit_unsent_entries": True,
+    "clear_sent_entries": True,
+}
+
 
 USE_X_FORWARDED_FOR = env("USE_X_FORWARDED_FOR")
 

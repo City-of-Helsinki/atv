@@ -1,10 +1,9 @@
 import factory
-
-from audit_log.models import AuditLogEntry
+from resilient_logger.models import ResilientLogEntry
 
 
 class AuditLogEntryFactory(factory.django.DjangoModelFactory):
     message = {"field": "content"}
 
     class Meta:
-        model = AuditLogEntry
+        model = ResilientLogEntry
