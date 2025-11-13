@@ -22,12 +22,7 @@ def fixed_datetime() -> Callable[[], datetime]:
 
 @pytest.fixture(autouse=True)
 def setup_audit_logging(settings):
-    settings.ENABLE_SEND_AUDIT_LOG = True
-    settings.CLEAR_AUDIT_LOG_ENTRIES = True
     settings.USE_X_FORWARDED_FOR = True
-    settings.ELASTIC_HOST = "localhost"
-    settings.ELASTIC_AUDIT_LOG_INDEX = "atv-test"
-    settings.ELASTIC_CREATE_DATA_STREAM = False
 
 
 register(AuditLogEntryFactory)
