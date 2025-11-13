@@ -7,10 +7,10 @@ import pytest
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import override_settings
 from freezegun import freeze_time
+from resilient_logger.models import ResilientLogEntry
 from rest_framework import status
 from rest_framework.reverse import reverse
 
-from audit_log.models import AuditLogEntry
 from documents.models import Attachment, Document
 from services.tests.utils import get_user_service_client
 from users.models import User
@@ -270,11 +270,11 @@ def test_audit_log_is_created_when_creating(
 
     assert Attachment.objects.count() == attachments
     assert (
-        AuditLogEntry.objects.filter(
-            message__audit_event__target__type="Document",
-            message__audit_event__target__id=response["id"],
-            message__audit_event__operation="CREATE",
-            message__audit_event__actor__ip_address=ip_address.strip(),  # remove whitespaces to verify correct parsing
+        ResilientLogEntry.objects.filter(
+            context__target__type="Document",
+            context__target__id=response["id"],
+            context__operation="CREATE",
+            context__actor__ip_address=ip_address.strip(),  # remove whitespaces to verify correct parsing
         ).count()
         == 1
     )

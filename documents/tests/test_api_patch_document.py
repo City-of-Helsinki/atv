@@ -9,11 +9,11 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.utils import timezone
 from freezegun import freeze_time
 from guardian.shortcuts import assign_perm
+from resilient_logger.models import ResilientLogEntry
 from rest_framework import status
 from rest_framework.reverse import reverse
 
 from atv.tests.factories import GroupFactory
-from audit_log.models import AuditLogEntry
 from documents.models import Activity, Document, StatusHistory
 from documents.tests.factories import DocumentFactory
 from documents.tests.test_api_create_document import VALID_DOCUMENT_DATA
@@ -654,13 +654,13 @@ def test_audit_log_is_created_when_patching(user, attachments, ip_address):
         )
 
     assert (
-        AuditLogEntry.objects.filter(
-            message__audit_event__target__type="Document",
-            message__audit_event__target__id=str(document.pk),
-            message__audit_event__target__lookup_field="pk",
-            message__audit_event__target__endpoint="Document Instance",
-            message__audit_event__operation="UPDATE",
-            message__audit_event__actor__ip_address=ip_address,
+        ResilientLogEntry.objects.filter(
+            context__target__type="Document",
+            context__target__id=str(document.pk),
+            context__target__lookup_field="pk",
+            context__target__endpoint="Document Instance",
+            context__operation="UPDATE",
+            context__actor__ip_address=ip_address,
         ).count()
         == 1
     )
