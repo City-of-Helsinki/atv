@@ -178,6 +178,23 @@ def test_gdpr_api_list_user(user, service):
     assert response.status_code == status.HTTP_403_FORBIDDEN
 
 
+@pytest.mark.django_db
+def test_gdpr_api_returns_user_data(service_api_client, user):
+    DocumentFactory(service=service_api_client.service, user=user, deletable=False)
+
+    response = service_api_client.get(reverse("gdpr-api-detail", args=[user.uuid]))
+
+    assert response.status_code == status.HTTP_200_OK
+
+    user_data = response.data["data"]["user_data"]
+    assert user_data["uuid"] == str(user.uuid)
+    assert user_data["username"] == user.username
+    assert user_data["email"] == user.email
+    assert user_data["first_name"] == user.first_name
+    assert user_data["last_name"] == user.last_name
+    assert "date_joined" in user_data
+
+
 def test_document_batch_list_service_api_key(service_api_client, user):
     data = {**VALID_DOCUMENT_DATA, "user_id": user.uuid}
     other_service = ServiceFactory()

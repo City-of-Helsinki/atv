@@ -15,6 +15,7 @@ from atv.exceptions import (
 from services.models import ServiceAPIKey
 from services.serializers.service import ServiceSerializer
 from users.models import User
+from users.serializers.user import GDPRUserSerializer
 
 from ..models import Document
 from .attachment import (
@@ -108,10 +109,17 @@ class GDPRSerializer(serializers.Serializer):  # noqa
         total = documents_qs.count()
         deletable = documents_qs.filter(deletable=True).count()
 
+        # Get the user from the query parameters if available
+        user_uuid = self.context.get("view").kwargs.get("user__uuid", None)
+        user = None
+        if user_uuid:
+            user = User.objects.filter(uuid=user_uuid).first()
+
         stats = {
             "total_deletable": deletable,
             "total_undeletable": total - deletable,
             "documents": GDPRDocumentSerializer(documents_qs, many=True).data,
+            "user_data": GDPRUserSerializer(user).data if user else None,
         }
         return stats
 
