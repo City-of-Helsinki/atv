@@ -3,11 +3,11 @@ from uuid import uuid4
 
 import pytest
 from guardian.shortcuts import assign_perm
+from resilient_logger.models import ResilientLogEntry
 from rest_framework import status
 from rest_framework.reverse import reverse
 
 from atv.tests.factories import GroupFactory
-from audit_log.models import AuditLogEntry
 from documents.tests.factories import AttachmentFactory
 from services.enums import ServicePermissions
 from services.tests.utils import get_user_service_client
@@ -138,14 +138,14 @@ def test_audit_log_is_created_when_retrieving(user, service, ip_address):
     )
 
     assert (
-        AuditLogEntry.objects.filter(
-            message__audit_event__target__type="Attachment",
-            message__audit_event__target__id=str(attachment.pk),
-            message__audit_event__operation="READ",
-            message__audit_event__target__lookup_field="pk",
-            message__audit_event__target__endpoint="Attachment Instance",
-            message__audit_event__actor__service=service.name,
-            message__audit_event__actor__ip_address=ip_address,
+        ResilientLogEntry.objects.filter(
+            context__target__type="Attachment",
+            context__target__id=str(attachment.pk),
+            context__operation="READ",
+            context__target__lookup_field="pk",
+            context__target__endpoint="Attachment Instance",
+            context__actor__service=service.name,
+            context__actor__ip_address=ip_address,
         ).count()
         == 1
     )
