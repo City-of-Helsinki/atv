@@ -2,11 +2,11 @@ import freezegun
 import pytest
 from dateutil.parser import isoparse
 from guardian.shortcuts import assign_perm
+from resilient_logger.models import ResilientLogEntry
 from rest_framework import status
 from rest_framework.reverse import reverse
 
 from atv.tests.factories import GroupFactory
-from audit_log.models import AuditLogEntry
 from documents.models import Document
 from documents.tests.factories import DocumentFactory
 from documents.tests.test_api_create_document import VALID_DOCUMENT_DATA
@@ -448,13 +448,13 @@ def test_audit_log_is_created_when_listing(user, ip_address):
 
     assert response.status_code == status.HTTP_200_OK
     assert (
-        AuditLogEntry.objects.filter(
-            message__audit_event__target__type="Document",
-            message__audit_event__target__id="",
-            message__audit_event__target__endpoint="Document List",
-            message__audit_event__operation="READ",
-            message__audit_event__actor__service=service.name,
-            message__audit_event__actor__ip_address=ip_address,
+        ResilientLogEntry.objects.filter(
+            context__target__type="Document",
+            context__target__id="",
+            context__target__endpoint="Document List",
+            context__operation="READ",
+            context__actor__service=service.name,
+            context__actor__ip_address=ip_address,
         ).count()
         == 1
     )

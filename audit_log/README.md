@@ -2,47 +2,66 @@
 
 ## Settings
 
-* `AUDIT_LOG_ORIGIN`, string set to the audit logs origin field
-* `ELASTIC_AUDIT_LOG_INDEX`, index to which the data is sent to
-* `ELASTIC_HOST`
-* `ELASTIC_PORT`
-* `ELASTIC_SSL`, will the connection use encryption
-* `ELASTIC_USERNAME`
-* `ELASTIC_PASSWORD`
-* `ELASTIC_CREATE_DATA_STREAM`, will try to create a data stream
-* `ENABLE_SEND_AUDIT_LOG`, will the audit logs be sent to ElasticSearch
+This module uses [django-resilient-logger](https://github.com/City-of-Helsinki/django-resilient-logger) for audit logging. Configure the following environment variables:
 
+* `AUDIT_LOG_ENVIRONMENT` - Environment identifier (e.g., "production", "staging")
+* `AUDIT_LOG_ES_URL` - Elasticsearch URL for log storage
+* `AUDIT_LOG_ES_INDEX` - Elasticsearch index name
+* `AUDIT_LOG_ES_USERNAME` - Elasticsearch username
+* `AUDIT_LOG_ES_PASSWORD` - Elasticsearch password
+
+The `RESILIENT_LOGGER` configuration in `settings.py` uses these environment variables to configure the resilient logger with Elasticsearch as the target.
 
 ## Usage
 
 An audit logging package that can be used with `djangorestframework`.
 
-This audit logger allows you to save log messages from Django Rest Framework
-CRUD events to database. The serializer works by defining a DRF model viewset
-that inherits `AuditLoggingModelViewSet`.
+This audit logger saves log messages from Django Rest Framework CRUD events using the [`resilient_logger`](https://github.com/City-of-Helsinki/django-resilient-logger). Logs are stored in the `ResilientLogEntry` model and sent to Elasticsearch via a cronjob that calls `submit_unsent_entries`. The viewset works by defining a DRF model viewset that inherits `AuditLoggingModelViewSet`.
 
 To start using this package, follow these steps:
 
-1. Add `djangorestframework` to requirements and add this setting:
+1. Add `djangorestframework` and `django-resilient-logger` to requirements and configure settings:
     ```python
     env = environ.Env(
-        ...,
-        AUDIT_LOG_ORIGIN=(str, ""),
+        AUDIT_LOG_ENVIRONMENT=(str, ""),
+        AUDIT_LOG_ES_URL=(str, ""),
+        AUDIT_LOG_ES_INDEX=(str, ""),
+        AUDIT_LOG_ES_USERNAME=(str, ""),
+        AUDIT_LOG_ES_PASSWORD=(str, ""),
     )
-
-    # Audit logging
-    AUDIT_LOG_ORIGIN = env.str("AUDIT_LOG_ORIGIN")
 
     INSTALLED_APPS = [
         ...,
         "audit_log",
+        "resilient_logger",
     ]
+
+    # Resilient logger configuration for audit logging
+    RESILIENT_LOGGER = {
+        "origin": "atv",
+        "environment": env("AUDIT_LOG_ENVIRONMENT"),
+        "sources": [
+            {
+                "class": "resilient_logger.sources.ResilientLogSource",
+            }
+        ],
+        "targets": [
+            {
+                "class": "resilient_logger.targets.ElasticsearchLogTarget",
+                "es_url": env("AUDIT_LOG_ES_URL"),
+                "es_username": env("AUDIT_LOG_ES_USERNAME"),
+                "es_password": env("AUDIT_LOG_ES_PASSWORD"),
+                "es_index": env("AUDIT_LOG_ES_INDEX"),
+                "required": True,
+            }
+        ],
+    }
     ```
 
-2. Add `AUDIT_LOG_ORIGIN` to env variables.
+2. Set the required environment variables (`AUDIT_LOG_ENVIRONMENT`, `AUDIT_LOG_ES_URL`, etc.).
 
 3. Create a DRF viewset that inherits `audit_log.viewsets.AuditLoggingModelViewSet`.
-   It will log all the CRUD events of that viewset.
+   It will automatically log all CRUD events of that viewset.
 
 Manual logging can also be done using the log function
 `audit_log.audit_logging.log`:
@@ -70,8 +89,12 @@ audit_logging.log(
 )
 ```
 
-Based on:
-- [apartment-application-service audit logging](https://github.com/City-of-Helsinki/apartment-application-service/tree/develop/audit_log)
-- [Helsinki Profile logging format](https://helsinkisolutionoffice.atlassian.net/wiki/spaces/KAN/pages/416972828/Helsinki+profile+audit+logging#Profile-audit-log---CRUD-events---JSON-content-and-format)
-- [YJDH Audit logging implemetation](https://github.com/City-of-Helsinki/yjdh/tree/main/backend/shared/shared/audit_log)
-- [YJDH Audit logging specification](https://helsinkisolutionoffice.atlassian.net/wiki/spaces/KAN/pages/7494172830/Audit+logging+specification)
+## Technical Details
+
+This implementation uses [django-resilient-logger](https://github.com/City-of-Helsinki/django-resilient-logger) which provides:
+- Reliable log delivery to Elasticsearch with retry mechanisms
+- Local database storage (`ResilientLogEntry` model) before transmission
+- Batch processing and submission of log entries via management command
+- Graceful handling of Elasticsearch connection failures
+
+Logs are sent to Elasticsearch by scheduling a cronjob that periodically runs `python manage.py submit_unsent_entries` to send accumulated log entries.

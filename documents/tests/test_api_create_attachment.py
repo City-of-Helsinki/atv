@@ -5,12 +5,12 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import override_settings
 from freezegun import freeze_time
 from guardian.shortcuts import assign_perm
+from resilient_logger.models import ResilientLogEntry
 from rest_framework import status
 from rest_framework.reverse import reverse
 
 from atv.tests.factories import GroupFactory
 from audit_log.enums import Role
-from audit_log.models import AuditLogEntry
 from documents.models import Attachment
 from documents.tests.factories import DocumentFactory
 from services.enums import ServicePermissions
@@ -224,15 +224,15 @@ def test_audit_log_is_created_when_creating(
 
     assert document.attachments.count() == 1
     assert (
-        AuditLogEntry.objects.filter(
-            message__audit_event__target__type="Attachment",
-            message__audit_event__target__id=str(response["id"]),
-            message__audit_event__target__lookup_field="pk",
-            message__audit_event__target__endpoint="Attachment List",
-            message__audit_event__operation="CREATE",
-            message__audit_event__actor__service=service.name,
-            message__audit_event__actor__role=Role.USER,
-            message__audit_event__actor__ip_address=ip_address,
+        ResilientLogEntry.objects.filter(
+            context__actor__service=service.name,
+            context__actor__role=Role.USER,
+            context__actor__ip_address=ip_address.strip(),
+            context__operation="CREATE",
+            context__target__type="Attachment",
+            context__target__id=str(response["id"]),
+            context__target__lookup_field="pk",
+            context__target__endpoint="Attachment List",
         ).count()
         == 1
     )
