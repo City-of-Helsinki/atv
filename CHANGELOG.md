@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0](https://github.com/City-of-Helsinki/atv/compare/atv-v1.3.0...atv-v1.4.0) (2025-11-16)
+
+
+### Features
+
+* Switch logging to django-logger-extra ([326572f](https://github.com/City-of-Helsinki/atv/commit/326572f0385e56178faeb4181f0d489f2ffc8bfc))
+
 ## [1.3.0](https://github.com/City-of-Helsinki/atv/compare/atv-v1.2.5...atv-v1.3.0) (2025-11-11)
 
 
