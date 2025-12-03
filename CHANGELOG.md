@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.4.0](https://github.com/City-of-Helsinki/atv/compare/atv-v1.3.0...atv-v1.4.0) (2025-12-03)
+
+
+### Features
+
+* Allow Sentry uWSGI-plugin to be optional ([26e1b51](https://github.com/City-of-Helsinki/atv/commit/26e1b5141b554643f52946c02a36e26dd4b95124))
+* Migrate to ResilientLogger ([d93b963](https://github.com/City-of-Helsinki/atv/commit/d93b963c08be0e9b92c57c765650690ea1d0579a))
+* Switch logging to django-logger-extra ([326572f](https://github.com/City-of-Helsinki/atv/commit/326572f0385e56178faeb4181f0d489f2ffc8bfc))
+
+
+### Dependencies
+
+* Add django-resilient-logger to deps ([0aeceea](https://github.com/City-of-Helsinki/atv/commit/0aeceea87d35dc00ab139d4c89ee328f736eba0a))
+
 ## [1.3.0](https://github.com/City-of-Helsinki/atv/compare/atv-v1.2.5...atv-v1.3.0) (2025-11-11)
 
 
