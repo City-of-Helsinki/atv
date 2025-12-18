@@ -26,11 +26,10 @@ def send_audit_log_entries():
         )
         return
 
+    scheme = "https" if settings.ELASTIC_SSL else "http"
     es = Elasticsearch(
-        host=settings.ELASTIC_HOST,
-        port=settings.ELASTIC_PORT,
-        use_ssl=settings.ELASTIC_SSL,
-        http_auth=(settings.ELASTIC_USERNAME, settings.ELASTIC_PASSWORD),
+        hosts=[f"{scheme}://{settings.ELASTIC_HOST}:{settings.ELASTIC_PORT}"],
+        basic_auth=(settings.ELASTIC_USERNAME, settings.ELASTIC_PASSWORD),
     )
     entries = AuditLogEntry.objects.filter(is_sent=False).order_by("created_at")
 
