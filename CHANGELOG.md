@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.2](https://github.com/City-of-Helsinki/atv/compare/atv-v1.4.1...atv-v1.4.2) (2025-12-28)
+
+
+### Bug Fixes
+
+* Use correct args in the elasticsearch client ([3956320](https://github.com/City-of-Helsinki/atv/commit/39563205b4d871dc8133c7634640f912c45a47cd))
+
 ## [1.4.1](https://github.com/City-of-Helsinki/atv/compare/atv-v1.4.0...atv-v1.4.1) (2025-12-04)
 
 
