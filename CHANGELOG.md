@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.4.2](https://github.com/City-of-Helsinki/atv/compare/atv-v1.4.1...atv-v1.4.2) (2026-01-12)
+
+
+### Bug Fixes
+
+* Use correct args in the elasticsearch client ([3956320](https://github.com/City-of-Helsinki/atv/commit/39563205b4d871dc8133c7634640f912c45a47cd))
+
+
+### Dependencies
+
+* Bump urllib3 from 1.26.20 to 2.6.3 ([849f3fa](https://github.com/City-of-Helsinki/atv/commit/849f3fa9e65c1fdf44de1069e0ea8073fe65a487))
+
 ## [1.4.1](https://github.com/City-of-Helsinki/atv/compare/atv-v1.4.0...atv-v1.4.1) (2025-12-04)
 
 
