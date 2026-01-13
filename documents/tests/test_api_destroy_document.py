@@ -17,8 +17,10 @@ from documents.models import Attachment, Document, StatusHistory
 from documents.tests.factories import DocumentFactory
 from documents.tests.test_api_create_document import VALID_DOCUMENT_DATA
 from services.enums import ServicePermissions
+from services.models import ServiceAPIKey
 from services.tests.factories import ServiceFactory
 from services.tests.utils import get_user_service_client
+from users.models import User
 from users.tests.factories import UserFactory
 from utils.exceptions import get_error_response
 
@@ -384,3 +386,60 @@ def test_audit_log_is_created_when_destroying(user, service, ip_address):
         ).count()
         == 1
     )
+
+
+def test_gdpr_delete_deletes_user_instance(user, service_api_client):
+    """Test that the GDPR API delete endpoint properly deletes the user instance."""
+    data = {
+        **VALID_DOCUMENT_DATA,
+        "user_id": user.id,
+        "deletable": True,
+        "service_id": service_api_client.service.id,
+    }
+    DocumentFactory(**data)
+
+    user_uuid = user.uuid
+    assert User.objects.filter(uuid=user_uuid).exists()
+
+    response = service_api_client.delete(reverse("gdpr-api-detail", args=[user_uuid]))
+    assert response.status_code == status.HTTP_200_OK
+
+    assert not User.objects.filter(uuid=user_uuid).exists()
+
+
+@mock.patch("sentry_sdk.capture_exception")
+def test_gdpr_delete_does_not_delete_user_with_api_key(
+    sentry_mock, user, service_api_client
+):
+    """Test that the GDPR API delete endpoint does not delete the user if they have an API key."""
+    ServiceAPIKey.objects.create(
+        user=user, name="testing", service=service_api_client.service
+    )
+
+    data = {
+        **VALID_DOCUMENT_DATA,
+        "user_id": user.id,
+        "deletable": True,
+        "service_id": service_api_client.service.id,
+    }
+    doc = DocumentFactory(**data)
+
+    user_uuid = user.uuid
+    assert User.objects.filter(uuid=user_uuid).exists()
+
+    response = service_api_client.delete(reverse("gdpr-api-detail", args=[user_uuid]))
+    assert response.status_code == status.HTTP_200_OK
+    assert sentry_mock.call_count == 1
+
+    # Verify the user instance still exists because it has an API key
+    assert User.objects.filter(uuid=user_uuid).exists()
+
+    # Verify documents were anonymized but not deleted
+    doc.refresh_from_db()
+    assert doc.user is None
+    assert doc.content == {}
+    assert doc.business_id == ""
+    assert doc.metadata == {}
+
+    # Verify attachments were deleted
+    assert not Attachment.objects.filter(document=doc).exists()
