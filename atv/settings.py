@@ -22,7 +22,7 @@ else:
 
 env = environ.Env(
     # Resilient logger config
-    AUDIT_LOG_ENVIRONMENT=(str, ""),
+    AUDIT_LOG_ENV=(str, ""),
     AUDIT_LOG_ES_URL=(str, ""),
     AUDIT_LOG_ES_INDEX=(str, ""),
     AUDIT_LOG_ES_USERNAME=(str, ""),
@@ -290,7 +290,7 @@ CLEAR_AUDIT_LOG_ENTRIES = env("CLEAR_AUDIT_LOG_ENTRIES")
 # Resilient logger settings
 RESILIENT_LOGGER = {
     "origin": "atv",
-    "environment": env("AUDIT_LOG_ENVIRONMENT"),
+    "environment": env("AUDIT_LOG_ENV"),
     "sources": [
         {
             "class": "resilient_logger.sources.ResilientLogSource",
