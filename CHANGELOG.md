@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.4.2](https://github.com/City-of-Helsinki/atv/compare/atv-v1.4.1...atv-v1.4.2) (2026-01-20)
+
+
+### Bug Fixes
+
+* Change audit log env var to correct form ([16c178c](https://github.com/City-of-Helsinki/atv/commit/16c178c50d4d915ae31ac1f90a2d1ea1e6ea3847))
+* Use correct args in the elasticsearch client ([3956320](https://github.com/City-of-Helsinki/atv/commit/39563205b4d871dc8133c7634640f912c45a47cd))
+
+
+### Dependencies
+
+* Bump pyasn1 from 0.6.1 to 0.6.2 ([661ecc6](https://github.com/City-of-Helsinki/atv/commit/661ecc69778560b5f724d6c15407f18b4e39bf8b))
+* Bump urllib3 from 1.26.20 to 2.6.3 ([849f3fa](https://github.com/City-of-Helsinki/atv/commit/849f3fa9e65c1fdf44de1069e0ea8073fe65a487))
+
 ## [1.4.1](https://github.com/City-of-Helsinki/atv/compare/atv-v1.4.0...atv-v1.4.1) (2025-12-04)
 
 
