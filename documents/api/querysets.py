@@ -149,7 +149,7 @@ def get_document_queryset(
     return (
         Document.objects.filter(**qs_filters)
         .select_related("user", "service")
-        .prefetch_related("attachments", "status_histories")
+        .prefetch_related("attachments", "status_histories__activities")
     )
 
 
