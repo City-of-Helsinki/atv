@@ -75,7 +75,10 @@ def log(
             "lookup_field": lookup_field if target_id else "",
             "endpoint": view_name,
         },
-        extra={"status": status, "additional_information": additional_information},
+        extra={
+            "status": status.value,
+            "additional_information": additional_information,
+        },
     )
 
 
