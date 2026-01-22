@@ -88,3 +88,10 @@ class MaliciousFileException(APIException):
     status_code = status.HTTP_400_BAD_REQUEST
     default_code = "MALICIOUS FILE DETECTED"
     default_detail = _("Malware detected.")
+
+
+class UserWithServiceApiKeyDeleteError(APIException):
+    """Exception raised when GDPR deletion fails."""
+
+    status_code = status.HTTP_403_FORBIDDEN
+    default_detail = "User with service API key cannot be deleted."
