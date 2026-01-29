@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.3](https://github.com/City-of-Helsinki/atv/compare/atv-v1.4.2...atv-v1.4.3) (2026-01-29)
+
+
+### Bug Fixes
+
+* Log status enum value in audit log ([16fe9f8](https://github.com/City-of-Helsinki/atv/commit/16fe9f85b4479a563adac8a106620edb4e8098cf))
+
 ## [1.4.2](https://github.com/City-of-Helsinki/atv/compare/atv-v1.4.1...atv-v1.4.2) (2026-01-20)
 
 
