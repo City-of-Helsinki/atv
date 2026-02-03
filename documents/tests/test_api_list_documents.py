@@ -1,13 +1,15 @@
 import freezegun
 import pytest
 from dateutil.parser import isoparse
+from django.db import connection
+from django.test.utils import override_settings
 from guardian.shortcuts import assign_perm
 from resilient_logger.models import ResilientLogEntry
 from rest_framework import status
 from rest_framework.reverse import reverse
 
 from atv.tests.factories import GroupFactory
-from documents.models import Document
+from documents.models import Activity, Document, StatusHistory
 from documents.tests.factories import DocumentFactory
 from documents.tests.test_api_create_document import VALID_DOCUMENT_DATA
 from services.enums import ServicePermissions
@@ -458,3 +460,92 @@ def test_audit_log_is_created_when_listing(user, ip_address):
         ).count()
         == 1
     )
+
+
+def _create_documents_with_status_histories_and_activities(
+    service, user=None, num_documents=3
+):
+    """Helper to create documents with nested status histories and activities."""
+    for i in range(num_documents):
+        doc = DocumentFactory(service=service, user=user)
+        for j in range(2):
+            status_history = StatusHistory.objects.create(
+                document=doc, value=f"status_{i}_{j}"
+            )
+            for k in range(2):
+                Activity.objects.create(
+                    status=status_history,
+                    title={"en": f"Activity {i}_{j}_{k}"},
+                    show_to_user=True,
+                )
+
+
+def _assert_response_has_activities(response_data):
+    """Verify response contains status histories with activities."""
+    for doc_data in response_data["results"]:
+        assert len(doc_data["status_histories"]) > 0
+        for status_history in doc_data["status_histories"]:
+            assert len(status_history["activities"]) > 0
+
+
+@override_settings(DEBUG=True)
+def test_no_n_plus_one_query_for_status_histories_activities_superuser(
+    superuser_api_client,
+):
+    service = ServiceFactory()
+    _create_documents_with_status_histories_and_activities(service)
+
+    connection.queries_log.clear()
+    response = superuser_api_client.get(reverse("documents-list"))
+
+    assert response.status_code == status.HTTP_200_OK
+    body = response.json()
+    assert len(body["results"]) == 3
+
+    num_queries = len(connection.queries)
+    assert num_queries < 15, f"Too many queries: {num_queries}"
+
+    _assert_response_has_activities(body)
+
+
+@override_settings(DEBUG=True)
+def test_no_n_plus_one_query_for_status_histories_activities_service_staff(user):
+    service = ServiceFactory()
+    group = GroupFactory()
+    user.groups.add(group)
+    assign_perm(ServicePermissions.VIEW_DOCUMENTS.value, group, service)
+
+    _create_documents_with_status_histories_and_activities(service)
+
+    api_client = get_user_service_client(user, service)
+    connection.queries_log.clear()
+    response = api_client.get(reverse("documents-list"))
+
+    assert response.status_code == status.HTTP_200_OK
+    body = response.json()
+    assert len(body["results"]) == 3
+
+    num_queries = len(connection.queries)
+    assert num_queries < 20, f"Too many queries: {num_queries}"
+
+    _assert_response_has_activities(body)
+
+
+@override_settings(DEBUG=True)
+def test_no_n_plus_one_query_for_status_histories_activities_document_owner(
+    user, service
+):
+    _create_documents_with_status_histories_and_activities(service, user=user)
+
+    api_client = get_user_service_client(user, service)
+    connection.queries_log.clear()
+    response = api_client.get(reverse("documents-list"))
+
+    assert response.status_code == status.HTTP_200_OK
+    body = response.json()
+    assert len(body["results"]) == 3
+
+    num_queries = len(connection.queries)
+    assert num_queries < 20, f"Too many queries: {num_queries}"
+
+    _assert_response_has_activities(body)
