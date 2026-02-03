@@ -2,6 +2,7 @@ import freezegun
 import pytest
 from dateutil.parser import isoparse
 from guardian.shortcuts import assign_perm
+from pytest_django.asserts import assertNumQueries
 from resilient_logger.models import ResilientLogEntry
 from rest_framework import status
 from rest_framework.reverse import reverse
@@ -458,3 +459,15 @@ def test_audit_log_is_created_when_listing(user, ip_address):
         ).count()
         == 1
     )
+
+
+def test_document_query_causes_decent_amount_of_queries(
+    superuser_api_client, documents_with_nested_activities
+):
+    """
+    Some n+1 problems seen within document listing due to nested activities.
+    This test ensures that the number of queries stays within reasonable limits.
+    """
+    with assertNumQueries(8):
+        response = superuser_api_client.get(reverse("documents-list"))
+        assert response.status_code == status.HTTP_200_OK
