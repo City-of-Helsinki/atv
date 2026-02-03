@@ -1,13 +1,15 @@
 import freezegun
 import pytest
 from dateutil.parser import isoparse
+from django.db import connection
+from django.test.utils import override_settings
 from guardian.shortcuts import assign_perm
 from resilient_logger.models import ResilientLogEntry
 from rest_framework import status
 from rest_framework.reverse import reverse
 
 from atv.tests.factories import GroupFactory
-from documents.models import Document
+from documents.models import Activity, Document, StatusHistory
 from documents.tests.factories import DocumentFactory
 from documents.tests.test_api_create_document import VALID_DOCUMENT_DATA
 from services.enums import ServicePermissions
@@ -458,3 +460,152 @@ def test_audit_log_is_created_when_listing(user, ip_address):
         ).count()
         == 1
     )
+
+
+@override_settings(DEBUG=True)
+def test_no_n_plus_one_query_for_status_histories_activities_superuser(
+    superuser_api_client,
+):
+    """Test that listing documents as superuser doesn't create N+1 queries for activities."""
+    service = ServiceFactory()
+
+    # Create 3 documents with status histories and activities
+    for i in range(3):
+        doc = DocumentFactory(service=service)
+        for j in range(2):
+            status_history = StatusHistory.objects.create(
+                document=doc, value=f"status_{i}_{j}"
+            )
+            for k in range(2):
+                Activity.objects.create(
+                    status=status_history,
+                    title={"en": f"Activity {i}_{j}_{k}"},
+                    show_to_user=True,
+                )
+
+    # Reset queries
+    connection.queries_log.clear()
+
+    # Make the request
+    response = superuser_api_client.get(reverse("documents-list"))
+
+    assert response.status_code == status.HTTP_200_OK
+    assert len(response.json()["results"]) == 3
+
+    # Count queries - should be a constant number regardless of document/status/activity count
+    # Expected queries:
+    # 1. SELECT documents
+    # 2. SELECT users (select_related)
+    # 3. SELECT services (select_related)
+    # 4. SELECT attachments (prefetch_related)
+    # 5. SELECT status_histories (prefetch_related)
+    # 6. SELECT activities (prefetch_related with status_histories__activities)
+    # Plus potentially some session/auth queries
+    num_queries = len(connection.queries)
+
+    # The exact number may vary slightly, but we're checking it's reasonable and constant
+    # With proper prefetching, it should be around 6-10 queries
+    assert num_queries < 15, f"Too many queries: {num_queries}"
+
+    # Verify the response contains the status histories and activities
+    for doc_data in response.json()["results"]:
+        assert "status_histories" in doc_data
+        assert len(doc_data["status_histories"]) > 0
+        for status_history in doc_data["status_histories"]:
+            assert "activities" in status_history
+            assert len(status_history["activities"]) > 0
+
+
+@override_settings(DEBUG=True)
+def test_no_n_plus_one_query_for_status_histories_activities_service_staff(user):
+    """Test that listing documents as service staff doesn't create N+1 queries for activities."""
+    service = ServiceFactory()
+    group = GroupFactory()
+    user.groups.add(group)
+    assign_perm(ServicePermissions.VIEW_DOCUMENTS.value, group, service)
+
+    # Create 3 documents with status histories and activities
+    for i in range(3):
+        doc = DocumentFactory(service=service)
+        for j in range(2):
+            status_history = StatusHistory.objects.create(
+                document=doc, value=f"status_{i}_{j}"
+            )
+            for k in range(2):
+                Activity.objects.create(
+                    status=status_history,
+                    title={"en": f"Activity {i}_{j}_{k}"},
+                    show_to_user=True,
+                )
+
+    api_client = get_user_service_client(user, service)
+
+    # Reset queries
+    connection.queries_log.clear()
+
+    # Make the request
+    response = api_client.get(reverse("documents-list"))
+
+    assert response.status_code == status.HTTP_200_OK
+    assert len(response.json()["results"]) == 3
+
+    # Count queries - should be a constant number regardless of document/status/activity count
+    # Expected queries similar to superuser test
+    num_queries = len(connection.queries)
+
+    # With proper prefetching, it should be around 6-15 queries (may include permission checks)
+    assert num_queries < 20, f"Too many queries: {num_queries}"
+
+    # Verify the response contains the status histories and activities
+    for doc_data in response.json()["results"]:
+        assert "status_histories" in doc_data
+        assert len(doc_data["status_histories"]) > 0
+        for status_history in doc_data["status_histories"]:
+            assert "activities" in status_history
+            assert len(status_history["activities"]) > 0
+
+
+@override_settings(DEBUG=True)
+def test_no_n_plus_one_query_for_status_histories_activities_document_owner(
+    user, service
+):
+    """Test that listing documents as document owner doesn't create N+1 queries for activities."""
+
+    # Create 3 documents with status histories and activities
+    for i in range(3):
+        doc = DocumentFactory(service=service, user=user)
+        for j in range(2):
+            status_history = StatusHistory.objects.create(
+                document=doc, value=f"status_{i}_{j}"
+            )
+            for k in range(2):
+                Activity.objects.create(
+                    status=status_history,
+                    title={"en": f"Activity {i}_{j}_{k}"},
+                    show_to_user=True,
+                )
+
+    api_client = get_user_service_client(user, service)
+
+    # Reset queries
+    connection.queries_log.clear()
+
+    # Make the request
+    response = api_client.get(reverse("documents-list"))
+
+    assert response.status_code == status.HTTP_200_OK
+    assert len(response.json()["results"]) == 3
+
+    # Count queries - should be a constant number regardless of document/status/activity count
+    num_queries = len(connection.queries)
+
+    # With proper prefetching, it should be around 6-15 queries (may include permission checks)
+    assert num_queries < 20, f"Too many queries: {num_queries}"
+
+    # Verify the response contains the status histories and activities
+    for doc_data in response.json()["results"]:
+        assert "status_histories" in doc_data
+        assert len(doc_data["status_histories"]) > 0
+        for status_history in doc_data["status_histories"]:
+            assert "activities" in status_history
+            assert len(status_history["activities"]) > 0
