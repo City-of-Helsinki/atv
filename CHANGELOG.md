@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.4.3](https://github.com/City-of-Helsinki/atv/compare/atv-v1.4.2...atv-v1.4.3) (2026-02-05)
+
+
+### Bug Fixes
+
+* Log status enum value in audit log ([16fe9f8](https://github.com/City-of-Helsinki/atv/commit/16fe9f85b4479a563adac8a106620edb4e8098cf))
+
+
+### Performance Improvements
+
+* Prefetch activities for status histories ([f80b870](https://github.com/City-of-Helsinki/atv/commit/f80b870dd4f87534a603b9e2bb94fc79f4d6d231))
+
+
+### Dependencies
+
+* Bump django from 5.2.9 to 5.2.11 ([13927cc](https://github.com/City-of-Helsinki/atv/commit/13927ccce5da10f80a0dace92072f6faa14a448d))
+
 ## [1.4.2](https://github.com/City-of-Helsinki/atv/compare/atv-v1.4.1...atv-v1.4.2) (2026-01-20)
 
 
