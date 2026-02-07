@@ -57,16 +57,6 @@ env = environ.Env(
     FIELD_ENCRYPTION_KEYS=(list, []),
     ENABLE_AUTOMATIC_ATTACHMENT_FILE_DELETION=(bool, True),
     ENABLE_SWAGGER_UI=(bool, True),
-    # Old audit log settings, TODO: remove later in ATV-252.
-    ELASTIC_AUDIT_LOG_INDEX=(str, "logs-atv-audit"),
-    ELASTIC_CREATE_DATA_STREAM=(bool, False),
-    ELASTIC_HOST=(str, ""),
-    ELASTIC_PORT=(int, 9200),
-    ELASTIC_SSL=(bool, True),
-    ELASTIC_USERNAME=(str, ""),
-    ELASTIC_PASSWORD=(str, ""),
-    ENABLE_SEND_AUDIT_LOG=(bool, False),
-    CLEAR_AUDIT_LOG_ENTRIES=(bool, False),
     USE_X_FORWARDED_FOR=(bool, True),
     TOKEN_AUTH_ACCEPTED_AUDIENCE=(list, []),
     TOKEN_AUTH_ACCEPTED_SCOPE_PREFIX=(list, []),
@@ -275,18 +265,6 @@ SPECTACULAR_SETTINGS = {
 }
 
 # Audit logging
-# Old audit log settings TODO: remove later in ATV-252.
-AUDIT_LOG_ORIGIN = "atv"
-ELASTIC_AUDIT_LOG_INDEX = env("ELASTIC_AUDIT_LOG_INDEX")
-ELASTIC_HOST = env("ELASTIC_HOST")
-ELASTIC_PORT = env("ELASTIC_PORT")
-ELASTIC_SSL = env("ELASTIC_SSL")
-ELASTIC_USERNAME = env("ELASTIC_USERNAME")
-ELASTIC_PASSWORD = env("ELASTIC_PASSWORD")
-ELASTIC_CREATE_DATA_STREAM = env("ELASTIC_CREATE_DATA_STREAM")
-ENABLE_SEND_AUDIT_LOG = env("ENABLE_SEND_AUDIT_LOG")
-CLEAR_AUDIT_LOG_ENTRIES = env("CLEAR_AUDIT_LOG_ENTRIES")
-
 # Resilient logger settings
 RESILIENT_LOGGER = {
     "origin": "atv",
