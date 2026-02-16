@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.0.0](https://github.com/City-of-Helsinki/atv/compare/atv-v1.4.3...atv-v2.0.0) (2026-02-16)
+
+
+### ⚠ BREAKING CHANGES
+
+* remove obsolete AuditLog model and functionality
+
+### Features
+
+* Delete user in gdpr destroy if no documents left ([9bc4727](https://github.com/City-of-Helsinki/atv/commit/9bc4727cc59866b9c70eceabfd5b822ba3ccd076))
+* Remove obsolete AuditLog model and functionality ([bc39a05](https://github.com/City-of-Helsinki/atv/commit/bc39a05017a66076e65afd48702492fcefa0e72d))
+
 ## [1.4.3](https://github.com/City-of-Helsinki/atv/compare/atv-v1.4.2...atv-v1.4.3) (2026-02-05)
 
 
