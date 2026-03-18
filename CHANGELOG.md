@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.1](https://github.com/City-of-Helsinki/atv/compare/atv-v2.0.0...atv-v2.0.1) (2026-03-18)
+
+
+### Dependencies
+
+* Bump pyasn1 from 0.6.2 to 0.6.3 ([7a13b5b](https://github.com/City-of-Helsinki/atv/commit/7a13b5be299c184da633d65ceac1b2060f7ebb69))
+
 ## [2.0.0](https://github.com/City-of-Helsinki/atv/compare/atv-v1.4.3...atv-v2.0.0) (2026-03-10)
 
 
