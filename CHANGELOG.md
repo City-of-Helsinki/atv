@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.0.2](https://github.com/City-of-Helsinki/atv/compare/atv-v2.0.1...atv-v2.0.2) (2026-03-31)
+
+
+### Dependencies
+
+* Bump ecdsa from 0.19.1 to 0.19.2 ([946e74d](https://github.com/City-of-Helsinki/atv/commit/946e74d133e0176a31d542a86a92b8a6a39f036c))
+* Bump pygments from 2.19.2 to 2.20.0 ([3e617fe](https://github.com/City-of-Helsinki/atv/commit/3e617fe4dbd3f7b695dd7705445acc696140c7c4))
+* Bump requests from 2.32.5 to 2.33.0 ([3d364f1](https://github.com/City-of-Helsinki/atv/commit/3d364f18ddf4420b05b7518fb4d80de64865c2fd))
+
 ## [2.0.1](https://github.com/City-of-Helsinki/atv/compare/atv-v2.0.0...atv-v2.0.1) (2026-03-18)
 
 
