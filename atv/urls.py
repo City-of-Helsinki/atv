@@ -1,6 +1,5 @@
 from django.conf import settings
 from django.contrib import admin
-from django.http import HttpResponse
 from django.urls import include, path
 from drf_spectacular.views import (
     SpectacularAPIView,
@@ -60,17 +59,6 @@ if settings.ENABLE_SWAGGER_UI:
         ),
     ]
 
-#
+
 # Kubernetes liveness & readiness probes
-#
-
-
-def healthz(*args, **kwargs):
-    return HttpResponse(status=200)
-
-
-def readiness(*args, **kwargs):
-    return HttpResponse(status=200)
-
-
-urlpatterns += [path("healthz", healthz), path("readiness", readiness)]
+urlpatterns += [path("", include("helsinki_health_endpoints.urls"))]

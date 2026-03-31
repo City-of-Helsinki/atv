@@ -4,6 +4,7 @@ django-environ
 django-filter
 django-guardian
 django-helusers
+django-helsinki-health-endpoints
 django-logger-extra
 django-resilient-logger
 django-searchable-encrypted-fields
