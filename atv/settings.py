@@ -67,6 +67,9 @@ env = environ.Env(
 if os.path.exists(env_file):
     env.read_env(env_file)
 
+# Django helsinki health endpoints
+SENTRY_RELEASE = env.str("SENTRY_RELEASE")
+
 SENTRY_TRACES_SAMPLE_RATE = env("SENTRY_TRACES_SAMPLE_RATE")
 SENTRY_TRACES_IGNORE_PATHS = env("SENTRY_TRACES_IGNORE_PATHS")
 
@@ -89,7 +92,7 @@ if env("SENTRY_DSN"):
     sentry_sdk.init(
         dsn=env("SENTRY_DSN"),
         environment=env("SENTRY_ENVIRONMENT"),
-        release=env("SENTRY_RELEASE"),
+        release=SENTRY_RELEASE,
         integrations=[DjangoIntegration()],
         traces_sampler=sentry_traces_sampler,
         profile_session_sample_rate=env("SENTRY_PROFILE_SESSION_SAMPLE_RATE"),
@@ -161,6 +164,7 @@ INSTALLED_APPS = [
     "audit_log",
     "logger_extra",
     "resilient_logger",
+    "helsinki_health_endpoints",
 ]
 
 MIDDLEWARE = [
