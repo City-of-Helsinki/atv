@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.0](https://github.com/City-of-Helsinki/atv/compare/atv-v2.0.2...atv-v2.1.0) (2026-04-01)
+
+
+### Features
+
+* Use django-helsinki-health-endpoints for readiness and healthz ([1949694](https://github.com/City-of-Helsinki/atv/commit/1949694a695c0579cc83741e4f628ceedc389728))
+
 ## [2.0.2](https://github.com/City-of-Helsinki/atv/compare/atv-v2.0.1...atv-v2.0.2) (2026-03-31)
 
 
