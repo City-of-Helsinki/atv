@@ -144,7 +144,7 @@ def test_update_document_owner_non_draft(user):
 def test_update_document_owner_after_lock_date(user):
     document = DocumentFactory(
         id="2d2b7a36-a306-4e35-990f-13aea04263ff",
-        locked_after=today() - relativedelta(days=1),
+        locked_after=timezone.make_aware(today()) - relativedelta(days=1),
         draft=True,
         user=user,
     )
@@ -283,7 +283,7 @@ def test_update_document_staff_after_lock_date(user, service):
 
     document = DocumentFactory(
         id="2d2b7a36-a306-4e35-990f-13aea04263ff",
-        locked_after=today() - relativedelta(days=1),
+        locked_after=timezone.make_aware(today()) - relativedelta(days=1),
         service=service,
     )
 
