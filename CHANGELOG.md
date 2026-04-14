@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.1.1](https://github.com/City-of-Helsinki/atv/compare/atv-v2.1.0...atv-v2.1.1) (2026-04-14)
+
+
+### Dependencies
+
+* Bump django from 5.2.12 to 5.2.13 ([532d55d](https://github.com/City-of-Helsinki/atv/commit/532d55db78011779cc78fd3291b5c32bd80bcf96))
+* Bump pytest from 8.4.2 to 9.0.3 ([6d28397](https://github.com/City-of-Helsinki/atv/commit/6d28397e670e2b6d84a30b3a10d99c2981d895e8))
+
 ## [2.1.0](https://github.com/City-of-Helsinki/atv/compare/atv-v2.0.2...atv-v2.1.0) (2026-04-01)
 
 
