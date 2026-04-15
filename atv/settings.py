@@ -4,6 +4,7 @@ import environ
 import sentry_sdk
 from corsheaders.defaults import default_headers
 from django.core.exceptions import ImproperlyConfigured
+from helusers.defaults import SOCIAL_AUTH_PIPELINE  # noqa
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.types import SamplingContext
 
@@ -63,6 +64,12 @@ env = environ.Env(
     TOKEN_AUTH_REQUIRE_SCOPE=(bool, False),
     TOKEN_AUTH_AUTHSERVER_URL=(list, []),
     CLAMAV_HOST=(str, "atv-clamav"),
+    SOCIAL_AUTH_TUNNISTAMO_KEY=(str, ""),
+    SOCIAL_AUTH_TUNNISTAMO_SECRET=(str, ""),
+    SOCIAL_AUTH_TUNNISTAMO_OIDC_ENDPOINT=(str, ""),
+    LOGOUT_REDIRECT_URL=(str, "/admin/"),
+    HELUSERS_PASSWORD_LOGIN_DISABLED=(bool, False),
+    HELUSERS_PASSWORD_LOGIN_ALLOWLIST=(list, []),
 )
 if os.path.exists(env_file):
     env.read_env(env_file)
@@ -145,6 +152,7 @@ INSTALLED_APPS = [
     # 3rd party
     "helusers.apps.HelusersConfig",
     "helusers.apps.HelusersAdminConfig",
+    "social_django",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
@@ -233,7 +241,8 @@ MAX_FILE_UPLOAD_ALLOWED = 10
 AUTH_USER_MODEL = "users.User"
 
 AUTHENTICATION_BACKENDS = [
-    "django.contrib.auth.backends.ModelBackend",
+    "helusers.tunnistamo_oidc.TunnistamoOIDCAuth",
+    "helusers.auth.HelusersModelBackend",
     "guardian.backends.ObjectPermissionBackend",
 ]
 
@@ -320,3 +329,13 @@ LOGGING = {
 CLAMAV_HOST = env("CLAMAV_HOST")
 
 HELUSERS_BACK_CHANNEL_LOGOUT_ENABLED = True
+HELUSERS_PASSWORD_LOGIN_DISABLED = env("HELUSERS_PASSWORD_LOGIN_DISABLED")
+HELUSERS_PASSWORD_LOGIN_ALLOWLIST = env("HELUSERS_PASSWORD_LOGIN_ALLOWLIST")
+
+SOCIAL_AUTH_TUNNISTAMO_KEY = env("SOCIAL_AUTH_TUNNISTAMO_KEY")
+SOCIAL_AUTH_TUNNISTAMO_SECRET = env("SOCIAL_AUTH_TUNNISTAMO_SECRET")
+SOCIAL_AUTH_TUNNISTAMO_OIDC_ENDPOINT = env("SOCIAL_AUTH_TUNNISTAMO_OIDC_ENDPOINT")
+
+SESSION_SERIALIZER = "helusers.sessions.TunnistamoOIDCSerializer"
+
+LOGOUT_REDIRECT_URL = env("LOGOUT_REDIRECT_URL")

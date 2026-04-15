@@ -4,6 +4,7 @@ django-environ
 django-filter
 django-guardian
 django-helusers
+social-auth-app-django
 django-helsinki-health-endpoints
 django-logger-extra
 django-resilient-logger
