@@ -41,6 +41,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("v1/", include(router.urls)),
     path("helauth/", include("helusers.urls")),
+    path("pysocial/", include("social_django.urls", namespace="social")),
 ]
 
 

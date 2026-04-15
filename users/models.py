@@ -10,8 +10,15 @@ class User(AbstractUser):
     def clean(self):
         super().clean()
         # Prevent personal details from being saved to ATV user model, ATV doesn't need
-        # to know anything else than uuid
-        self.first_name = self.last_name = self.email = ""
+        # to know anything else than uuid, unless it's a user for Django admin
+        # or another explicitly exempt user.
+        is_exempt_from_pii_stripping = (
+            self.is_staff
+            or self.is_superuser
+            or (self.pk and self.social_auth.exists())
+        )
+        if not is_exempt_from_pii_stripping:
+            self.first_name = self.last_name = self.email = ""
 
     class Meta:
         permissions = [
