@@ -27,11 +27,9 @@ RUN mkdir -p /usr/local/lib/uwsgi/plugins && chown -R 1000:0 /usr/local/lib/uwsg
 WORKDIR /app
 
 COPY --chown=1000:0 requirements.txt /app/requirements.txt
-COPY --chown=1000:0 requirements-prod.txt /app/requirements-prod.txt
 
 RUN pip install -U pip setuptools wheel \
-    && pip install --no-cache-dir -r /app/requirements.txt \
-    && pip install --no-cache-dir -r /app/requirements-prod.txt
+    && pip install --no-cache-dir -r /app/requirements.txt
 
     # Build and copy specific python-uwsgi-common files.
 ADD https://github.com/City-of-Helsinki/python-uwsgi-common/archive/${UWSGI_COMMON_REF}.tar.gz /usr/src/
