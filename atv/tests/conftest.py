@@ -37,5 +37,9 @@ def autouse_django_db(db, django_db_setup, django_db_blocker):
 def django_db_modify_db_settings():
     pass
 
+@pytest.fixture(autouse=True)
+def set_resilient_logger_environment(settings):
+    settings.RESILIENT_LOGGER["environment"] = "unittest"
+
 
 register(GroupFactory)

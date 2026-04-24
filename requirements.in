@@ -15,7 +15,7 @@ drf-extensions
 drf-spectacular
 psycopg[c]
 sentry-sdk[django]
-elasticsearch
+elasticsearch<9
 pyclamd
 jsonschema
 uwsgi

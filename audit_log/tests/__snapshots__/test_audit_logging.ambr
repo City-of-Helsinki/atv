@@ -10,7 +10,7 @@
         'user_id': '7e564b45-527f-4ea6-92c7-3d39ba05733c',
       }),
       'date_time': '2020-06-01T00:00:00.000Z',
-      'environment': '',
+      'environment': 'unittest',
       'extra': dict({
         'additional_information': '',
         'source_pk': 3,
@@ -40,7 +40,7 @@
         'user_id': '7e564b45-527f-4ea6-92c7-3d39ba05733c',
       }),
       'date_time': '2020-06-01T00:00:00.000Z',
-      'environment': '',
+      'environment': 'unittest',
       'extra': dict({
         'additional_information': '',
         'source_pk': 12,
@@ -70,7 +70,7 @@
         'user_id': '7e564b45-527f-4ea6-92c7-3d39ba05733c',
       }),
       'date_time': '2020-06-01T00:00:00.000Z',
-      'environment': '',
+      'environment': 'unittest',
       'extra': dict({
         'additional_information': '',
         'source_pk': 15,
@@ -100,7 +100,7 @@
         'user_id': '7e564b45-527f-4ea6-92c7-3d39ba05733c',
       }),
       'date_time': '2020-06-01T00:00:00.000Z',
-      'environment': '',
+      'environment': 'unittest',
       'extra': dict({
         'additional_information': '',
         'source_pk': 13,
@@ -130,7 +130,7 @@
         'user_id': '7e564b45-527f-4ea6-92c7-3d39ba05733c',
       }),
       'date_time': '2020-06-01T00:00:00.000Z',
-      'environment': '',
+      'environment': 'unittest',
       'extra': dict({
         'additional_information': '',
         'source_pk': 14,
@@ -160,7 +160,7 @@
         'user_id': '',
       }),
       'date_time': '2020-06-01T00:00:00.000Z',
-      'environment': '',
+      'environment': 'unittest',
       'extra': dict({
         'additional_information': '',
         'source_pk': 20,
@@ -190,7 +190,7 @@
         'user_id': '',
       }),
       'date_time': '2020-06-01T00:00:00.000Z',
-      'environment': '',
+      'environment': 'unittest',
       'extra': dict({
         'additional_information': '',
         'source_pk': 23,
@@ -220,7 +220,7 @@
         'user_id': '',
       }),
       'date_time': '2020-06-01T00:00:00.000Z',
-      'environment': '',
+      'environment': 'unittest',
       'extra': dict({
         'additional_information': '',
         'source_pk': 21,
@@ -250,7 +250,7 @@
         'user_id': '',
       }),
       'date_time': '2020-06-01T00:00:00.000Z',
-      'environment': '',
+      'environment': 'unittest',
       'extra': dict({
         'additional_information': '',
         'source_pk': 22,
@@ -280,7 +280,7 @@
         'user_id': '7e564b45-527f-4ea6-92c7-3d39ba05733c',
       }),
       'date_time': '2020-06-01T00:00:00.000Z',
-      'environment': '',
+      'environment': 'unittest',
       'extra': dict({
         'additional_information': '',
         'source_pk': 4,
@@ -310,7 +310,7 @@
         'user_id': '7e564b45-527f-4ea6-92c7-3d39ba05733c',
       }),
       'date_time': '2020-06-01T00:00:00.000Z',
-      'environment': '',
+      'environment': 'unittest',
       'extra': dict({
         'additional_information': '',
         'source_pk': 7,
@@ -340,7 +340,7 @@
         'user_id': '7e564b45-527f-4ea6-92c7-3d39ba05733c',
       }),
       'date_time': '2020-06-01T00:00:00.000Z',
-      'environment': '',
+      'environment': 'unittest',
       'extra': dict({
         'additional_information': '',
         'source_pk': 5,
@@ -370,7 +370,7 @@
         'user_id': '7e564b45-527f-4ea6-92c7-3d39ba05733c',
       }),
       'date_time': '2020-06-01T00:00:00.000Z',
-      'environment': '',
+      'environment': 'unittest',
       'extra': dict({
         'additional_information': '',
         'source_pk': 6,
@@ -400,7 +400,7 @@
         'user_id': '7e564b45-527f-4ea6-92c7-3d39ba05733c',
       }),
       'date_time': '2020-06-01T00:00:00.000Z',
-      'environment': '',
+      'environment': 'unittest',
       'extra': dict({
         'additional_information': '',
         'source_pk': 25,
@@ -430,7 +430,7 @@
         'user_id': '7e564b45-527f-4ea6-92c7-3d39ba05733c',
       }),
       'date_time': '2020-06-01T00:00:00.000Z',
-      'environment': '',
+      'environment': 'unittest',
       'extra': dict({
         'additional_information': '',
         'source_pk': 24,
@@ -460,7 +460,7 @@
         'user_id': '',
       }),
       'date_time': '2020-06-01T00:00:00.000Z',
-      'environment': '',
+      'environment': 'unittest',
       'extra': dict({
         'additional_information': '',
         'source_pk': 16,
@@ -490,7 +490,7 @@
         'user_id': '',
       }),
       'date_time': '2020-06-01T00:00:00.000Z',
-      'environment': '',
+      'environment': 'unittest',
       'extra': dict({
         'additional_information': '',
         'source_pk': 19,
@@ -520,7 +520,7 @@
         'user_id': '',
       }),
       'date_time': '2020-06-01T00:00:00.000Z',
-      'environment': '',
+      'environment': 'unittest',
       'extra': dict({
         'additional_information': '',
         'source_pk': 17,
@@ -550,7 +550,7 @@
         'user_id': '',
       }),
       'date_time': '2020-06-01T00:00:00.000Z',
-      'environment': '',
+      'environment': 'unittest',
       'extra': dict({
         'additional_information': '',
         'source_pk': 18,
@@ -580,7 +580,7 @@
         'user_id': '7e564b45-527f-4ea6-92c7-3d39ba05733c',
       }),
       'date_time': '2020-06-01T00:00:00.000Z',
-      'environment': '',
+      'environment': 'unittest',
       'extra': dict({
         'additional_information': '',
         'source_pk': 8,
@@ -610,7 +610,7 @@
         'user_id': '7e564b45-527f-4ea6-92c7-3d39ba05733c',
       }),
       'date_time': '2020-06-01T00:00:00.000Z',
-      'environment': '',
+      'environment': 'unittest',
       'extra': dict({
         'additional_information': '',
         'source_pk': 11,
@@ -640,7 +640,7 @@
         'user_id': '7e564b45-527f-4ea6-92c7-3d39ba05733c',
       }),
       'date_time': '2020-06-01T00:00:00.000Z',
-      'environment': '',
+      'environment': 'unittest',
       'extra': dict({
         'additional_information': '',
         'source_pk': 9,
@@ -670,7 +670,7 @@
         'user_id': '7e564b45-527f-4ea6-92c7-3d39ba05733c',
       }),
       'date_time': '2020-06-01T00:00:00.000Z',
-      'environment': '',
+      'environment': 'unittest',
       'extra': dict({
         'additional_information': '',
         'source_pk': 10,
@@ -700,7 +700,7 @@
         'user_id': '7e564b45-527f-4ea6-92c7-3d39ba05733c',
       }),
       'date_time': '2020-06-01T00:00:00.000Z',
-      'environment': '',
+      'environment': 'unittest',
       'extra': dict({
         'additional_information': '',
         'source_pk': 27,
