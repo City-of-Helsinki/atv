@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.2.0](https://github.com/City-of-Helsinki/atv/compare/atv-v2.1.1...atv-v2.2.0) (2026-04-27)
+
+
+### Features
+
+* Add AD login for Django Admin ([87dfddc](https://github.com/City-of-Helsinki/atv/commit/87dfddc21afbd11c79761a563411a11b0c7bb33c))
+
+
+### Dependencies
+
+* Bump logging packages ([ba15ffb](https://github.com/City-of-Helsinki/atv/commit/ba15ffb7a29067b1caa2e92e8093b0f73320e9f7))
+* Move uwsgi to main requirements ([3a84f92](https://github.com/City-of-Helsinki/atv/commit/3a84f923b45c2c8f61cbee2ee3127931a41873c0))
+
 ## [2.1.1](https://github.com/City-of-Helsinki/atv/compare/atv-v2.1.0...atv-v2.1.1) (2026-04-14)
 
 
