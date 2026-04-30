@@ -11,7 +11,7 @@ RUN dnf --disableplugin subscription-manager -y --allowerasing update \
     && dnf --disableplugin subscription-manager -y install pcre-devel nmap-ncat \
     && dnf --disableplugin subscription-manager -y clean all
 
-COPY scripts /scripts
+COPY --chmod=0550 --chown=1000:0 scripts /scripts
 ENV PATH="/scripts:${PATH}"
 
 RUN setup_user.sh
@@ -26,13 +26,13 @@ RUN mkdir -p /usr/local/lib/uwsgi/plugins && chown -R 1000:0 /usr/local/lib/uwsg
 
 WORKDIR /app
 
-COPY --chown=1000:0 requirements.txt /app/requirements.txt
+COPY --chmod=0440 --chown=1000:0 requirements.txt /app/requirements.txt
 
 RUN pip install -U pip setuptools wheel \
     && pip install --no-cache-dir -r /app/requirements.txt
 
     # Build and copy specific python-uwsgi-common files.
-ADD https://github.com/City-of-Helsinki/python-uwsgi-common/archive/${UWSGI_COMMON_REF}.tar.gz /usr/src/
+ADD --chmod=0440 https://github.com/City-of-Helsinki/python-uwsgi-common/archive/${UWSGI_COMMON_REF}.tar.gz /usr/src/
 RUN mkdir -p /usr/src/python-uwsgi-common && \
     tar --strip-components=1 -xzf /usr/src/${UWSGI_COMMON_REF}.tar.gz -C /usr/src/python-uwsgi-common && \
     cp /usr/src/python-uwsgi-common/uwsgi-base.ini /app && \
@@ -45,7 +45,7 @@ RUN mkdir -p /usr/src/python-uwsgi-common && \
 
 USER 1000
 
-COPY --chown=1000:0 docker-entrypoint.sh /entrypoint/docker-entrypoint.sh
+COPY --chmod=0555 --chown=1000:0 docker-entrypoint.sh /entrypoint/docker-entrypoint.sh
 ENTRYPOINT ["/entrypoint/docker-entrypoint.sh"]
 
 EXPOSE 8000/tcp
@@ -54,19 +54,19 @@ EXPOSE 8000/tcp
 FROM appbase AS development
 # ==============================
 
-COPY --chown=1000:0 requirements-dev.txt ./requirements-dev.txt
+COPY --chmod=0440 --chown=1000:0 requirements-dev.txt ./requirements-dev.txt
 RUN pip install --no-cache-dir -r ./requirements-dev.txt
 
 ENV DEV_SERVER=1
 
-COPY --chown=1000:0 . /app/
+COPY --chmod=0750 --chown=1000:0 . /app/
 
 # ==============================
 FROM appbase AS staticbuilder
 # ==============================
 
 ENV STATIC_ROOT=/var/static
-COPY --chown=1000:0 . /app/
+COPY --chmod=0555 --chown=1000:0 . /app/
 RUN SECRET_KEY="only-used-for-collectstatic" python manage.py collectstatic --noinput
 
 # ==============================
@@ -76,5 +76,5 @@ FROM appbase AS production
 # fatal: detected dubious ownership in repository at '/app'
 RUN git config --global --add safe.directory /app
 
-COPY --from=staticbuilder --chown=1000:0 /var/static /var/static
-COPY --chown=1000:0 . /app/
+COPY --from=staticbuilder --chmod=0555 --chown=1000:0 /var/static /var/static
+COPY --chmod=0555 --chown=1000:0 . /app/
