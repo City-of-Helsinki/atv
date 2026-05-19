@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.2.2](https://github.com/City-of-Helsinki/atv/compare/atv-v2.2.1...atv-v2.2.2) (2026-05-19)
+
+
+### Bug Fixes
+
+* **docker:** Add --chmod to COPY instructions ([39439cb](https://github.com/City-of-Helsinki/atv/commit/39439cb02cf06aaff59b1ce96cafe062e3d00881))
+* Remove makemigrations from docker-entrypoint ([1a6ea1f](https://github.com/City-of-Helsinki/atv/commit/1a6ea1ff25cac42e98f5c1678f4b9aaa5944f922))
+
+
+### Dependencies
+
+* Bump urllib3 from 2.6.3 to 2.7.0 ([21a5ca0](https://github.com/City-of-Helsinki/atv/commit/21a5ca0a0d57ab37e322b231098d023ebc932878))
+
 ## [2.2.1](https://github.com/City-of-Helsinki/atv/compare/atv-v2.2.0...atv-v2.2.1) (2026-05-11)
 
 
