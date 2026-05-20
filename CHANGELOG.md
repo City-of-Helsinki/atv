@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.3](https://github.com/City-of-Helsinki/atv/compare/atv-v2.2.2...atv-v2.2.3) (2026-05-20)
+
+
+### Dependencies
+
+* Bump idna from 3.11 to 3.15 ([00cb426](https://github.com/City-of-Helsinki/atv/commit/00cb4262557ca9d584d374236fe151c9509bc0a4))
+
 ## [2.2.2](https://github.com/City-of-Helsinki/atv/compare/atv-v2.2.1...atv-v2.2.2) (2026-05-19)
 
 
