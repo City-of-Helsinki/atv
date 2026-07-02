@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.2.4](https://github.com/City-of-Helsinki/atv/compare/atv-v2.2.3...atv-v2.2.4) (2026-07-02)
+
+
+### Dependencies
+
+* Bump cryptography from 46.0.7 to 48.0.1 ([1354dbc](https://github.com/City-of-Helsinki/atv/commit/1354dbcfebf4d28bd2eb2c660406d346f16493d1))
+* Bump pyjwt from 2.12.1 to 2.13.0 ([065cb7e](https://github.com/City-of-Helsinki/atv/commit/065cb7ea03c76b8e7535b82711d487753ab90f33))
+
 ## [2.2.3](https://github.com/City-of-Helsinki/atv/compare/atv-v2.2.2...atv-v2.2.3) (2026-05-20)
 
 
