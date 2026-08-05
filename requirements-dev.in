@@ -1,9 +1,0 @@
--c requirements.txt
-factory_boy
-freezegun
-ipython
-pytest
-pytest-cov
-pytest-django
-pytest-factoryboy
-syrupy
