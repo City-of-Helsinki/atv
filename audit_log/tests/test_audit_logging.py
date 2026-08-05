@@ -4,7 +4,7 @@ import pytest
 from django.contrib.auth.models import AnonymousUser
 from freezegun import freeze_time
 from resilient_logger.models import ResilientLogEntry
-from resilient_logger.sources import ResilientLogSource
+from resilient_logger.sources.resilient_log_source_entry import ResilientLogSourceEntry
 
 from audit_log import audit_logging
 from audit_log.enums import Operation, Status
@@ -16,7 +16,7 @@ class TestAuditLogging:
         audit_logging.log(user, "", Operation.READ, user)
 
         log = ResilientLogEntry.objects.first()
-        audit_doc = ResilientLogSource(log).get_document()
+        audit_doc = ResilientLogSourceEntry(log).get_document()
         assert audit_doc["audit_event"]["origin"] == "atv"
 
     @freeze_time("2020-06-06T00:00:00Z")
@@ -25,7 +25,7 @@ class TestAuditLogging:
         audit_logging.log(user, "", Operation.READ, user)
 
         log = ResilientLogEntry.objects.first()
-        audit_doc = ResilientLogSource(log).get_document()
+        audit_doc = ResilientLogSourceEntry(log).get_document()
         logged_date_from_date_time = datetime.strptime(
             audit_doc["audit_event"]["date_time"], "%Y-%m-%dT%H:%M:%S.%f%z"
         )
@@ -42,7 +42,7 @@ class TestAuditLogging:
         )
 
         log = ResilientLogEntry.objects.first()
-        audit_doc = ResilientLogSource(log).get_document()
+        audit_doc = ResilientLogSourceEntry(log).get_document()
         assert audit_doc["audit_event"]["actor"]["user_id"] == str(user.uuid)
         snapshot.assert_match(audit_doc)
 
@@ -51,7 +51,7 @@ class TestAuditLogging:
         audit_logging.log(user, "", operation, user, ip_address="192.168.1.1")
 
         log = ResilientLogEntry.objects.first()
-        audit_doc = ResilientLogSource(log).get_document()
+        audit_doc = ResilientLogSourceEntry(log).get_document()
         assert audit_doc["audit_event"]["actor"]["role"] == "OWNER"
         snapshot.assert_match(audit_doc)
 
@@ -70,7 +70,7 @@ class TestAuditLogging:
         )
 
         log = ResilientLogEntry.objects.first()
-        audit_doc = ResilientLogSource(log).get_document()
+        audit_doc = ResilientLogSourceEntry(log).get_document()
         assert audit_doc["audit_event"]["actor"]["role"] == "USER"
         snapshot.assert_match(audit_doc)
 
@@ -92,7 +92,7 @@ class TestAuditLogging:
         )
 
         log = ResilientLogEntry.objects.first()
-        audit_doc = ResilientLogSource(log).get_document()
+        audit_doc = ResilientLogSourceEntry(log).get_document()
         assert audit_doc["audit_event"]["actor"]["role"] == "ADMIN"
         snapshot.assert_match(audit_doc)
 
@@ -101,7 +101,7 @@ class TestAuditLogging:
         audit_logging.log(None, "", operation, user, ip_address="192.168.1.1")
 
         log = ResilientLogEntry.objects.first()
-        audit_doc = ResilientLogSource(log).get_document()
+        audit_doc = ResilientLogSourceEntry(log).get_document()
         assert audit_doc["audit_event"]["actor"]["role"] == "SYSTEM"
         snapshot.assert_match(audit_doc)
 
@@ -116,7 +116,7 @@ class TestAuditLogging:
         )
 
         log = ResilientLogEntry.objects.first()
-        audit_doc = ResilientLogSource(log).get_document()
+        audit_doc = ResilientLogSourceEntry(log).get_document()
         assert audit_doc["audit_event"]["actor"]["role"] == "ANONYMOUS"
         snapshot.assert_match(audit_doc)
 
@@ -132,7 +132,7 @@ class TestAuditLogging:
         )
 
         log = ResilientLogEntry.objects.first()
-        audit_doc = ResilientLogSource(log).get_document()
+        audit_doc = ResilientLogSourceEntry(log).get_document()
         assert audit_doc["audit_event"]["message"] == status.value
         assert audit_doc["audit_event"]["extra"]["status"] == status.value
         snapshot.assert_match(audit_doc)
@@ -147,7 +147,7 @@ class TestAuditLogging:
         )
 
         log = ResilientLogEntry.objects.first()
-        audit_doc = ResilientLogSource(log).get_document()
+        audit_doc = ResilientLogSourceEntry(log).get_document()
         assert audit_doc["audit_event"]["extra"]["additional_information"] == "test"
 
     def test_log_user_with_backend(self, user, fixed_datetime, snapshot):
@@ -162,6 +162,6 @@ class TestAuditLogging:
         )
 
         log = ResilientLogEntry.objects.first()
-        audit_doc = ResilientLogSource(log).get_document()
+        audit_doc = ResilientLogSourceEntry(log).get_document()
         assert audit_doc["audit_event"]["actor"]["provider"] == backend_str
         snapshot.assert_match(audit_doc)
