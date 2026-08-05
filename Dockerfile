@@ -24,12 +24,22 @@ RUN mkdir -p /var/static && chown -R 1000:0 /var/static && chmod g=u -R /var/sta
 RUN mkdir -p /usr/local/lib/uwsgi/plugins && chown -R 1000:0 /usr/local/lib/uwsgi/plugins \
     && chmod g=u -R /usr/local/lib/uwsgi/plugins
 
+# Install uv.
+COPY --from=ghcr.io/astral-sh/uv:0.12.1@sha256:cf4eedcaa81655197f625739489effcbe71b61ceb1506f332c3facae5deceded /uv /uvx /usr/local/bin/
+
+ENV UV_PROJECT_ENVIRONMENT=/opt/app-root \
+    UV_COMPILE_BYTECODE=1 \
+    UV_LINK_MODE=copy \
+    UV_NO_CACHE=1 \
+    UV_PYTHON_DOWNLOADS=never
+ENV PATH="/opt/app-root/bin:${PATH}"
+
 WORKDIR /app
 
-COPY --chmod=0440 --chown=1000:0 requirements.txt /app/requirements.txt
+COPY --chmod=0440 --chown=1000:0 pyproject.toml uv.lock /app/
 
-RUN pip install -U pip setuptools wheel \
-    && pip install --no-cache-dir -r /app/requirements.txt
+RUN uv sync --locked --no-default-groups --group prod \
+    && mkdir -p /opt/app-root && chown -R 1000:0 /opt/app-root && chmod g=u -R /opt/app-root
 
     # Build and copy specific python-uwsgi-common files.
 ADD --chmod=0440 https://github.com/City-of-Helsinki/python-uwsgi-common/archive/${UWSGI_COMMON_REF}.tar.gz /usr/src/
@@ -54,8 +64,7 @@ EXPOSE 8000/tcp
 FROM appbase AS development
 # ==============================
 
-COPY --chmod=0440 --chown=1000:0 requirements-dev.txt ./requirements-dev.txt
-RUN pip install --no-cache-dir -r ./requirements-dev.txt
+RUN uv sync --locked --no-default-groups --group prod --group dev
 
 ENV DEV_SERVER=1
 
