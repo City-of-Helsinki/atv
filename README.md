@@ -29,11 +29,11 @@ Prerequisites:
 
 1. Run migrations:
     * Taken care by the example env
-    * `docker exec atv-backend python manage.py migrate`
+    * `docker exec atv-backend uv run manage.py migrate`
 
 2. Create superuser:
     * Taken care by the example env
-    * `docker exec -it atv-backend python manage.py add_admin_user`
+    * `docker exec -it atv-backend uv run manage.py add_admin_user`
 
 
 ## Development without Docker
@@ -45,8 +45,8 @@ Prerequisites:
 
 ### Installing Python requirements
 
-* Run `pip install -r requirements.txt`
-* Run `pip install -r requirements-dev.txt` (development requirements)
+* Install [`uv`](https://docs.astral.sh/uv/getting-started/installation/)
+* Run `uv sync` (installs both production and development dependencies)
 
 
 ### Database
@@ -75,35 +75,32 @@ FIELD_ENCRYPTION_KEYS=
 ```
 
 * Set the `DEBUG` environment variable to `1`.
-* Run `python manage.py migrate`
-* Run `python manage.py add_admin_user`
-* Run `python manage.py runserver 0:8000`
+* Run `uv run manage.py migrate`
+* Run `uv run manage.py add_admin_user`
+* Run `uv run manage.py runserver 0:8000`
 
 The project is now running at [localhost:8000](http://localhost:8000)
 
 
 ## Keeping Python requirements up to date
 
-1. Install `pip-tools`:
-    * `pip install pip-tools`
+1. Add new packages:
+    * `uv add <package>` for production dependencies
+    * `uv add --group dev <package>` for development dependencies
+    * `uv add --group prod <package>` for production-only (e.g. WSGI server) dependencies
 
-2. Add new packages to `requirements.in` or `requirements-dev.in`
+2. If you want to update dependencies to their newest versions, run:
+    * `uv lock --upgrade`
 
-3. Update `.txt` file for the changed requirements file:
-    * `pip-compile requirements.in`
-    * `pip-compile requirements-dev.in`
-
-4. If you want to update dependencies to their newest versions, run:
-    * `pip-compile --upgrade requirements.in`
-
-5. To install Python requirements run:
-    * `pip-sync requirements.txt`
+3. To install Python requirements run:
+    * `uv sync`
 
 
 ## Code format
 
 
 This project uses [Ruff](https://docs.astral.sh/ruff/) for code formatting and quality checking.
+Ruff needs to be explicitly installed in your Python environment, as it is not included in the `uv` setup.
 
 Basic `ruff` commands:
 
@@ -126,7 +123,7 @@ See audit_log package.
 ## Running tests
 
 * Set the `DEBUG` environment variable to `1`.
-* Run `pytest`.
+* Run `uv run pytest`.
 
 
 ## Git blame ignore refs
