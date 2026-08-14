@@ -1,5 +1,25 @@
 # Changelog
 
+## [2.2.4](https://github.com/City-of-Helsinki/atv/compare/atv-v2.2.3...atv-v2.2.4) (2026-08-14)
+
+
+### Bug Fixes
+
+* **deps:** Update django-resilient-logger compatibility for v.2.3.0 ([25f3084](https://github.com/City-of-Helsinki/atv/commit/25f30842bb8809dee8fcc3c6c83dd209bb60f383))
+
+
+### Dependencies
+
+* Bump cachetools ([cb30281](https://github.com/City-of-Helsinki/atv/commit/cb30281129fb7f8329303588de25b79bfcf7f2ef))
+* Bump cryptography from 46.0.7 to 48.0.1 ([1354dbc](https://github.com/City-of-Helsinki/atv/commit/1354dbcfebf4d28bd2eb2c660406d346f16493d1))
+* Bump cryptography from 48.0.1 to 50.0.0 ([426d3cd](https://github.com/City-of-Helsinki/atv/commit/426d3cdde61dd9f42e94332deccbf2d8e64a7a90))
+* Bump django from 5.2.14 to 5.2.15 ([d8fd49d](https://github.com/City-of-Helsinki/atv/commit/d8fd49d873e2c51392b46b4a17d4f65ff77b417a))
+* Bump django to latest 5.2.17 ([2a82f59](https://github.com/City-of-Helsinki/atv/commit/2a82f597656261bacf4909e3df1ddc264ecf6b43))
+* Bump pyasn1 from 0.6.3 to 0.6.4 ([c70a2b1](https://github.com/City-of-Helsinki/atv/commit/c70a2b15d59ffbb5c07122cc62164d1b83d9df43))
+* Bump pyjwt from 2.12.1 to 2.13.0 ([065cb7e](https://github.com/City-of-Helsinki/atv/commit/065cb7ea03c76b8e7535b82711d487753ab90f33))
+* Update django-helusers to v.1.2.0 ([e19a376](https://github.com/City-of-Helsinki/atv/commit/e19a376c242e7590980ab2c8bfb1379eb73386f0))
+* Update pre-commit tool versions ([63d264c](https://github.com/City-of-Helsinki/atv/commit/63d264cf4fac25a8e0563d1c62e251ea90aef4cb))
+
 ## [2.2.3](https://github.com/City-of-Helsinki/atv/compare/atv-v2.2.2...atv-v2.2.3) (2026-05-20)
 
 

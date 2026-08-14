@@ -38,7 +38,7 @@ wheels = [
 
 [[package]]
 name = "atv"
-version = "2.2.3"
+version = "2.2.4"
 source = { virtual = "." }
 dependencies = [
     { name = "django" },
