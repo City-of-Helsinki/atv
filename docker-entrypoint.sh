@@ -3,7 +3,7 @@
 set -e
 
 # Wait for the database
-if [ -z "$SKIP_DATABASE_CHECK" ] || [ "$SKIP_DATABASE_CHECK" = "0" ]; then
+if [[ -z "$SKIP_DATABASE_CHECK" ]] || [[ "$SKIP_DATABASE_CHECK" = "0" ]]; then
     until nc --verbose --wait 30 -z "${DATABASE_HOST}" "${DATABASE_PORT-5432}"
     do
       echo "Waiting for postgres database connection..."
