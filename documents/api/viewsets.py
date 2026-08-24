@@ -228,6 +228,20 @@ class GDPRDataViewSet(AuditLoggingModelViewSet):
             serializer = self.get_serializer(queryset)
             return Response(serializer.data)
 
+    def _delete_user_if_possible(self, user_uuid):
+        user = User.objects.filter(uuid=user_uuid).first()
+        if not user or user.documents.exists() or user.is_anonymous:
+            return
+
+        if getattr(user, "service_api_key", None):
+            sentry_sdk.capture_exception(
+                UserWithServiceApiKeyDeleteError(
+                    "Cannot delete user with ServiceAPIKey."
+                )
+            )
+        else:
+            user.delete()
+
     def destroy(self, request, *args, **kwargs):
         with self.record_action():
             # Anonymize data
@@ -248,17 +262,7 @@ class GDPRDataViewSet(AuditLoggingModelViewSet):
 
                 user_uuid = self.kwargs.get("user__uuid")
                 if user_uuid:
-                    user = User.objects.filter(uuid=user_uuid).first()
-
-                    if user and not user.documents.exists() and not user.is_anonymous:
-                        if getattr(user, "service_api_key", None):
-                            sentry_sdk.capture_exception(
-                                UserWithServiceApiKeyDeleteError(
-                                    "Cannot delete user with ServiceApiKey."
-                                )
-                            )
-                        else:
-                            user.delete()
+                    self._delete_user_if_possible(user_uuid)
 
             # Return details on documents that weren't deleted
             serializer = self.get_serializer(user_documents_qs)
