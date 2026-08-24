@@ -14,8 +14,7 @@ RUN dnf --disableplugin subscription-manager -y --allowerasing update \
 COPY --chmod=0550 --chown=1000:0 scripts /scripts
 ENV PATH="/scripts:${PATH}"
 
-RUN setup_user.sh
-RUN mkdir /app && chown -R 1000:0 /app
+RUN setup_user.sh && mkdir /app && chown -R 1000:0 /app
 
 ## Need to set the permissions beforehand for the Attachment directory
 ## https://github.com/docker/compose/issues/3270#issuecomment-363478501
