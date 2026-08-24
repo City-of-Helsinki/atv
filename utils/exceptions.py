@@ -41,7 +41,7 @@ def custom_exception_handler(exc, _context=None) -> Response:
         def exception_value_to_str(value):
             if isinstance(value, list):
                 return value[0]
-            return f"Required fields: {[key for key in value.keys()]}"
+            return f"Required fields: {list(value)}"
 
         response = Response(
             status=status.HTTP_400_BAD_REQUEST,
