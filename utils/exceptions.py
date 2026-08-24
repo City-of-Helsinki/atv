@@ -27,7 +27,7 @@ def sentry_before_send(event, hint):
     from atv.exceptions import ATVError
 
     if "exc_info" in hint:
-        exc_type, exc_value, tb = hint["exc_info"]
+        _, exc_value, _ = hint["exc_info"]
         if isinstance(exc_value, ATVError):
             return None
     return event
