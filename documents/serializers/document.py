@@ -24,6 +24,9 @@ from .attachment import (
 )
 from .status_history import StatusHistorySerializer
 
+SERVICE_NAME_SOURCE = "service.name"
+USER_UUID_SOURCE = "user.uuid"
+
 
 def status_to_representation(representation):
     status_timestamp = representation.pop("status_timestamp")
@@ -44,13 +47,13 @@ def status_to_representation(representation):
 
 class DocumentStatisticsSerializer(serializers.ModelSerializer):
     service = serializers.CharField(
-        source="service.name", required=False, read_only=True
+        source=SERVICE_NAME_SOURCE, required=False, read_only=True
     )
     attachments = AttachmentNameSerializer(many=True)
     # Attachment count included here just for clarity. Field is added to
     # response body in to_representation
     attachment_count = serializers.HiddenField(default=0)
-    user_id = serializers.UUIDField(source="user.uuid", read_only=True)
+    user_id = serializers.UUIDField(source=USER_UUID_SOURCE, read_only=True)
 
     class Meta:
         model = Document
@@ -78,11 +81,11 @@ class DocumentStatisticsSerializer(serializers.ModelSerializer):
 
 class GDPRDocumentSerializer(serializers.ModelSerializer):
     service = serializers.CharField(
-        source="service.name", required=False, read_only=True
+        source=SERVICE_NAME_SOURCE, required=False, read_only=True
     )
     attachments = AttachmentNameSerializer(many=True, read_only=True)
     attachment_count = serializers.IntegerField()
-    user_id = serializers.UUIDField(source="user.uuid", read_only=True)
+    user_id = serializers.UUIDField(source=USER_UUID_SOURCE, read_only=True)
 
     class Meta:
         model = Document
@@ -147,14 +150,14 @@ class DocumentSerializer(serializers.ModelSerializer):
     """Basic "read" serializer for the Document model."""
 
     user_id = serializers.UUIDField(
-        source="user.uuid", required=False, default=None, read_only=True
+        source=USER_UUID_SOURCE, required=False, default=None, read_only=True
     )
     attachments = AttachmentSerializer(many=True, required=False, read_only=True)
     content = serializers.JSONField(
         required=True, decoder=None, encoder=DjangoJSONEncoder
     )
     service = serializers.CharField(
-        source="service.name", required=False, read_only=True
+        source=SERVICE_NAME_SOURCE, required=False, read_only=True
     )
     status_histories = StatusHistorySerializer(many=True, read_only=True)
 
@@ -228,7 +231,9 @@ class CreateAnonymousDocumentSerializer(serializers.ModelSerializer):
     `CreateAttachmentSerializer`.
     """
 
-    user_id = serializers.UUIDField(source="user.uuid", required=False, default=None)
+    user_id = serializers.UUIDField(
+        source=USER_UUID_SOURCE, required=False, default=None
+    )
     attachments = serializers.ListField(child=serializers.FileField(), required=False)
     content = serializers.JSONField(
         required=True, decoder=None, encoder=DjangoJSONEncoder
