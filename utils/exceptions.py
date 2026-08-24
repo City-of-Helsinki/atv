@@ -46,7 +46,7 @@ def custom_exception_handler(exc, _context=None) -> Response:
         response = Response(
             status=status.HTTP_400_BAD_REQUEST,
             data=_get_error_wrapper(
-                list(
+                [
                     # TODO: Refactor this to produce cleaner error message for nested
                     #  errors
                     _get_error_detail(
@@ -54,7 +54,7 @@ def custom_exception_handler(exc, _context=None) -> Response:
                         f"{k}: {exception_value_to_str(v)}",
                     )
                     for k, v in exc.detail.items()
-                )
+                ]
             ),
         )
     elif isinstance(exc, APIException):
