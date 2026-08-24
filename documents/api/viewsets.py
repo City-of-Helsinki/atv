@@ -523,7 +523,7 @@ class DocumentViewSet(AuditLoggingModelViewSet):
 
         user_id = data.get("user_id")
         if user_id and api_key:
-            user, created = User.objects.get_or_create(
+            user, _ = User.objects.get_or_create(
                 uuid=user_id, defaults={"username": uuid_to_username(user_id)}
             )
         elif user_id and not api_key:

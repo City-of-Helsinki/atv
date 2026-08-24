@@ -210,7 +210,7 @@ class DocumentSerializer(serializers.ModelSerializer):
                     code="invalid field: user_id",
                 )
 
-            user, created = User.objects.get_or_create(
+            user, _ = User.objects.get_or_create(
                 uuid=user_id, defaults={"username": uuid_to_username(user_id)}
             )
             document.user = user
