@@ -2,7 +2,7 @@ import ipaddress
 import re
 from contextlib import contextmanager
 from copy import copy
-from typing import Optional, Union
+from typing import Optional
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -107,7 +107,7 @@ class AuditLoggingModelViewSet(ModelViewSet):
             )
             raise
 
-    def _get_actor(self) -> Union[User, AnonymousUser]:
+    def _get_actor(self) -> User | AnonymousUser:
         return self.request.user
 
     def _get_actor_backend(self) -> str:
@@ -116,7 +116,7 @@ class AuditLoggingModelViewSet(ModelViewSet):
     def _get_operation(self) -> Operation:
         return self.method_to_operation.get(self.request.method, Operation.READ)
 
-    def _get_target(self) -> Optional[Union[Model, ModelBase]]:
+    def _get_target(self) -> Optional[Model | ModelBase]:
         target = None
         lookup_value = self.kwargs.get(self.lookup_field, None)
         if lookup_value is not None:
