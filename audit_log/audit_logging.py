@@ -1,6 +1,5 @@
 import logging
 from datetime import datetime, timezone
-from typing import Optional, Union
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
@@ -19,10 +18,10 @@ def _now() -> datetime:
 
 
 def log(
-    actor: Optional[Union[User, AnonymousUser]],
+    actor: User | AnonymousUser | None,
     actor_backend: str,
     operation: Operation,
-    target: Union[Model, ModelBase],
+    target: Model | ModelBase,
     status: Status = Status.SUCCESS,
     ip_address: str = "",
     additional_information: str = "",
@@ -82,7 +81,7 @@ def log(
     )
 
 
-def _get_target_id(target: Union[Model, ModelBase]) -> str:
+def _get_target_id(target: Model | ModelBase) -> str:
     if isinstance(target, ModelBase):
         return ""
     field_name = getattr(target, "audit_log_id_field", "pk")
@@ -90,7 +89,7 @@ def _get_target_id(target: Union[Model, ModelBase]) -> str:
     return str(audit_log_id)
 
 
-def _get_target_type(target: Union[Model, ModelBase]) -> str:
+def _get_target_type(target: Model | ModelBase) -> str:
     return (
         str(target.__class__.__name__)
         if isinstance(target, Model)

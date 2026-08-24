@@ -2,7 +2,6 @@ import logging
 import os
 import shutil
 from pathlib import Path
-from typing import Union
 
 from sentry_sdk import capture_exception
 
@@ -15,7 +14,7 @@ def remove_instance_file(instance, field_name):
         remove_file(file.path)
 
 
-def remove_file(path: Union[Path, str]):
+def remove_file(path: Path | str):
     try:
         os.unlink(path)
     except FileNotFoundError as e:
@@ -23,7 +22,7 @@ def remove_file(path: Union[Path, str]):
         capture_exception(e)
 
 
-def remove_directory(path: Union[Path, str]):
+def remove_directory(path: Path | str):
     if os.path.exists(path):
         shutil.rmtree(path)
 

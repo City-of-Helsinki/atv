@@ -1,5 +1,3 @@
-from typing import Union
-
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 from rest_framework import status
@@ -62,7 +60,7 @@ class InvalidFieldException(APIException):
     default_detail = _("Got invalid input fields")
 
     def __init__(
-        self, detail=None, code=None, fields: Union[list[str], set[str]] = None
+        self, detail=None, code=None, fields: list[str] | set[str] | None = None
     ):
         detail = detail or self.default_detail
         if fields:
