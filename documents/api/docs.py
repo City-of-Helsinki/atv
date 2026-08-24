@@ -15,6 +15,22 @@ from documents.serializers.status_history import (
     StatusHistorySerializer,
 )
 
+ATTACHMENT_TIMESTAMP = "2021-04-21T13:17:15.511Z"
+DOCUMENT_STATUS_TIMESTAMP = "2022-06-21T13:13:54.247974+03:00"
+ACTIVITY_MESSAGE = "Viestin teksti"
+ACTIVITY_EN_URL = "asdf.uk"
+ACTIVITY_EN_DISPLAY_TEXT = "continue in service asdf"
+ACTIVITY_FI_URL = "asdf.fi"
+ACTIVITY_FI_DISPLAY_TEXT = "tästä palveluun asdf"
+ACTIVITY_SV_URL = "asdf.sv"
+ACTIVITY_SV_DISPLAY_TEXT = "samma på svenska"
+ACTIVITY_TIMESTAMP = "2023-05-22T15:29:49.384845+03:00"
+METADATA_STATUS_TIMESTAMP = "2023-05-22T15:29:49.379761+03:00"
+MYSTERIOUS_FORM_TYPE = "mysterious form"
+APPLICATION_JSON = "application/json"
+TRANSACTION_ID_DESCRIPTION = "Search for documents with the given transaction id"
+DOCUMENT_NOT_FOUND_DESCRIPTION = "No document was found with `documentId`."
+
 error_serializer = inline_serializer(
     "ErrorResponse",
     fields={
@@ -52,8 +68,8 @@ example_attachment = OpenApiExample(
     status_codes=[str(status.HTTP_200_OK), str(status.HTTP_201_CREATED)],
     value={
         "id": 12994,
-        "createdAt": "2021-04-21T13:17:15.511Z",
-        "updatedAt": "2021-04-21T13:17:15.511Z",
+        "createdAt": ATTACHMENT_TIMESTAMP,
+        "updatedAt": ATTACHMENT_TIMESTAMP,
         "filename": "high-school-diploma.pdf",
         "mediaType": "application/pdf",
         "size": 123223,
@@ -73,23 +89,26 @@ example_document = OpenApiExample(
         "status": {
             "value": "PROCESSING",
             "status_display_values": {"fi": "Käsittelyssä"},
-            "timestamp": "2022-06-21T13:13:54.247974+03:00",
+            "timestamp": DOCUMENT_STATUS_TIMESTAMP,
             "activities": [
                 {
                     "title": {"fi": "Otsikko"},
-                    "message": {"fi": "Viestin teksti"},
+                    "message": {"fi": ACTIVITY_MESSAGE},
                     "activity_links": {
                         "en": {
-                            "url": "asdf.uk",
-                            "display_text": "continue in service asdf",
+                            "url": ACTIVITY_EN_URL,
+                            "display_text": ACTIVITY_EN_DISPLAY_TEXT,
                         },
                         "fi": {
-                            "url": "asdf.fi",
-                            "display_text": "tästä palveluun asdf",
+                            "url": ACTIVITY_FI_URL,
+                            "display_text": ACTIVITY_FI_DISPLAY_TEXT,
                         },
-                        "sv": {"url": "asdf.sv", "display_text": "samma på svenska"},
+                        "sv": {
+                            "url": ACTIVITY_SV_URL,
+                            "display_text": ACTIVITY_SV_DISPLAY_TEXT,
+                        },
                     },
-                    "activity_timestamp": "2023-05-22T15:29:49.384845+03:00",
+                    "activity_timestamp": ACTIVITY_TIMESTAMP,
                     "show_to_user": True,
                 }
             ],
@@ -98,26 +117,26 @@ example_document = OpenApiExample(
             {
                 "value": "PROCESSING",
                 "status_display_values": {"fi": "Käsittelyssä"},
-                "timestamp": "2022-06-21T13:13:54.247974+03:00",
+                "timestamp": DOCUMENT_STATUS_TIMESTAMP,
                 "activities": [
                     {
                         "title": {"fi": "Otsikko"},
-                        "message": {"fi": "Viestin teksti"},
+                        "message": {"fi": ACTIVITY_MESSAGE},
                         "activity_links": {
                             "en": {
-                                "url": "asdf.uk",
-                                "display_text": "continue in service asdf",
+                                "url": ACTIVITY_EN_URL,
+                                "display_text": ACTIVITY_EN_DISPLAY_TEXT,
                             },
                             "fi": {
-                                "url": "asdf.fi",
-                                "display_text": "tästä palveluun asdf",
+                                "url": ACTIVITY_FI_URL,
+                                "display_text": ACTIVITY_FI_DISPLAY_TEXT,
                             },
                             "sv": {
-                                "url": "asdf.sv",
-                                "display_text": "samma på svenska",
+                                "url": ACTIVITY_SV_URL,
+                                "display_text": ACTIVITY_SV_DISPLAY_TEXT,
                             },
                         },
-                        "activity_timestamp": "2023-05-22T15:29:49.384845+03:00",
+                        "activity_timestamp": ACTIVITY_TIMESTAMP,
                         "show_to_user": True,
                     }
                 ],
@@ -125,13 +144,13 @@ example_document = OpenApiExample(
             {
                 "value": "RECEIVED",
                 "status_display_values": {"fi": "Vastaanotettu"},
-                "timestamp": "2022-06-21T13:13:54.247974+03:00",
+                "timestamp": DOCUMENT_STATUS_TIMESTAMP,
                 "activities": [],
             },
             {
                 "value": "SUBMITTED",
                 "status_display_values": {"fi": "Lähetetty"},
-                "timestamp": "2022-06-21T13:13:54.247974+03:00",
+                "timestamp": DOCUMENT_STATUS_TIMESTAMP,
                 "activities": [],
             },
         ],
@@ -165,8 +184,8 @@ example_document = OpenApiExample(
         "attachments": [
             {
                 "id": 12994,
-                "createdAt": "2021-04-21T13:17:15.511Z",
-                "updatedAt": "2021-04-21T13:17:15.511Z",
+                "createdAt": ATTACHMENT_TIMESTAMP,
+                "updatedAt": ATTACHMENT_TIMESTAMP,
                 "filename": "high-school-diploma.pdf",
                 "mediaType": "application/pdf",
                 "size": 123223,
@@ -198,7 +217,7 @@ example_document_metadata = OpenApiExample(
         "results": [
             {
                 "id": "cf1bf707-5fef-4d21-841a-3408e5f1ea66",
-                "type": "mysterious form",
+                "type": MYSTERIOUS_FORM_TYPE,
                 "human_readable_type": {},
                 "created_at": "2023-05-15T17:00:08.961578+03:00",
                 "updated_at": "2023-05-22T15:29:49.387682+03:00",
@@ -214,26 +233,26 @@ example_document_metadata = OpenApiExample(
                 "status": {
                     "value": "RECEIVED",
                     "status_display_values": {"fi": "Vastaanotettu"},
-                    "timestamp": "2023-05-22T15:29:49.379761+03:00",
+                    "timestamp": METADATA_STATUS_TIMESTAMP,
                     "activities": [
                         {
                             "title": {"fi": "Otsikko"},
-                            "message": {"fi": "Viestin teksti"},
+                            "message": {"fi": ACTIVITY_MESSAGE},
                             "activity_links": {
                                 "en": {
-                                    "url": "asdf.uk",
-                                    "display_text": "continue in service asdf",
+                                    "url": ACTIVITY_EN_URL,
+                                    "display_text": ACTIVITY_EN_DISPLAY_TEXT,
                                 },
                                 "fi": {
-                                    "url": "asdf.fi",
-                                    "display_text": "tästä palveluun asdf",
+                                    "url": ACTIVITY_FI_URL,
+                                    "display_text": ACTIVITY_FI_DISPLAY_TEXT,
                                 },
                                 "sv": {
-                                    "url": "asdf.sv",
-                                    "display_text": "samma på svenska",
+                                    "url": ACTIVITY_SV_URL,
+                                    "display_text": ACTIVITY_SV_DISPLAY_TEXT,
                                 },
                             },
-                            "activity_timestamp": "2023-05-22T15:29:49.384845+03:00",
+                            "activity_timestamp": ACTIVITY_TIMESTAMP,
                             "show_to_user": True,
                         }
                     ],
@@ -242,26 +261,26 @@ example_document_metadata = OpenApiExample(
                     {
                         "value": "RECEIVED",
                         "status_display_values": {"fi": "Vastaanotettu"},
-                        "timestamp": "2023-05-22T15:29:49.379761+03:00",
+                        "timestamp": METADATA_STATUS_TIMESTAMP,
                         "activities": [
                             {
                                 "title": {"fi": "Otsikko"},
-                                "message": {"fi": "Viestin teksti"},
+                                "message": {"fi": ACTIVITY_MESSAGE},
                                 "activity_links": {
                                     "en": {
-                                        "url": "asdf.uk",
-                                        "display_text": "continue in service asdf",
+                                        "url": ACTIVITY_EN_URL,
+                                        "display_text": ACTIVITY_EN_DISPLAY_TEXT,
                                     },
                                     "fi": {
-                                        "url": "asdf.fi",
-                                        "display_text": "tästä palveluun asdf",
+                                        "url": ACTIVITY_FI_URL,
+                                        "display_text": ACTIVITY_FI_DISPLAY_TEXT,
                                     },
                                     "sv": {
-                                        "url": "asdf.sv",
-                                        "display_text": "samma på svenska",
+                                        "url": ACTIVITY_SV_URL,
+                                        "display_text": ACTIVITY_SV_DISPLAY_TEXT,
                                     },
                                 },
-                                "activity_timestamp": "2023-05-22T15:29:49.384845+03:00",  # noqa: E501
+                                "activity_timestamp": ACTIVITY_TIMESTAMP,  # noqa: E501
                                 "show_to_user": True,
                             }
                         ],
@@ -306,7 +325,7 @@ example_gdpr_api_repsonse = OpenApiExample(
                     "created_at": "2022-06-27T17:51:59.374880+03:00",
                     "user_id": "a67dec08-cc7c-11ec-a4fb-00155dcd8647",
                     "service": "TestService",
-                    "type": "mysterious form",
+                    "type": MYSTERIOUS_FORM_TYPE,
                     "human_readable_type": {"en": "Mysterious Form"},
                     "deletable": True,
                     "delete_after": "2030-12-12",
@@ -318,7 +337,7 @@ example_gdpr_api_repsonse = OpenApiExample(
                     "created_at": "2022-06-09T17:16:49.565282+03:00",
                     "user_id": "a67dec08-cc7c-11ec-a4fb-00155dcd8647",
                     "service": "TestService",
-                    "type": "mysterious form",
+                    "type": MYSTERIOUS_FORM_TYPE,
                     "human_readable_type": {},
                     "deletable": False,
                     "delete_after": "2030-12-12",
@@ -337,20 +356,26 @@ example_create_status_activity_data = OpenApiExample(
     value={
         "value": "RECEIVED",
         "status_display_values": {"fi": "Vastaanotettu"},
-        "timestamp": "2023-05-22T15:29:49.379761+03:00",
+        "timestamp": METADATA_STATUS_TIMESTAMP,
         "activities": [
             {
                 "title": {"fi": "Otsikko"},
-                "message": {"fi": "Viestin teksti"},
+                "message": {"fi": ACTIVITY_MESSAGE},
                 "activity_links": {
                     "en": {
-                        "url": "asdf.uk",
-                        "display_text": "continue in service asdf",
+                        "url": ACTIVITY_EN_URL,
+                        "display_text": ACTIVITY_EN_DISPLAY_TEXT,
                     },
-                    "fi": {"url": "asdf.fi", "display_text": "tästä palveluun asdf"},
-                    "sv": {"url": "asdf.sv", "display_text": "samma på svenska"},
+                    "fi": {
+                        "url": ACTIVITY_FI_URL,
+                        "display_text": ACTIVITY_FI_DISPLAY_TEXT,
+                    },
+                    "sv": {
+                        "url": ACTIVITY_SV_URL,
+                        "display_text": ACTIVITY_SV_DISPLAY_TEXT,
+                    },
                 },
-                "activity_timestamp": "2023-05-22T15:29:49.384845+03:00",
+                "activity_timestamp": ACTIVITY_TIMESTAMP,
                 "show_to_user": True,
             }
         ],
@@ -364,20 +389,26 @@ example_get_status_activity_data = OpenApiExample(
     value={
         "value": "RECEIVED",
         "status_display_values": {"fi": "Vastaanotettu"},
-        "timestamp": "2023-05-22T15:29:49.379761+03:00",
+        "timestamp": METADATA_STATUS_TIMESTAMP,
         "activities": [
             {
                 "title": {"fi": "Otsikko"},
-                "message": {"fi": "Viestin teksti"},
+                "message": {"fi": ACTIVITY_MESSAGE},
                 "activity_links": {
                     "en": {
-                        "url": "asdf.uk",
-                        "display_text": "continue in service asdf",
+                        "url": ACTIVITY_EN_URL,
+                        "display_text": ACTIVITY_EN_DISPLAY_TEXT,
                     },
-                    "fi": {"url": "asdf.fi", "display_text": "tästä palveluun asdf"},
-                    "sv": {"url": "asdf.sv", "display_text": "samma på svenska"},
+                    "fi": {
+                        "url": ACTIVITY_FI_URL,
+                        "display_text": ACTIVITY_FI_DISPLAY_TEXT,
+                    },
+                    "sv": {
+                        "url": ACTIVITY_SV_URL,
+                        "display_text": ACTIVITY_SV_DISPLAY_TEXT,
+                    },
                 },
-                "activity_timestamp": "2023-05-22T15:29:49.384845+03:00",
+                "activity_timestamp": ACTIVITY_TIMESTAMP,
                 "show_to_user": True,
             }
         ],
@@ -430,7 +461,7 @@ attachment_viewset_docs = {
             (status.HTTP_200_OK, "application/octet-stream"): OpenApiResponse(
                 description="Returns the attachment as a downloadable file.",
             ),
-            (status.HTTP_400_BAD_REQUEST, "application/json"): _base_400_response(),
+            (status.HTTP_400_BAD_REQUEST, APPLICATION_JSON): _base_400_response(),
             status.HTTP_401_UNAUTHORIZED: _base_401_response(),
             status.HTTP_403_FORBIDDEN: OpenApiResponse(
                 description=(
@@ -475,12 +506,12 @@ attachment_viewset_docs = {
         ),
         request={"application/octet-stream": OpenApiTypes.BINARY},
         responses={
-            (status.HTTP_201_CREATED, "application/json"): OpenApiResponse(
+            (status.HTTP_201_CREATED, APPLICATION_JSON): OpenApiResponse(
                 response=AttachmentSerializer,
                 description="The attachment was uploaded successfully. "
                 "The attachments information is returned in the response body.",
             ),
-            (status.HTTP_400_BAD_REQUEST, "application/json"): _base_400_response(),
+            (status.HTTP_400_BAD_REQUEST, APPLICATION_JSON): _base_400_response(),
             status.HTTP_401_UNAUTHORIZED: _base_401_response(),
             # TODO: Uncomment when organization features are implemented
             # status.HTTP_403_FORBIDDEN: OpenApiResponse(
@@ -518,7 +549,7 @@ attachment_viewset_docs = {
             status.HTTP_204_NO_CONTENT: OpenApiResponse(
                 description="The attachment was removed successfully.",
             ),
-            (status.HTTP_400_BAD_REQUEST, "application/json"): _base_400_response(),
+            (status.HTTP_400_BAD_REQUEST, APPLICATION_JSON): _base_400_response(),
             status.HTTP_401_UNAUTHORIZED: _base_401_response(),
             status.HTTP_403_FORBIDDEN: OpenApiResponse(
                 description=(
@@ -606,7 +637,7 @@ document_viewset_docs = {
             OpenApiParameter(
                 "transaction_id",
                 OpenApiTypes.STR,
-                description="Search for documents with the given transaction id",
+                description=TRANSACTION_ID_DESCRIPTION,
             ),
             OpenApiParameter(
                 "lookfor",
@@ -619,12 +650,12 @@ document_viewset_docs = {
             ),
         ],
         responses={
-            (status.HTTP_200_OK, "application/json"): OpenApiResponse(
+            (status.HTTP_200_OK, APPLICATION_JSON): OpenApiResponse(
                 response=DocumentSerializer,
                 description="Returns a list of documents with the given criteria. "
                 "An empty list is returned if there are no results.",
             ),
-            (status.HTTP_400_BAD_REQUEST, "application/json"): _base_400_response(),
+            (status.HTTP_400_BAD_REQUEST, APPLICATION_JSON): _base_400_response(),
             status.HTTP_401_UNAUTHORIZED: _base_401_response(),
             # TODO: Uncomment when organization features are implemented
             # status.HTTP_403_FORBIDDEN: OpenApiResponse(
@@ -652,13 +683,13 @@ document_viewset_docs = {
             # " the user has permission to act on behalf of that organization."
         ),
         responses={
-            (status.HTTP_200_OK, "application/json"): OpenApiResponse(
+            (status.HTTP_200_OK, APPLICATION_JSON): OpenApiResponse(
                 response=DocumentSerializer,
                 description=(
                     "The document was found and its contents are returned as JSON."
                 ),
             ),
-            (status.HTTP_400_BAD_REQUEST, "application/json"): _base_400_response(),
+            (status.HTTP_400_BAD_REQUEST, APPLICATION_JSON): _base_400_response(),
             status.HTTP_401_UNAUTHORIZED: _base_401_response(),
             status.HTTP_403_FORBIDDEN: OpenApiResponse(
                 description=(
@@ -672,7 +703,7 @@ document_viewset_docs = {
                 )
             ),
             status.HTTP_404_NOT_FOUND: OpenApiResponse(
-                description="No document was found with `documentId`.",
+                description=DOCUMENT_NOT_FOUND_DESCRIPTION,
             ),
             status.HTTP_500_INTERNAL_SERVER_ERROR: _base_500_response(),
         },
@@ -690,13 +721,13 @@ document_viewset_docs = {
         ),
         request=serializers.JSONField(),
         responses={
-            (status.HTTP_200_OK, "application/json"): OpenApiResponse(
+            (status.HTTP_200_OK, APPLICATION_JSON): OpenApiResponse(
                 response=DocumentSerializer,
                 description=(
                     "The document/s was found and contents are returned as JSON."
                 ),
             ),
-            (status.HTTP_400_BAD_REQUEST, "application/json"): _base_400_response(),
+            (status.HTTP_400_BAD_REQUEST, APPLICATION_JSON): _base_400_response(),
             status.HTTP_401_UNAUTHORIZED: _base_401_response(),
             status.HTTP_403_FORBIDDEN: OpenApiResponse(
                 description=(
@@ -710,7 +741,7 @@ document_viewset_docs = {
                 )
             ),
             status.HTTP_404_NOT_FOUND: OpenApiResponse(
-                description="No document was found with `documentId`.",
+                description=DOCUMENT_NOT_FOUND_DESCRIPTION,
             ),
             status.HTTP_500_INTERNAL_SERVER_ERROR: _base_500_response(),
         },
@@ -728,12 +759,12 @@ document_viewset_docs = {
             " access the stored document normally afterwards."
         ),
         responses={
-            (status.HTTP_201_CREATED, "application/json"): OpenApiResponse(
+            (status.HTTP_201_CREATED, APPLICATION_JSON): OpenApiResponse(
                 response=DocumentSerializer,
                 description="The document was created successfully. "
                 "The created document is returned in the response body.",
             ),
-            (status.HTTP_400_BAD_REQUEST, "application/json"): _base_400_response(),
+            (status.HTTP_400_BAD_REQUEST, APPLICATION_JSON): _base_400_response(),
             status.HTTP_401_UNAUTHORIZED: _base_401_response(),
             # TODO: Uncomment when organization features are implemented
             # status.HTTP_403_FORBIDDEN: OpenApiResponse(
@@ -773,12 +804,12 @@ document_viewset_docs = {
             "* Documents may not be modified if their `lockedAfter` date has passed."
         ),
         responses={
-            (status.HTTP_200_OK, "application/json"): OpenApiResponse(
+            (status.HTTP_200_OK, APPLICATION_JSON): OpenApiResponse(
                 response=DocumentSerializer,
                 description="The Document was updated successfully. "
                 "The updated contents are returned in the response body.",
             ),
-            (status.HTTP_400_BAD_REQUEST, "application/json"): _base_400_response(),
+            (status.HTTP_400_BAD_REQUEST, APPLICATION_JSON): _base_400_response(),
             status.HTTP_401_UNAUTHORIZED: _base_401_response(),
             status.HTTP_403_FORBIDDEN: OpenApiResponse(
                 description=(
@@ -792,7 +823,7 @@ document_viewset_docs = {
                 )
             ),
             status.HTTP_404_NOT_FOUND: OpenApiResponse(
-                description="No document was found with `documentId`.",
+                description=DOCUMENT_NOT_FOUND_DESCRIPTION,
             ),
             status.HTTP_500_INTERNAL_SERVER_ERROR: _base_500_response(),
         },
@@ -822,7 +853,7 @@ document_viewset_docs = {
                     " successfully"
                 ),
             ),
-            (status.HTTP_400_BAD_REQUEST, "application/json"): _base_400_response(),
+            (status.HTTP_400_BAD_REQUEST, APPLICATION_JSON): _base_400_response(),
             status.HTTP_401_UNAUTHORIZED: _base_401_response(),
             status.HTTP_403_FORBIDDEN: OpenApiResponse(
                 description=(
@@ -836,7 +867,7 @@ document_viewset_docs = {
                 # "of the organization which owns the document."
             ),
             status.HTTP_404_NOT_FOUND: OpenApiResponse(
-                description="No document was found with `documentId`.",
+                description=DOCUMENT_NOT_FOUND_DESCRIPTION,
             ),
             status.HTTP_500_INTERNAL_SERVER_ERROR: _base_500_response(),
         },
@@ -856,11 +887,11 @@ document_metadata_viewset_docs = {
         ),
         # "of that organization.",
         responses={
-            (status.HTTP_200_OK, "application/json"): OpenApiResponse(
+            (status.HTTP_200_OK, APPLICATION_JSON): OpenApiResponse(
                 response=DocumentMetadataSerializer,
                 description="User was found and their documents are listed.",
             ),
-            (status.HTTP_400_BAD_REQUEST, "application/json"): _base_400_response(),
+            (status.HTTP_400_BAD_REQUEST, APPLICATION_JSON): _base_400_response(),
             status.HTTP_401_UNAUTHORIZED: _base_401_response(),
             status.HTTP_403_FORBIDDEN: OpenApiResponse(
                 description=(
@@ -888,7 +919,7 @@ document_metadata_viewset_docs = {
             OpenApiParameter(
                 "transaction_id",
                 OpenApiTypes.STR,
-                description="Search for documents with the given transaction id",
+                description=TRANSACTION_ID_DESCRIPTION,
             ),
         ],
     ),
@@ -909,12 +940,12 @@ document_gdpr_viewset = {
             " documents."
         ),
         responses={
-            (status.HTTP_200_OK, "application/json"): OpenApiResponse(
+            (status.HTTP_200_OK, APPLICATION_JSON): OpenApiResponse(
                 response=GDPRSerializer,
                 description="User was found and their documents are listed."
                 " Number of deletable and undeletable documents are included.",
             ),
-            (status.HTTP_400_BAD_REQUEST, "application/json"): _base_400_response(),
+            (status.HTTP_400_BAD_REQUEST, APPLICATION_JSON): _base_400_response(),
             status.HTTP_401_UNAUTHORIZED: OpenApiResponse(
                 description=(
                     "Authorization not provided. API Key authentication required."
@@ -940,7 +971,7 @@ document_gdpr_viewset = {
             " zero."
         ),
         responses={
-            (status.HTTP_200_OK, "application/json"): OpenApiResponse(
+            (status.HTTP_200_OK, APPLICATION_JSON): OpenApiResponse(
                 response=GDPRSerializer,
                 description=(
                     "User was found and their deletable documents and attachments have"
@@ -948,7 +979,7 @@ document_gdpr_viewset = {
                     " in response body. Field 'total_deletable' should now be zero."
                 ),
             ),
-            (status.HTTP_400_BAD_REQUEST, "application/json"): _base_400_response(),
+            (status.HTTP_400_BAD_REQUEST, APPLICATION_JSON): _base_400_response(),
             status.HTTP_401_UNAUTHORIZED: OpenApiResponse(
                 description=(
                     "Authorization not provided. API Key authentication required."
@@ -979,11 +1010,11 @@ document_statistics_viewset_docs = {
             " documents match between ATV and services."
         ),
         responses={
-            (status.HTTP_200_OK, "application/json"): OpenApiResponse(
+            (status.HTTP_200_OK, APPLICATION_JSON): OpenApiResponse(
                 response=DocumentMetadataSerializer,
                 description="Request was allowed and documents were listed",
             ),
-            (status.HTTP_400_BAD_REQUEST, "application/json"): _base_400_response(),
+            (status.HTTP_400_BAD_REQUEST, APPLICATION_JSON): _base_400_response(),
             status.HTTP_401_UNAUTHORIZED: OpenApiResponse(
                 "Request's credentials are missing or invalid. An API-key is required,"
                 " or an user token associated with statistics service.",
@@ -1021,7 +1052,7 @@ document_statistics_viewset_docs = {
             OpenApiParameter(
                 "transaction_id",
                 OpenApiTypes.STR,
-                description="Search for documents with the given transaction id",
+                description=TRANSACTION_ID_DESCRIPTION,
             ),
         ],
     ),
@@ -1040,11 +1071,11 @@ document_status_history_viewset_docs = {
             "Lists all document's statuses and activities related to the statuses"
         ),
         responses={
-            (status.HTTP_200_OK, "application/json"): OpenApiResponse(
+            (status.HTTP_200_OK, APPLICATION_JSON): OpenApiResponse(
                 response=StatusHistorySerializer,
                 description="Request was allowed and document statuses were listed",
             ),
-            (status.HTTP_400_BAD_REQUEST, "application/json"): _base_400_response(),
+            (status.HTTP_400_BAD_REQUEST, APPLICATION_JSON): _base_400_response(),
             status.HTTP_401_UNAUTHORIZED: (
                 "Request's credentials are missing or invalid."
             ),
@@ -1060,14 +1091,14 @@ document_status_history_viewset_docs = {
         ),
         request=CreateStatusHistorySerializer,
         responses={
-            (status.HTTP_201_CREATED, "application/json"): OpenApiResponse(
+            (status.HTTP_201_CREATED, APPLICATION_JSON): OpenApiResponse(
                 response=StatusHistorySerializer,
                 description=(
                     "New Status and/or Activity was created. All Activities related to"
                     " the status is returned."
                 ),
             ),
-            (status.HTTP_200_OK, "application/json"): OpenApiResponse(
+            (status.HTTP_200_OK, APPLICATION_JSON): OpenApiResponse(
                 response=StatusHistorySerializer,
                 description=(
                     "Return HTTP 200 OK, if nothing changed but request was correctly"
@@ -1075,7 +1106,7 @@ document_status_history_viewset_docs = {
                     " latest StatusHistory object."
                 ),
             ),
-            (status.HTTP_400_BAD_REQUEST, "application/json"): _base_400_response(),
+            (status.HTTP_400_BAD_REQUEST, APPLICATION_JSON): _base_400_response(),
             status.HTTP_401_UNAUTHORIZED: (
                 "Request's credentials are missing or invalid."
             ),
