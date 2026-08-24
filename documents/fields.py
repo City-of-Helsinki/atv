@@ -18,9 +18,8 @@ class EncryptedJSONField(EncryptedFieldMixin, models.JSONField):
             value = ""
         # Instead of using db_prep_value use json.dumps() to get a json formatted object
         value = json.dumps(value)
-        if value is not None:
-            encrypted_value = self.encrypt(value)
-            return connection.Database.Binary(encrypted_value)
+        encrypted_value = self.encrypt(value)
+        return connection.Database.Binary(encrypted_value)
 
 
 class EncryptedFileField(models.FileField):
