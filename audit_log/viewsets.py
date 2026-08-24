@@ -127,6 +127,21 @@ class AuditLoggingModelViewSet(ModelViewSet):
             )
         return target or self.created_instance or self.get_queryset().model
 
+    @staticmethod
+    def _get_global_ip_address(ip: str) -> Optional[str]:
+        try:
+            # This regexp matches IPv4 addresses without including the port
+            # number
+            regexp_for_ipv4 = re.match(
+                r"(^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4})", ip
+            )
+            ip_address = regexp_for_ipv4[0] if regexp_for_ipv4 else ip
+            if ipaddress.ip_address(ip_address).is_global:
+                return ip_address
+        except ValueError:
+            return None
+        return None
+
     def _get_ip_address(self) -> str:
         if settings.USE_X_FORWARDED_FOR:
             forwarded_for = [
@@ -134,17 +149,8 @@ class AuditLoggingModelViewSet(ModelViewSet):
                 for ip in self.request.META.get("HTTP_X_FORWARDED_FOR", "").split(",")
             ]
             for ip in forwarded_for:
-                try:
-                    # This regexp matches IPv4 addresses without including the port
-                    # number
-                    regexp_for_ipv4 = re.match(
-                        r"(^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4})", ip
-                    )
-                    if ipaddress.ip_address(
-                        regexp_for_ipv4[0] if regexp_for_ipv4 else ip
-                    ).is_global:
-                        return regexp_for_ipv4[0] if regexp_for_ipv4 else ip
-                except ValueError:
-                    continue
+                global_ip_address = self._get_global_ip_address(ip)
+                if global_ip_address:
+                    return global_ip_address
 
         return self.request.META.get("REMOTE_ADDR")
