@@ -1,5 +1,19 @@
 # Changelog
 
+## [2.2.5](https://github.com/City-of-Helsinki/atv/compare/atv-v2.2.4...atv-v2.2.5) (2026-08-25)
+
+
+### Bug Fixes
+
+* Merge adjacent Docker instructions ([ea2feae](https://github.com/City-of-Helsinki/atv/commit/ea2feae88e8d1c408921946a33445ee883e989fd))
+* Quote Docker archive paths ([9e56924](https://github.com/City-of-Helsinki/atv/commit/9e5692497ed0b336b8478ac5a8a22b3142c35ab3))
+* Remove unreachable encryption guard ([a234ff3](https://github.com/City-of-Helsinki/atv/commit/a234ff32377e9703ac133710a4a95968c5563abd))
+
+
+### Dependencies
+
+* Bump sqlparse from 0.5.5 to 0.6.0 ([4144a44](https://github.com/City-of-Helsinki/atv/commit/4144a44ec07d6651881c7b644090a8c5f26e1630))
+
 ## [2.2.4](https://github.com/City-of-Helsinki/atv/compare/atv-v2.2.3...atv-v2.2.4) (2026-08-14)
 
 
