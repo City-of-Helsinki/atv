@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.6](https://github.com/City-of-Helsinki/atv/compare/atv-v2.2.5...atv-v2.2.6) (2026-09-04)
+
+
+### Dependencies
+
+* Bump djangorestframework from 3.17.1 to 3.17.2 ([c8e45e8](https://github.com/City-of-Helsinki/atv/commit/c8e45e80030248e95ac1b9245d72650984453678))
+
 ## [2.2.5](https://github.com/City-of-Helsinki/atv/compare/atv-v2.2.4...atv-v2.2.5) (2026-08-25)
 
 
