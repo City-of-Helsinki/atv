@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.2.7](https://github.com/City-of-Helsinki/atv/compare/atv-v2.2.6...atv-v2.2.7) (2026-10-04)
+
+
+### Dependencies
+
+* Bump oauthlib from 3.3.1 to 4.0.0 ([264a849](https://github.com/City-of-Helsinki/atv/commit/264a849e35138f077bd2bfd1572683412f292ce6))
+* Bump pyjwt from 2.13.0 to 2.15.0 ([19b8757](https://github.com/City-of-Helsinki/atv/commit/19b8757060974f1bd06eceab016a4b32e6bb800e))
+* Bump urllib3 from 2.7.0 to 2.8.0 ([01f5680](https://github.com/City-of-Helsinki/atv/commit/01f56807067b444ca5a78f6403f327ac825f5c76))
+
 ## [2.2.6](https://github.com/City-of-Helsinki/atv/compare/atv-v2.2.5...atv-v2.2.6) (2026-09-04)
 
 
