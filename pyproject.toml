@@ -8,7 +8,7 @@ dependencies = [
     "django-environ",
     "django-filter",
     "django-guardian",
-    "django-helusers>=1.2.0",
+    "django-helusers",
     "social-auth-app-django",
     "django-helsinki-health-endpoints",
     "django-logger-extra",
@@ -44,9 +44,6 @@ prod = [
 [tool.uv]
 package = false
 exclude-newer = "P3D"
-
-[tool.uv.exclude-newer-package]
-django-helusers = "2026-08-04T00:00:00Z"
 
 [tool.ruff]
 target-version = "py312"
