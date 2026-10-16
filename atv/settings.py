@@ -4,7 +4,7 @@ import environ
 import sentry_sdk
 from corsheaders.defaults import default_headers
 from django.core.exceptions import ImproperlyConfigured
-from helusers.defaults import SOCIAL_AUTH_PIPELINE  # noqa
+from helusers.defaults import SOCIAL_AUTH_PIPELINE as HELUSERS_SOCIAL_AUTH_PIPELINE
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.types import SamplingContext
 
@@ -335,6 +335,15 @@ HELUSERS_PASSWORD_LOGIN_ALLOWLIST = env("HELUSERS_PASSWORD_LOGIN_ALLOWLIST")
 SOCIAL_AUTH_TUNNISTAMO_KEY = env("SOCIAL_AUTH_TUNNISTAMO_KEY")
 SOCIAL_AUTH_TUNNISTAMO_SECRET = env("SOCIAL_AUTH_TUNNISTAMO_SECRET")
 SOCIAL_AUTH_TUNNISTAMO_OIDC_ENDPOINT = env("SOCIAL_AUTH_TUNNISTAMO_OIDC_ENDPOINT")
+
+_associate_user_index = HELUSERS_SOCIAL_AUTH_PIPELINE.index(
+    "social_core.pipeline.social_auth.associate_user"
+)
+SOCIAL_AUTH_PIPELINE = (
+    *HELUSERS_SOCIAL_AUTH_PIPELINE[: _associate_user_index + 1],
+    "users.pipeline.store_user_details",
+    *HELUSERS_SOCIAL_AUTH_PIPELINE[_associate_user_index + 1 :],
+)
 
 SESSION_SERIALIZER = "helusers.sessions.TunnistamoOIDCSerializer"
 
