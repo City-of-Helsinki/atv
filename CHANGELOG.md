@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.8](https://github.com/City-of-Helsinki/atv/compare/atv-v2.2.7...atv-v2.2.8) (2026-10-18)
+
+
+### Bug Fixes
+
+* Keep admin user details on first AD login ([d826e92](https://github.com/City-of-Helsinki/atv/commit/d826e9256740f4fce0ab258ecd27196799242354))
+
 ## [2.2.7](https://github.com/City-of-Helsinki/atv/compare/atv-v2.2.6...atv-v2.2.7) (2026-10-14)
 
 
