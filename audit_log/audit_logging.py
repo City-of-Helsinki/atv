@@ -1,10 +1,12 @@
 import logging
 from datetime import datetime, timezone
+from uuid import UUID
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
 from django.db.models import Model
 from django.db.models.base import ModelBase
+from logger_extra.logger_context import get_logger_context, logger_context
 from resilient_logger.sources import ResilientLogSource
 
 from audit_log.enums import Operation, Role, Status
@@ -63,22 +65,28 @@ def log(
         )
     target_id = _get_target_id(target)
 
-    ResilientLogSource.create_structured(
-        level=logging.NOTSET,
-        message=status.value,
-        actor=actor_data,
-        operation=operation.value,
-        target={
-            "type": _get_target_type(target),
-            "id": target_id,
-            "lookup_field": lookup_field if target_id else "",
-            "endpoint": view_name,
-        },
-        extra={
-            "status": status.value,
-            "additional_information": additional_information,
-        },
+    # Generated request IDs are UUIDs, which the audit JSON field cannot serialize.
+    request_id = get_logger_context().get("request_id")
+    context_overrides = (
+        {"request_id": str(request_id)} if isinstance(request_id, UUID) else {}
     )
+    with logger_context(context_overrides):
+        ResilientLogSource.create_structured(
+            level=logging.NOTSET,
+            message=status.value,
+            actor=actor_data,
+            operation=operation.value,
+            target={
+                "type": _get_target_type(target),
+                "id": target_id,
+                "lookup_field": lookup_field if target_id else "",
+                "endpoint": view_name,
+            },
+            extra={
+                "status": status.value,
+                "additional_information": additional_information,
+            },
+        )
 
 
 def _get_target_id(target: Model | ModelBase) -> str:
