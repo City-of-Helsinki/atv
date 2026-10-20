@@ -3,7 +3,7 @@ revision = 3
 requires-python = "==3.12.*"
 
 [options]
-exclude-newer = "2026-10-10T14:44:27.798544Z"
+exclude-newer = "2026-10-17T10:19:01.264438Z"
 exclude-newer-span = "P3D"
 
 [[package]]
@@ -56,6 +56,7 @@ dependencies = [
     { name = "jsonschema" },
     { name = "psycopg", extra = ["c"] },
     { name = "pyclamd" },
+    { name = "pycryptodome" },
     { name = "sentry-sdk", extra = ["django"] },
     { name = "social-auth-app-django" },
 ]
@@ -69,6 +70,7 @@ dev = [
     { name = "pytest-cov" },
     { name = "pytest-django" },
     { name = "pytest-factoryboy" },
+    { name = "python-dateutil" },
     { name = "syrupy" },
 ]
 prod = [
@@ -96,6 +98,7 @@ requires-dist = [
     { name = "jsonschema" },
     { name = "psycopg", extras = ["c"] },
     { name = "pyclamd" },
+    { name = "pycryptodome" },
     { name = "sentry-sdk", extras = ["django"] },
     { name = "social-auth-app-django" },
 ]
@@ -109,6 +112,7 @@ dev = [
     { name = "pytest-cov" },
     { name = "pytest-django" },
     { name = "pytest-factoryboy" },
+    { name = "python-dateutil" },
     { name = "syrupy" },
 ]
 prod = [

@@ -22,6 +22,7 @@ dependencies = [
     "sentry-sdk[django]",
     "elasticsearch<9",
     "pyclamd",
+    "pycryptodome",
     "jsonschema",
 ]
 
@@ -34,6 +35,7 @@ dev = [
     "pytest-cov",
     "pytest-django",
     "pytest-factoryboy",
+    "python-dateutil",
     "syrupy",
 ]
 prod = [
