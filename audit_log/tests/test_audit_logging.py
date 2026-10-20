@@ -1,8 +1,10 @@
 from datetime import datetime, timezone
+from uuid import UUID
 
 import pytest
 from django.contrib.auth.models import AnonymousUser
 from freezegun import freeze_time
+from logger_extra.logger_context import get_logger_context, logger_context
 from resilient_logger.models import ResilientLogEntry
 from resilient_logger.sources.resilient_log_source_entry import ResilientLogSourceEntry
 
@@ -165,3 +167,17 @@ class TestAuditLogging:
         audit_doc = ResilientLogSourceEntry(log).get_document()
         assert audit_doc["audit_event"]["actor"]["provider"] == backend_str
         snapshot.assert_match(audit_doc)
+
+    @pytest.mark.parametrize(
+        "request_id",
+        [UUID("6ad6e242-97fc-4ae9-91ac-6728e4c45f3b"), "provided-request-id"],
+    )
+    def test_log_request_id(self, user, request_id):
+        with logger_context({"request_id": request_id}):
+            audit_logging.log(user, "", Operation.READ, user)
+            assert get_logger_context()["request_id"] == request_id
+
+        log = ResilientLogEntry.objects.get()
+        assert log.context["request_id"] == str(request_id)
+        audit_doc = ResilientLogSourceEntry(log).get_document()
+        assert audit_doc["audit_event"]["extra"]["request_id"] == str(request_id)
