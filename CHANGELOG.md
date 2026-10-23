@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.2.9](https://github.com/City-of-Helsinki/atv/compare/atv-v2.2.8...atv-v2.2.9) (2026-10-23)
+
+
+### Bug Fixes
+
+* Bump uv version to 0.13.5 ([9c8d069](https://github.com/City-of-Helsinki/atv/commit/9c8d06991ae8227dd5fd60523c1b8afbf575e960))
+
+
+### Dependencies
+
+* Bump certifi to 2026.10.19 ([1f30f60](https://github.com/City-of-Helsinki/atv/commit/1f30f60c1f6b425f11a2336c0212624c6e05ac15))
+
 ## [2.2.8](https://github.com/City-of-Helsinki/atv/compare/atv-v2.2.7...atv-v2.2.8) (2026-10-20)
 
 
