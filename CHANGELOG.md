@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.11](https://github.com/City-of-Helsinki/atv/compare/atv-v2.2.10...atv-v2.2.11) (2026-11-07)
+
+
+### Dependencies
+
+* Bump oauthlib from 4.0.0 to 4.0.1 ([f1c4071](https://github.com/City-of-Helsinki/atv/commit/f1c40711e4d4866b9e55d03e288c1460ed4b3201))
+
 ## [2.2.10](https://github.com/City-of-Helsinki/atv/compare/atv-v2.2.9...atv-v2.2.10) (2026-10-26)
 
 
