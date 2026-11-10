@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.2.11](https://github.com/City-of-Helsinki/atv/compare/atv-v2.2.10...atv-v2.2.11) (2026-11-10)
+
+
+### Dependencies
+
+* Bump django-helusers from 1.3.0 to 1.3.2 ([b272236](https://github.com/City-of-Helsinki/atv/commit/b272236351ea2b33dc7861f1661b46a12579411a))
+* Bump oauthlib from 4.0.0 to 4.0.1 ([f1c4071](https://github.com/City-of-Helsinki/atv/commit/f1c40711e4d4866b9e55d03e288c1460ed4b3201))
+* Bump social-auth-core from 5.2.0 to 6.2.0 ([edfacdd](https://github.com/City-of-Helsinki/atv/commit/edfacddded3be23ab5bd960f40ab6279bb8c452a))
+
 ## [2.2.10](https://github.com/City-of-Helsinki/atv/compare/atv-v2.2.9...atv-v2.2.10) (2026-10-26)
 
 
